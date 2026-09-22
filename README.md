@@ -18,18 +18,28 @@ src/
   app/                      Composition, routing, providers
     App.tsx
     index.ts
-    styles/index.css        Global CSS and Tailwind
+    styles/index.css        Global CSS, theme tokens, and Tailwind
+    ui/AppHeader/           Brand and market connection display
   processes/                Reserved for multi-step workflows
   pages/home/
     index.ts                Public API
-    ui/                     HomePage and styles
-    assets/                 Starter screen images
+    ui/                     Market page introduction
   features/                 User actions, grouped into named slices
   entities/                 Domain concepts, grouped into named slices
   shared/                   Domain-independent UI, utilities, configuration
 ```
 
-The processes layer follows the requested article and stays empty until needed. The original starter screen remains the home page.
+The processes layer follows the requested article and stays empty until needed.
+
+## Current implementation
+
+The responsive header and pale background follow the [visual reference](https://pixel-perfect-canvas-2478.lovable.app/). The implementation is written independently. Global Tailwind theme tokens provide the palette for upcoming dashboard components. The main content shares the header's 1280px container and responsive gutters.
+
+The header accepts a typed connection status. It currently displays Disconnected because no WebSocket connection has been implemented. The status component supports connecting, connected, reconnecting, disconnected, and error states with text and a colored indicator. Future connection logic should pass its real state into the header.
+
+The home page contains the market title and introduction. Live Binance prices, search/sorting, persistent favorites and hidden assets, conversion, and session alerts are still to be implemented according to Take-home-assigment.docx. The reference's mock-data behavior is not part of the implementation.
+
+The current UI uses React and Tailwind without additional component libraries. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
 
 ## Rules for future implementation
 

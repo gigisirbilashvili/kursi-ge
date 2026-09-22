@@ -5,7 +5,7 @@ import { ESLint } from 'eslint'
 const eslint = new ESLint()
 type RuleSetting = [0 | 1 | 2, ...unknown[]]
 type ResolvedConfig = { rules: Record<string, RuleSetting> }
-const scopes = ['src/App.tsx', 'src/shared/ui/Example.tsx', 'src/pages/dashboard/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js']
+const scopes = ['src/app/App.tsx', 'src/shared/ui/Example.tsx', 'src/pages/dashboard/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js']
 const rows = new Map<string, { name: string; setting: RuleSetting; scopes: string[] }>()
 for (const scope of scopes) {
   const config = await eslint.calculateConfigForFile(scope) as ResolvedConfig
@@ -52,7 +52,7 @@ Example layout:
 - Order: built-in → external → project/internal → styles. Type imports stay with their source group. Side-effect imports are checked too.
 - Built-ins include node: imports and Node built-in module names. Internal paths include relative paths, absolute paths, @/, ~/, and src/. Additional aliases must be added to the rule before use.
 - No unused imports or variables. No duplicate imports, except separate type-only imports.
-- FSD boundaries: shared cannot import app or pages; pages cannot import app. Restrictions recognize common aliases and relative paths; they are path-pattern checks, not a filesystem dependency graph. They do not enforce cross-page isolation or public APIs.
+- FSD boundaries: imports flow downward through app → processes → pages → features → entities → shared. Each lower layer is forbidden from importing higher layers. Restrictions recognize common aliases and relative paths; they are path-pattern checks, not a filesystem dependency graph. They do not enforce cross-page isolation or public APIs.
 
 ## JSX, comments, and logging
 
@@ -72,7 +72,7 @@ The tests cover accepted/rejected comments, types-only files, constant names, im
 
 ## Complete active rule inventory
 
-Scope abbreviations: App = src/App.tsx; Shared = src/shared/ui/Example.tsx; Page = src/pages/dashboard/ui/Example.tsx; Vite = vite.config.ts; Tooling = eslint-local-rules.ts; Config = eslint.config.ts; Tests = eslint-local-rules.test.ts; JS = a representative JavaScript file. These representative files cover the current configuration overrides. Values include resolved/default options. Disabled rules are omitted; core no-unused-vars is disabled for TS in favor of its TypeScript version.
+Scope abbreviations: App = src/app/App.tsx; Shared = src/shared/ui/Example.tsx; Page = src/pages/dashboard/ui/Example.tsx; Vite = vite.config.ts; Tooling = eslint-local-rules.ts; Config = eslint.config.ts; Tests = eslint-local-rules.test.ts; JS = a representative JavaScript file. These representative files cover the current configuration overrides. Values include resolved/default options. Disabled rules are omitted; core no-unused-vars is disabled for TS in favor of its TypeScript version.
 
 | Rule | Severity | Options | Scopes |
 |---|---|---|---|
@@ -82,4 +82,5 @@ const inventory = [...rows.values()].sort((a, b) => a.name.localeCompare(b.name)
   `| ${name} | ${setting[0] === 2 ? 'error' : 'warn'} | ${JSON.stringify(setting.slice(1)).replaceAll('|', '&#124;')} | ${targets.map((item) => names[scopes.indexOf(item)]).join(', ')} |`).join('\n')
 await writeFile(new URL('../../rule.md', import.meta.url), `${intro}${inventory}\n`)
 process.stdout.write(`Documented ${rows.size} rule configurations in ../rule.md.\n`)
+
 

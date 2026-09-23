@@ -45,7 +45,7 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
       </div>
 
       <div className="hidden sm:block">
-        <table className="w-full text-sm">
+        <table className="w-full table-fixed text-sm">
           <caption className="sr-only">Live cryptocurrency prices in USDT, latest tick direction, and percentage change since opening this page.</caption>
           <thead className="border-b border-border bg-white text-xs text-muted">
             <tr>

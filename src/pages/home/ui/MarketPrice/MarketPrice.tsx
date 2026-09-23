@@ -13,11 +13,11 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
   return (
     <span className="inline-flex flex-col items-end gap-1">
       <span className="inline-flex items-center gap-2 font-semibold tabular-nums">
-        <span title={`Latest tick: ${quote.direction}`} className={color}>
+        <span title={`Latest tick: ${quote.direction}`} className={`w-4 shrink-0 text-center ${color}`}>
           <span aria-hidden="true">{direction}</span>
           <span className="sr-only">Latest tick {quote.direction}. </span>
         </span>
-        {formatPrice(quote.price)}
+        <span className="min-w-[10ch] text-right">{formatPrice(quote.price)}</span>
       </span>
       {isStale && <span className="text-xs font-medium text-stale">Last-known price</span>}
     </span>

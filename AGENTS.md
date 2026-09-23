@@ -2,6 +2,9 @@
 
 All future implementation must follow Feature-Sliced Design and the detailed rules in README.md.
 
+- Before feature development, inspect ../Take-home-assigment.docx for the assignment requirements. The Lovable reference at https://pixel-perfect-canvas-2478.lovable.app/ is for visual design only; do not copy its implementation or substitute its mock data for the required Binance integration.
+- Commit only completed, verified logical changes. Use conventional messages such as feat: add market dashboard header.
+
 - Dependency direction: app → processes → pages → features → entities → shared. Import only lower layers or code inside the current slice.
 - Keep same-layer slices independent. Compose them in a higher layer.
 - Expose slices through index.ts. Consumers use public APIs; internal code uses direct relative imports.

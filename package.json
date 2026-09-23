@@ -11,6 +11,7 @@
     "test:lint": "tsx eslint-local-rules.test.ts",
     "test:market": "tsx scripts/test-market.ts",
     "test:dashboard": "tsx scripts/test-dashboard.ts",
+    "test:calculator": "tsx scripts/test-calculator.ts",
     "docs:lint": "tsx scripts/document-eslint.ts",
     "preview": "vite preview"
   },

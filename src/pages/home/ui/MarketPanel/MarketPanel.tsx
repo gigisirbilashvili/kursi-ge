@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Alert, Avatar, Box, Button, Card, Chip, FormControl, IconButton, InputLabel, List, ListItem, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material'
+import { Alert, Avatar, Box, Button, Card, Chip, FormControl, IconButton, InputAdornment, InputLabel, List, ListItem, MenuItem, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material'
 
 import { CURRENCIES, STALE_TIMEOUT_MS } from '../../../../entities/currency'
 import { selectCurrencies, useMarketPreferences } from '../../../../features/market-preferences'
@@ -68,8 +68,23 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
         </Stack>
       )}
       <Stack className="flex-row flex-wrap items-center gap-3 border-b border-border p-5 sm:p-6">
-        <TextField label="Search currencies" type="search" size="small" value={search} onChange={(event) => setSearch(event.target.value)} className="min-w-48 flex-1" />
-        {search && <Button type="button" onClick={() => setSearch('')}>Clear search</Button>}
+        <TextField
+          label="Search currencies"
+          size="small"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          slotProps={{
+            htmlInput: { role: 'searchbox' },
+            input: {
+              endAdornment: search ? (
+                <InputAdornment position="end">
+                  <Button type="button" size="small" aria-label="Clear search" onClick={() => setSearch('')}>Clear</Button>
+                </InputAdornment>
+              ) : undefined,
+            },
+          }}
+          className="min-w-48 flex-1"
+        />
         <ToggleButtonGroup size="small" exclusive value={filter} onChange={(_, value: TMarketFilter | null) => { if (value) setFilter(value) }} aria-label="Currency filter">
           <ToggleButton value="all">All</ToggleButton>
           <ToggleButton value="favorites">Favorites</ToggleButton>

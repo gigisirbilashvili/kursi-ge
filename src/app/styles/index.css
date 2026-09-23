@@ -1,15 +1,25 @@
-@import "tailwindcss";
+@layer theme, base, mui, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
+  --breakpoint-md: 900px;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-background: oklch(0.9805 0.0059 350.79);
-  --color-foreground: oklch(0.2413 0.0764 358.56);
-  --color-header: oklch(0.1763 0.0563 12.04);
-  --color-brand-muted: oklch(0.8172 0.0376 344.44);
+  --color-background: #FCF7F9;
+  --color-foreground: #3A0B1F;
+  --color-header: #24040A;
+  --color-brand-muted: #D6BAC9;
   --color-muted: #7c7278;
+  --color-brand: #651947;
+  --color-brand-soft: #fdeef3;
+  --color-border: #eadde3;
+  --color-positive-soft: #eaf5ef;
+  --color-negative-soft: #fcecef;
+  --color-warning-soft: #fff8eb;
+  --color-stale: #80551d;
   --color-status-connected: #27815b;
   --color-status-pending: #d69c3c;
-  --color-status-disconnected: oklch(0.5143 0.1978 16.93);
+  --color-status-disconnected: #ba2646;
 }
 
 @layer base {
@@ -26,7 +36,7 @@
 
   body {
     margin: 0;
-    min-width: 320px;
+    min-width: 0;
   }
 
   #root {

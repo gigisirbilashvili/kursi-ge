@@ -1,13 +1,16 @@
-function HomePage() {
+import { Box, Chip, Typography } from '@mui/material'
+
+import { MarketPanel } from './MarketPanel/MarketPanel'
+import type { IHomePageProps } from './types'
+
+function HomePage({ market, onRetry }: IHomePageProps) {
   return (
-    <section aria-labelledby="market-heading">
-      <h1 id="market-heading" className="text-2xl leading-9 font-semibold tracking-tight sm:text-3xl">
-        Crypto market
-      </h1>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-        Live prices, your favorites, and instant conversions.
-      </p>
-    </section>
+    <Box component="section" aria-labelledby="market-heading">
+      <Typography component="h1" variant="h1" id="market-heading" className="text-2xl sm:text-3xl">Crypto market</Typography>
+      <Typography className="mt-2 max-w-2xl text-muted">Live prices, favorites, and alerts in one place.</Typography>
+      <Chip label="Prices quoted in USDT · Binance Spot" size="small" className="mt-3 bg-brand-soft text-xs font-medium text-brand" />
+      <MarketPanel snapshot={market} onRetry={onRetry} />
+    </Box>
   )
 }
 

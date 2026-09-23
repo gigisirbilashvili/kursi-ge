@@ -8,7 +8,7 @@ Run npm install, then npm run dev. Validate changes with npm run build and npm r
 
 ## Architecture
 
-Reference: https://serhiikoziy.medium.com/feature-sliced-design-architecture-in-react-with-typescript-447dc5e6a411
+![Feature-Sliced Design architecture](./design-schema.jpg)
 
 Dependency direction: app -> processes -> pages -> features -> entities -> shared. Layers can import lower layers directly, skipping intermediate layers.
 

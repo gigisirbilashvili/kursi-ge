@@ -14,7 +14,7 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
     <span className="inline-flex flex-col items-end gap-1">
       <span className="inline-flex items-center gap-2 font-semibold tabular-nums">
         <span title={`Latest tick: ${quote.direction}`} className={`w-4 shrink-0 text-center ${color}`}>
-          <span aria-hidden="true">{direction}</span>
+          <span aria-hidden="true" className="inline-block text-xl leading-none">{direction}</span>
           <span className="sr-only">Latest tick {quote.direction}. </span>
         </span>
         <span className="min-w-[10ch] text-right">{formatPrice(quote.price)}</span>

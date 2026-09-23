@@ -13,7 +13,7 @@ export function SessionChange({ quote }: ISessionChangeProps) {
       title={`Since the first session price of ${formatPrice(quote.initialPrice)} USDT`}
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums ${color}`}
     >
-      <span aria-hidden="true">{change > 0 ? '↑' : change < 0 ? '↓' : '−'}</span>
+      <span aria-hidden="true" className="w-4 shrink-0 text-center text-lg leading-none">{change > 0 ? '↑' : change < 0 ? '↓' : '−'}</span>
       <span>{formatted}%</span>
     </span>
   )

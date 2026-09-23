@@ -27,6 +27,8 @@ src/
     ui/                     Market introduction, desktop table, mobile cards
     lib/                    Price formatting
   features/                 User actions, grouped into named slices
+    market-preferences/     Favorites, hiding, filtering, sorting, persistence
+    significant-alerts/    Session threshold tracking and notifications
   entities/currency/        Binance transport, quote model, market-feed hook
     api/                    Browser socket adapter and message validation
     config/                 Five supported USDT pairs and timing limits
@@ -44,7 +46,7 @@ The responsive header and pale background follow the [visual reference](https://
 
 The app starts one Binance market feed and passes its current connection status to the header and its snapshot to the home page. The feed uses a single combined WebSocket connection for BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, and XRP/USDT. The header supports connecting, connected, reconnecting, disconnected, and error states with text and a colored indicator. Connected means a valid market update has arrived, not merely that the socket opened.
 
-The home page shows live prices, latest-tick direction, and percentage change since opening, with a desktop table and mobile cards. Prices arrive directly from Binance; there is no mock-data fallback. Loading placeholders remain until each pair receives a valid price. Search/sorting, persistent favorites and hidden assets, conversion, and session alerts remain future work according to Take-home-assigment.docx.
+The home page shows live prices, latest-tick direction, and percentage change since opening, with a desktop table and mobile cards. Prices arrive directly from Binance; there is no mock-data fallback. Loading placeholders remain until each pair receives a valid price. The market panel now supports favorite toggles and an All/Favorites filter, persistent hidden currencies with a restore view, search by name or symbol, and sorting by name, current price, or session change in either direction. The UI shows an empty state when nothing matches. Session alerts trigger when a price first crosses +2% or -2% from its initial price, include the initial and current prices, and rearm only after the price returns inside the threshold. The conversion calculator remains future work.
 
 The UI uses Material UI with Emotion: Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, Tooltip, and Skeleton. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
 
@@ -80,4 +82,4 @@ ESLint restricts upward imports with path patterns. Same-layer isolation and pub
 
 Run npm run test:lint after lint rule changes. Run npm run docs:lint after lint configuration changes to regenerate ../rule.md.
 
-Run `npm run test:market` for deterministic parser, session-price, out-of-order-message, reconnection/backoff, timeout, offline/retry, and cleanup tests. These use controlled sockets and timers without depending on external market movement. Browser smoke checks should also confirm all five real prices update and that desktop and mobile layouts remain readable.
+Run `npm run test:dashboard` for market preference selection and alert threshold behavior. Run `npm run test:market` for deterministic parser, session-price, out-of-order-message, reconnection/backoff, timeout, offline/retry, and cleanup tests. These use controlled sockets and timers without depending on external market movement. Browser smoke checks should also confirm all five real prices update and that desktop and mobile layouts remain readable.

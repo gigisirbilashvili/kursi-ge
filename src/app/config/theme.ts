@@ -21,9 +21,4 @@ export const theme = createTheme({
     button: { textTransform: 'none', fontWeight: 600 },
   },
   shape: { borderRadius: 12 },
-  components: {
-    MuiTableCell: { styleOverrides: { root: { padding: '20px 24px', borderColor: '#eadde3' }, head: { padding: '16px 24px', color: '#7c7278', fontSize: '0.75rem' } } },
-    MuiChip: { styleOverrides: { root: { fontWeight: 500 } } },
-    MuiSkeleton: { styleOverrides: { root: { '@media (prefers-reduced-motion: reduce)': { animation: 'none', '&::after': { animation: 'none' } } } } },
-  },
 })

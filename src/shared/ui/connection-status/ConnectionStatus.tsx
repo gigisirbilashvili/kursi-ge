@@ -1,6 +1,6 @@
 import { Box, Chip } from '@mui/material'
 
-import { CONNECTION_STATUS_COLORS, CONNECTION_STATUS_LABELS } from './constants'
+import { CONNECTION_STATUS_CLASSES, CONNECTION_STATUS_LABELS } from './constants'
 import type { IConnectionStatusProps } from './types'
 
 export function ConnectionStatus({ status }: IConnectionStatusProps) {
@@ -10,11 +10,11 @@ export function ConnectionStatus({ status }: IConnectionStatusProps) {
       aria-live="polite"
       aria-atomic="true"
       aria-label={`Market connection: ${CONNECTION_STATUS_LABELS[status]}`}
-      icon={<Box component="span" aria-hidden="true" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: CONNECTION_STATUS_COLORS[status] }} />}
+      icon={<Box component="span" aria-hidden="true" className={`size-2 rounded-full ${CONNECTION_STATUS_CLASSES[status]}`} />}
       label={CONNECTION_STATUS_LABELS[status]}
       variant="outlined"
       size="small"
-      sx={{ flexShrink: 0, height: 30, color: '#ffffffd9', borderColor: '#ffffff26', bgcolor: '#ffffff0d', '& .MuiChip-icon': { ml: 1.5, mr: 0.25 } }}
+      className="h-7.5 shrink-0 border-white/15 bg-white/5 font-medium text-white/85 [&_.MuiChip-icon]:mr-0.5 [&_.MuiChip-icon]:ml-3"
     />
   )
 }

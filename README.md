@@ -71,7 +71,7 @@ The UI uses Material UI with Emotion: Box, Stack, Typography, AppBar, Card, Tabl
 - Keep page-specific assets and styles in the page. Keep global styles and the Tailwind import in app/styles/index.css.
 - Keep functionality local to its page until extraction has a concrete benefit. Do not add empty components, services, or stores.
 - For example, currency conversion belongs in features/convert-currency; a currency domain model belongs in entities/currency; a generic button belongs in shared/ui/button.
-- Use Material UI components for interface elements and layout. Use the theme and sx for styling, preserving semantic elements through component props. Keep the Tailwind import for existing global styles.
+- Use Material UI components for interface elements and layout. Use Tailwind className utilities for styling instead of sx or inline styles, preserving semantic elements through component props. StyledEngineProvider places MUI styles in the mui CSS layer, before Tailwind utilities, so classes override component defaults without !important. Shared palette and typography defaults remain in the MUI theme. Keep the Tailwind import for existing global styles.
 - Follow the naming, types, import ordering, JSX, and comment conventions in ../rule.md.
 
 ## Verification

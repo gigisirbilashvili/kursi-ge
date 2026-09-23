@@ -5,14 +5,14 @@ import type { IAppHeaderProps } from './types'
 
 export function AppHeader({ connectionStatus }: IAppHeaderProps) {
   return (
-    <AppBar component="header" position="static" elevation={0} sx={{ bgcolor: '#24040A', borderBottom: '1px solid #ffffff1a' }}>
+    <AppBar component="header" position="static" elevation={0} className="border-b border-white/10 bg-header">
       <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ gap: 1.5, justifyContent: 'space-between', py: 2 }}>
-          <Stack direction="row" sx={{ minWidth: 0, flexWrap: 'wrap', alignItems: 'baseline', columnGap: 1.5, rowGap: 0.5 }}>
-            <Link href="/" aria-label="Kursi Crypto home" underline="none" sx={{ color: 'white', fontSize: 16, fontWeight: 600, flexShrink: 0 }}>
-              Kursi <Typography component="span" sx={{ color: 'secondary.main', fontWeight: 'inherit' }}>Crypto</Typography>
+        <Toolbar disableGutters className="justify-between gap-3 py-4">
+          <Stack className="min-w-0 flex-row flex-wrap items-baseline gap-x-3 gap-y-1">
+            <Link href="/" aria-label="Kursi Crypto home" underline="none" className="shrink-0 text-base font-semibold text-white">
+              Kursi <Typography component="span" className="font-semibold text-brand-muted">Crypto</Typography>
             </Link>
-            <Typography variant="caption" sx={{ color: '#ffffff99' }}>Market dashboard</Typography>
+            <Typography variant="caption" className="text-white/60">Market dashboard</Typography>
           </Stack>
           <ConnectionStatus status={connectionStatus} />
         </Toolbar>

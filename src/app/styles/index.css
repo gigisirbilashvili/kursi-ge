@@ -7,6 +7,13 @@
   --color-header: oklch(0.1763 0.0563 12.04);
   --color-brand-muted: oklch(0.8172 0.0376 344.44);
   --color-muted: #7c7278;
+  --color-brand: #651947;
+  --color-brand-soft: #fdeef3;
+  --color-border: #eadde3;
+  --color-positive-soft: #eaf5ef;
+  --color-negative-soft: #fcecef;
+  --color-warning-soft: #fff8eb;
+  --color-stale: #80551d;
   --color-status-connected: #27815b;
   --color-status-pending: #d69c3c;
   --color-status-disconnected: oklch(0.5143 0.1978 16.93);

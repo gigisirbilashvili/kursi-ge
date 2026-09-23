@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test:lint": "tsx eslint-local-rules.test.ts",
+    "test:market": "tsx scripts/test-market.ts",
     "docs:lint": "tsx scripts/document-eslint.ts",
     "preview": "vite preview"
   },

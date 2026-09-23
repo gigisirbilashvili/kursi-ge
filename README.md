@@ -1,6 +1,6 @@
 # Kursi — Feature-Sliced Design
 
-React, TypeScript, Vite, React Compiler, and Tailwind CSS.
+React, TypeScript, Vite, React Compiler, Material UI, Emotion, and Tailwind CSS.
 
 ## Development
 
@@ -18,6 +18,7 @@ src/
   app/                      Composition, routing, providers
     App.tsx
     index.ts
+    config/theme.ts         Material UI palette and component defaults
     styles/index.css        Global CSS, theme tokens, and Tailwind
     ui/AppHeader/           Brand and market connection display
   processes/                Reserved for multi-step workflows
@@ -39,13 +40,13 @@ The processes layer follows the requested article and stays empty until needed.
 
 ## Current implementation
 
-The responsive header and pale background follow the [visual reference](https://pixel-perfect-canvas-2478.lovable.app/). The implementation is written independently. Global Tailwind theme tokens provide the palette for upcoming dashboard components. The main content shares the header's 1280px container and responsive gutters.
+The responsive header and pale background follow the [visual reference](https://pixel-perfect-canvas-2478.lovable.app/). The implementation is written independently. The app-owned Material UI theme provides the Kursi palette, typography, breakpoints, and component defaults. The main content shares the header's 1280px container and responsive gutters.
 
 The app starts one Binance market feed and passes its current connection status to the header and its snapshot to the home page. The feed uses a single combined WebSocket connection for BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, and XRP/USDT. The header supports connecting, connected, reconnecting, disconnected, and error states with text and a colored indicator. Connected means a valid market update has arrived, not merely that the socket opened.
 
 The home page shows live prices, latest-tick direction, and percentage change since opening, with a desktop table and mobile cards. Prices arrive directly from Binance; there is no mock-data fallback. Loading placeholders remain until each pair receives a valid price. Search/sorting, persistent favorites and hidden assets, conversion, and session alerts remain future work according to Take-home-assigment.docx.
 
-The current UI uses React and Tailwind without additional component libraries. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
+The UI uses Material UI with Emotion: Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, Tooltip, and Skeleton. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
 
 ## Live market behavior
 
@@ -58,7 +59,7 @@ The current UI uses React and Tailwind without additional component libraries. I
 - Browser offline events stop retrying and display Disconnected. Coming online reconnects automatically. A manual Retry connection button is available during errors and reconnection.
 - Last-known prices remain visible during outages. Each quote is marked stale when disconnected or when it has not updated for 30 seconds. Stale quotes are informational and should not be treated as current conversion rates by future features.
 - Socket handlers, retry/watchdog timers, subscriptions, and browser network listeners are cleaned up. Obsolete socket callbacks cannot change the active feed. React Strict Mode is supported.
-- The application owns the feed lifecycle; the currency entity has no dependency on pages or app. The home page consumes the entity's public API. No extra runtime dependencies were added.
+- The application owns the feed lifecycle; the currency entity has no dependency on pages or app. The home page consumes the entity's public API.
 
 ## Rules for future implementation
 
@@ -70,7 +71,7 @@ The current UI uses React and Tailwind without additional component libraries. I
 - Keep page-specific assets and styles in the page. Keep global styles and the Tailwind import in app/styles/index.css.
 - Keep functionality local to its page until extraction has a concrete benefit. Do not add empty components, services, or stores.
 - For example, currency conversion belongs in features/convert-currency; a currency domain model belongs in entities/currency; a generic button belongs in shared/ui/button.
-- Use Tailwind utilities for new styling where suitable and preserve existing styles unless the task calls for changes.
+- Use Material UI components for interface elements and layout. Use the theme and sx for styling, preserving semantic elements through component props. Keep the Tailwind import for existing global styles.
 - Follow the naming, types, import ordering, JSX, and comment conventions in ../rule.md.
 
 ## Verification

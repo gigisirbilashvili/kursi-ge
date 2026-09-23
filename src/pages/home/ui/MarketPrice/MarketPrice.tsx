@@ -1,25 +1,30 @@
+import { Box, Skeleton, Stack, Tooltip, Typography } from '@mui/material'
+import { visuallyHidden } from '@mui/utils'
+
 import { ArrowIcon } from '../../../../shared/ui/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import type { IMarketPriceProps } from './types'
 
 export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
   if (!quote) return (
-    <span className="inline-flex flex-col items-end gap-1.5">
-      <span aria-hidden="true" className="h-5 w-24 rounded bg-brand-soft motion-safe:animate-pulse" />
-      <span className="text-xs text-muted">Awaiting price</span>
-    </span>
+    <Stack sx={{ alignItems: 'flex-end' }}>
+      <Skeleton width={96} height={24} />
+      <Typography variant="caption" color="text.secondary">Awaiting price</Typography>
+    </Stack>
   )
-  const color = quote.direction === 'up' ? 'text-status-connected' : quote.direction === 'down' ? 'text-status-disconnected' : 'text-muted'
+  const color = quote.direction === 'up' ? 'success.main' : quote.direction === 'down' ? 'error.main' : 'text.secondary'
   return (
-    <span className="inline-flex flex-col items-end gap-1">
-      <span className="inline-flex items-center gap-2 font-semibold tabular-nums">
-        <span title={`Latest tick: ${quote.direction}`} className={`w-4 shrink-0 text-center ${color}`}>
-          <ArrowIcon width={16} height={20} direction={quote.direction} />
-          <span className="sr-only">Latest tick {quote.direction}. </span>
-        </span>
-        <span className="min-w-[10ch] text-right">{formatPrice(quote.price)}</span>
-      </span>
-      {isStale && <span className="text-xs font-medium text-stale">Last-known price</span>}
-    </span>
+    <Stack sx={{ alignItems: 'flex-end', gap: 0.5 }}>
+      <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+        <Tooltip title={`Latest tick: ${quote.direction}`}>
+          <Box component="span" sx={{ width: 16, flexShrink: 0, display: 'inline-flex', color }}>
+            <ArrowIcon width={16} height={20} direction={quote.direction} />
+            <Box component="span" sx={visuallyHidden}>Latest tick {quote.direction}. </Box>
+          </Box>
+        </Tooltip>
+        <Typography component="span" variant="body2" sx={{ minWidth: '10ch', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{formatPrice(quote.price)}</Typography>
+      </Stack>
+      {isStale && <Typography variant="caption" color="warning.main">Last-known price</Typography>}
+    </Stack>
   )
 }

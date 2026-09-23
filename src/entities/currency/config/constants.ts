@@ -1,11 +1,11 @@
 import type { ICurrency } from '../types/index.ts'
 
 export const CURRENCIES: readonly ICurrency[] = [
-  { symbol: 'BTCUSDT', ticker: 'BTC', name: 'Bitcoin', badgeClass: 'bg-amber-50 text-amber-800' },
-  { symbol: 'ETHUSDT', ticker: 'ETH', name: 'Ethereum', badgeClass: 'bg-violet-50 text-violet-800' },
-  { symbol: 'SOLUSDT', ticker: 'SOL', name: 'Solana', badgeClass: 'bg-emerald-50 text-emerald-800' },
-  { symbol: 'BNBUSDT', ticker: 'BNB', name: 'BNB', badgeClass: 'bg-yellow-50 text-yellow-800' },
-  { symbol: 'XRPUSDT', ticker: 'XRP', name: 'XRP', badgeClass: 'bg-slate-100 text-slate-700' },
+  { symbol: 'BTCUSDT', ticker: 'BTC', name: 'Bitcoin', badgeBackground: '#fffbeb', badgeColor: '#92400e' },
+  { symbol: 'ETHUSDT', ticker: 'ETH', name: 'Ethereum', badgeBackground: '#f5f3ff', badgeColor: '#5b21b6' },
+  { symbol: 'SOLUSDT', ticker: 'SOL', name: 'Solana', badgeBackground: '#ecfdf5', badgeColor: '#065f46' },
+  { symbol: 'BNBUSDT', ticker: 'BNB', name: 'BNB', badgeBackground: '#fefce8', badgeColor: '#854d0e' },
+  { symbol: 'XRPUSDT', ticker: 'XRP', name: 'XRP', badgeBackground: '#f1f5f9', badgeColor: '#334155' },
 ]
 
 export const MARKET_STREAM_URL = `wss://data-stream.binance.vision/stream?streams=${CURRENCIES.map(({ symbol }) => `${symbol.toLowerCase()}@miniTicker`).join('/')}`

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Alert, Avatar, Box, Button, Card, Chip, List, ListItem, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { visuallyHidden } from '@mui/utils'
 
 import { CURRENCIES, STALE_TIMEOUT_MS } from '../../../../entities/currency'
 import { MarketPrice } from '../MarketPrice/MarketPrice'
@@ -21,78 +23,70 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
   const isQuoteStale = (symbol: string) => !isConnected || now - (snapshot.quotes[symbol]?.receivedAt ?? 0) >= STALE_TIMEOUT_MS
 
   return (
-    <section aria-labelledby="spot-market-heading" className="mt-8 overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-5 sm:px-6">
-        <div className="flex items-center gap-3">
-          <h2 id="spot-market-heading" className="text-base font-semibold">Spot markets</h2>
-          <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand">{CURRENCIES.length} assets</span>
-        </div>
-        <span className="text-xs text-muted">Binance · USDT pairs</span>
-      </div>
-
-      <div role="status" aria-live="polite" className={`border-b border-border px-5 py-3 text-sm sm:px-6 ${isUnavailable ? 'bg-warning-soft text-stale' : 'bg-background text-muted'}`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p>
+    <Card component="section" aria-labelledby="spot-market-heading" variant="outlined" sx={{ mt: 4, borderRadius: '16px', boxShadow: '0 1px 3px #24040a08' }}>
+      <Stack direction="row" sx={{ flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 2, p: { xs: 2.5, sm: 3 }, borderBottom: 1, borderColor: 'divider' }}>
+        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+          <Typography component="h2" variant="h2" id="spot-market-heading">Spot markets</Typography>
+          <Chip label={`${CURRENCIES.length} assets`} size="small" sx={{ bgcolor: '#fdeef3', color: 'primary.main', fontSize: 12 }} />
+        </Stack>
+        <Typography variant="caption" color="text.secondary">Binance · USDT pairs</Typography>
+      </Stack>
+      <Alert role="status" aria-live="polite" severity={isUnavailable ? 'warning' : isConnected ? 'success' : 'info'} icon={false} sx={{ borderRadius: 0, borderBottom: 1, borderColor: 'divider', bgcolor: isUnavailable ? '#fff8eb' : 'background.default', color: isUnavailable ? 'warning.main' : 'text.secondary', px: { xs: 2.5, sm: 3 }, '& .MuiAlert-message': { width: '100%' } }}>
+        <Stack direction="row" sx={{ flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
+          <Typography variant="body2">
             {snapshot.message ?? (isConnected ? 'Receiving market prices from Binance.' : 'Connecting to Binance. Waiting for the first prices…')}
             {isUnavailable && hasPrices && ' Last-known prices are shown below.'}
-          </p>
-          {isUnavailable && (
-            <button type="button" onClick={onRetry} disabled={snapshot.status === 'disconnected'} className="min-h-10 rounded-lg border border-brand-muted bg-white px-4 py-2 text-xs font-semibold text-brand hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50">
-              Retry connection
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="hidden sm:block">
-        <table className="w-full table-fixed text-sm">
-          <caption className="sr-only">Live cryptocurrency prices in USDT, latest tick direction, and percentage change since opening this page.</caption>
-          <thead className="border-b border-border bg-white text-xs text-muted">
-            <tr>
-              <th scope="col" className="px-6 py-4 text-left font-medium">Asset</th>
-              <th scope="col" className="px-6 py-4 text-right font-medium">Price (USDT)</th>
-              <th scope="col" className="px-6 py-4 text-right font-medium">Change since opening</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
+          </Typography>
+          {isUnavailable && <Button variant="outlined" size="small" onClick={onRetry} disabled={snapshot.status === 'disconnected'} sx={{ minHeight: 40 }}>Retry connection</Button>}
+        </Stack>
+      </Alert>
+      <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <Table sx={{ tableLayout: 'fixed' }}>
+          <Box component="caption" sx={visuallyHidden}>Live cryptocurrency prices in USDT, latest tick direction, and percentage change since opening this page.</Box>
+          <TableHead>
+            <TableRow>
+              <TableCell scope="col">Asset</TableCell>
+              <TableCell scope="col" align="right">Price (USDT)</TableCell>
+              <TableCell scope="col" align="right">Change since opening</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {CURRENCIES.map((currency) => (
-              <tr key={currency.symbol} className="transition-colors hover:bg-background">
-                <th scope="row" aria-label={`${currency.name}, ${currency.ticker}/USDT`} className="px-6 py-5 text-left font-normal">
-                  <div className="flex items-center gap-3">
-                    <span aria-hidden="true" className={`flex size-10 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${currency.badgeClass}`}>{currency.ticker}</span>
-                    <div><p className="font-semibold">{currency.name}</p><p className="mt-1 text-xs text-muted">{currency.ticker}/USDT</p></div>
-                  </div>
-                </th>
-                <td className="px-6 py-5 text-right"><MarketPrice quote={snapshot.quotes[currency.symbol]} isStale={isQuoteStale(currency.symbol)} /></td>
-                <td className="px-6 py-5 text-right"><SessionChange quote={snapshot.quotes[currency.symbol]} /></td>
-              </tr>
+              <TableRow key={currency.symbol} hover sx={{ '&:last-child td, &:last-child th': { borderBottom: 0 } }}>
+                <TableCell component="th" scope="row" aria-label={`${currency.name}, ${currency.ticker}/USDT`}>
+                  <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                    <Avatar aria-hidden="true" sx={{ width: 40, height: 40, fontSize: 10, fontWeight: 700, bgcolor: currency.badgeBackground, color: currency.badgeColor }}>{currency.ticker}</Avatar>
+                    <Box><Typography sx={{ fontWeight: 600 }}>{currency.name}</Typography><Typography variant="caption" color="text.secondary">{currency.ticker}/USDT</Typography></Box>
+                  </Stack>
+                </TableCell>
+                <TableCell align="right"><MarketPrice quote={snapshot.quotes[currency.symbol]} isStale={isQuoteStale(currency.symbol)} /></TableCell>
+                <TableCell align="right"><SessionChange quote={snapshot.quotes[currency.symbol]} /></TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-
-      <ul aria-label="Cryptocurrency markets" className="divide-y divide-border sm:hidden">
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <List aria-label="Cryptocurrency markets" disablePadding sx={{ display: { xs: 'block', sm: 'none' } }}>
         {CURRENCIES.map((currency) => (
-          <li key={currency.symbol} className="px-5 py-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <span aria-hidden="true" className={`flex size-9 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${currency.badgeClass}`}>{currency.ticker}</span>
-                <div><p className="text-sm font-semibold">{currency.name}</p><p className="mt-1 text-xs text-muted">{currency.ticker}/USDT</p></div>
-              </div>
-              <div className="text-right text-sm"><MarketPrice quote={snapshot.quotes[currency.symbol]} isStale={isQuoteStale(currency.symbol)} /></div>
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-2 text-xs">
-              <span className="text-muted">Since opening</span>
+          <ListItem key={currency.symbol} divider sx={{ display: 'block', p: 2.5, '&:last-child': { borderBottom: 0 } }}>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
+              <Stack direction="row" spacing={1} sx={{ minWidth: 0, alignItems: 'center' }}>
+                <Avatar aria-hidden="true" sx={{ width: 36, height: 36, fontSize: 9, fontWeight: 700, bgcolor: currency.badgeBackground, color: currency.badgeColor }}>{currency.ticker}</Avatar>
+                <Box><Typography sx={{ fontWeight: 600 }}>{currency.name}</Typography><Typography variant="caption" color="text.secondary">{currency.ticker}/USDT</Typography></Box>
+              </Stack>
+              <MarketPrice quote={snapshot.quotes[currency.symbol]} isStale={isQuoteStale(currency.symbol)} />
+            </Stack>
+            <Stack direction="row" sx={{ mt: 2, alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+              <Typography variant="caption" color="text.secondary">Since opening</Typography>
               <SessionChange quote={snapshot.quotes[currency.symbol]} />
-            </div>
-          </li>
+            </Stack>
+          </ListItem>
         ))}
-      </ul>
-
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-background px-5 py-4 text-xs leading-5 text-muted sm:px-6">
-        <p>Arrows beside prices show the latest tick. Percentages compare with your first session price.</p>
-        <p>{age === null ? (isWaiting ? 'Waiting for market data' : 'No prices received') : `Last update ${age < 2 ? 'just now' : `${age}s ago`}`}</p>
-      </div>
-    </section>
+      </List>
+      <Stack direction="row" sx={{ flexWrap: 'wrap', justifyContent: 'space-between', gap: 1, borderTop: 1, borderColor: 'divider', bgcolor: 'background.default', px: { xs: 2.5, sm: 3 }, py: 2, color: 'text.secondary' }}>
+        <Typography variant="caption">Arrows beside prices show the latest tick. Percentages compare with your first session price.</Typography>
+        <Typography variant="caption">{age === null ? (isWaiting ? 'Waiting for market data' : 'No prices received') : `Last update ${age < 2 ? 'just now' : `${age}s ago`}`}</Typography>
+      </Stack>
+    </Card>
   )
 }

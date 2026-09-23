@@ -5,7 +5,8 @@ export interface ICurrency {
   symbol: string
   ticker: string
   name: string
-  badgeClass: string
+  badgeBackground: string
+  badgeColor: string
 }
 
 export interface IMarketTick {

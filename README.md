@@ -8,7 +8,7 @@ Run npm install, then npm run dev. Validate changes with npm run build and npm r
 
 ## Architecture
 
-![Feature-Sliced Design architecture](./design-schema.jpg)
+![Feature-Sliced Design architecture](https://feature-sliced.design/assets/ideal-img/visual_schema.b6c18f6.1030.jpg)
 
 Dependency direction: app -> processes -> pages -> features -> entities -> shared. Layers can import lower layers directly, skipping intermediate layers.
 

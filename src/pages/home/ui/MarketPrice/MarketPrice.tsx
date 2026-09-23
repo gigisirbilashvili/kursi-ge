@@ -1,3 +1,4 @@
+import { ArrowIcon } from '../../../../shared/ui/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import type { IMarketPriceProps } from './types'
 
@@ -8,13 +9,12 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
       <span className="text-xs text-muted">Awaiting price</span>
     </span>
   )
-  const direction = quote.direction === 'up' ? '↑' : quote.direction === 'down' ? '↓' : '−'
   const color = quote.direction === 'up' ? 'text-status-connected' : quote.direction === 'down' ? 'text-status-disconnected' : 'text-muted'
   return (
     <span className="inline-flex flex-col items-end gap-1">
       <span className="inline-flex items-center gap-2 font-semibold tabular-nums">
         <span title={`Latest tick: ${quote.direction}`} className={`w-4 shrink-0 text-center ${color}`}>
-          <span aria-hidden="true" className="inline-block text-xl leading-none">{direction}</span>
+          <ArrowIcon width={16} height={20} direction={quote.direction} />
           <span className="sr-only">Latest tick {quote.direction}. </span>
         </span>
         <span className="min-w-[10ch] text-right">{formatPrice(quote.price)}</span>

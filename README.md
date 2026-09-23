@@ -62,6 +62,7 @@ The current UI uses React and Tailwind without additional component libraries. I
 
 ## Rules for future implementation
 
+- Keep static images in `public/images`. Use SVG React components from `shared/ui/icons` for UI icons, with explicit numeric `width` and `height` props on every use. Icons share `TSVGIconProps`, default to `currentColor`, and are decorative by default; the surrounding control supplies its accessible name. For example: `<SortIcon width={15} height={15} />`. The public `sort.svg` is a standalone static version; UI code uses the typed component.
 - Slices on the same layer remain independent. Compose separate features in a page or higher layer.
 - Expose each slice through index.ts. Consumers import the public API, never another slice's internal files.
 - Within a slice, use direct relative imports rather than its own barrel. The project currently uses relative paths; no aliases are configured.

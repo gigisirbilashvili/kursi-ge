@@ -1,3 +1,4 @@
+import { ArrowIcon } from '../../../../shared/ui/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import type { ISessionChangeProps } from './types'
 
@@ -13,7 +14,7 @@ export function SessionChange({ quote }: ISessionChangeProps) {
       title={`Since the first session price of ${formatPrice(quote.initialPrice)} USDT`}
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold tabular-nums ${color}`}
     >
-      <span aria-hidden="true" className="w-4 shrink-0 text-center text-lg leading-none">{change > 0 ? '↑' : change < 0 ? '↓' : '−'}</span>
+      <ArrowIcon width={16} height={18} direction={change > 0 ? 'up' : change < 0 ? 'down' : 'unchanged'} className="shrink-0" />
       <span>{formatted}%</span>
     </span>
   )

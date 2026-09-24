@@ -1,9 +1,9 @@
-import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Button, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
-export function AppHeader({ connectionStatus }: IAppHeaderProps) {
+export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderProps) {
   return (
     <AppBar
       component="header"
@@ -12,7 +12,7 @@ export function AppHeader({ connectionStatus }: IAppHeaderProps) {
       className="border-b border-white/10 bg-header"
     >
       <Container maxWidth="lg">
-        <Toolbar disableGutters className="justify-between gap-3 py-4">
+        <Toolbar disableGutters className="flex-wrap justify-between gap-3 py-4">
           <Stack className="min-w-0 flex-row flex-wrap items-baseline gap-x-3 gap-y-1">
             <Link
               href="/"
@@ -31,7 +31,17 @@ export function AppHeader({ connectionStatus }: IAppHeaderProps) {
             </Typography>
           </Stack>
 
-          <ConnectionStatus status={connectionStatus} />
+          <Stack className="flex-row flex-wrap items-center gap-2">
+            <ConnectionStatus status={connectionStatus} />
+            <Button
+              onClick={onToggleMode}
+              size="small"
+              className="text-white"
+              aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} theme`}
+            >
+              {mode === 'light' ? 'Dark mode' : 'Light mode'}
+            </Button>
+          </Stack>
         </Toolbar>
       </Container>
     </AppBar>

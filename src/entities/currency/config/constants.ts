@@ -18,7 +18,22 @@ export const CURRENCIES: readonly ICurrency[] = [
   { symbol: 'XRPUSDT', ticker: 'XRP', name: 'XRP', badgeClass: 'bg-slate-100 text-slate-700' },
 ]
 
+export const AVAILABLE_CURRENCIES: readonly ICurrency[] = [
+  ...CURRENCIES,
+  { symbol: 'ADAUSDT', ticker: 'ADA', name: 'Cardano', badgeClass: 'bg-blue-50 text-blue-800' },
+  {
+    symbol: 'DOGEUSDT',
+    ticker: 'DOGE',
+    name: 'Dogecoin',
+    badgeClass: 'bg-amber-50 text-amber-800',
+  },
+  { symbol: 'LINKUSDT', ticker: 'LINK', name: 'Chainlink', badgeClass: 'bg-blue-50 text-blue-800' },
+  { symbol: 'AVAXUSDT', ticker: 'AVAX', name: 'Avalanche', badgeClass: 'bg-red-50 text-red-800' },
+  { symbol: 'LTCUSDT', ticker: 'LTC', name: 'Litecoin', badgeClass: 'bg-slate-100 text-slate-700' },
+]
+
 export const MARKET_STREAM_URL = `wss://data-stream.binance.vision/stream?streams=${CURRENCIES.map(({ symbol }) => `${symbol.toLowerCase()}@miniTicker`).join('/')}`
+export const HISTORY_LIMIT = 360
 export const CONNECT_TIMEOUT_MS = 12_000
 export const STALE_TIMEOUT_MS = 30_000
 export const MAX_RETRY_DELAY_MS = 30_000

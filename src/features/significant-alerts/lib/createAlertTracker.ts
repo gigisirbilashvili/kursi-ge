@@ -20,6 +20,12 @@ export function createAlertTracker(): IAlertTracker {
       }
     },
     update(snapshot: IMarketSnapshot) {
+      for (const symbol of zones.keys()) {
+        if (!snapshot.quotes[symbol]) {
+          zones.delete(symbol)
+          lastEvents.delete(symbol)
+        }
+      }
       if (snapshot.status !== 'connected') return
       const additions: ISignificantAlert[] = []
       for (const [symbol, quote] of Object.entries(snapshot.quotes)) {

@@ -12,6 +12,7 @@
     "test:market": "tsx scripts/test-market.ts",
     "test:dashboard": "tsx scripts/test-dashboard.ts",
     "test:calculator": "tsx scripts/test-calculator.ts",
+    "test:bonuses": "tsx scripts/test-bonuses.ts",
     "docs:lint": "tsx scripts/document-eslint.ts",
     "preview": "vite preview"
   },

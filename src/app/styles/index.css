@@ -39,6 +39,22 @@
     min-width: 0;
   }
 
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --color-background: #181218;
+    --color-foreground: #f7edf3;
+    --color-muted: #beafba;
+    --color-brand: #efa7cf;
+    --color-brand-soft: #422a3b;
+    --color-border: #493a46;
+    --color-positive-soft: #173c30;
+    --color-negative-soft: #492731;
+    --color-warning-soft: #403324;
+    --color-stale: #ebc17b;
+    --color-status-connected: #6bd4a4;
+    --color-status-disconnected: #ff91a8;
+  }
+
   #root {
     min-height: 100vh;
     min-height: 100dvh;

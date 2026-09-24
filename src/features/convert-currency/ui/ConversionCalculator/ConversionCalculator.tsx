@@ -12,16 +12,15 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CURRENCIES } from '../../../../entities/currency'
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
-export function ConversionCalculator({ market }: IConversionCalculatorProps) {
+export function ConversionCalculator({ market, currencies }: IConversionCalculatorProps) {
   const { amount, setAmount, source, target, setSource, setTarget, swap, result } =
-    useConversionCalculator(market)
-  const sourceTicker = CURRENCIES.find(({ symbol }) => symbol === source)?.ticker ?? source
-  const targetTicker = CURRENCIES.find(({ symbol }) => symbol === target)?.ticker ?? target
+    useConversionCalculator(market, currencies)
+  const sourceTicker = currencies.find(({ symbol }) => symbol === source)?.ticker ?? source
+  const targetTicker = currencies.find(({ symbol }) => symbol === target)?.ticker ?? target
   const hasError = result.status === 'invalid'
 
   return (
@@ -38,11 +37,11 @@ export function ConversionCalculator({ market }: IConversionCalculatorProps) {
           </Typography>
 
           <Typography variant="body2" className="mt-1 text-muted">
-            Convert using live Binance prices.
+            Convert using Binance prices, refreshed every 30 seconds.
           </Typography>
         </Box>
 
-        <Chip label="Live conversion" size="small" className="bg-brand-soft text-xs text-brand" />
+        <Chip label="Updates every 30s" size="small" className="bg-brand-soft text-xs text-brand" />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -56,9 +55,9 @@ export function ConversionCalculator({ market }: IConversionCalculatorProps) {
               onChange={(event) => setSource(event.target.value)}
               className="min-w-0"
             >
-              {CURRENCIES.map((currency) => (
+              {currencies.map((currency) => (
                 <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} — {currency.name}
+                  {currency.ticker} - {currency.name}
                 </MenuItem>
               ))}
             </TextField>
@@ -80,9 +79,9 @@ export function ConversionCalculator({ market }: IConversionCalculatorProps) {
               onChange={(event) => setTarget(event.target.value)}
               className="min-w-0"
             >
-              {CURRENCIES.map((currency) => (
+              {currencies.map((currency) => (
                 <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} — {currency.name}
+                  {currency.ticker} - {currency.name}
                 </MenuItem>
               ))}
             </TextField>

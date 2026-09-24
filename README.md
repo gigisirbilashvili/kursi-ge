@@ -1,6 +1,6 @@
 # Kursi Crypto Dashboard
 
-A responsive frontend-only cryptocurrency dashboard with live Binance Spot data. Built with React, TypeScript, Vite, React Compiler, Material UI, Emotion, and Tailwind CSS.
+A responsive frontend-only cryptocurrency dashboard with live Binance Spot data, Currency Calculator, History chart and price notifications. Built with React, TypeScript, Vite, React Compiler, Material UI, Emotion, and Tailwind CSS.
 
 ## Development
 
@@ -19,13 +19,18 @@ npm run build
 npm run test:market
 npm run test:dashboard
 npm run test:calculator
+npm run test:bonuses
 ```
 
 Use `npm run preview` after building to preview the production output.
 
 ## Architecture
 
-![Feature-Sliced Design architecture](https://feature-sliced.design/assets/ideal-img/visual_schema.b6c18f6.1030.jpg)
+- First of all, Let's imagine that instead of take home assigment this is real production application/platform.
+- How can we design this application in a way, that it can be scaled to large development team, and huge amount of users?
+- we have to make first decision about the architecture.
+- there are multiple options to choose, for example: feature-based or component-based architecture, which sounds good it is simple for this kind of task, but while I we already imagined that it is large scale application let's think further..
+- I know for this kind of simple task it is overkill to use feature-sliced design architecture.it has benefits and trade-offs, which we can discuss in the interview.
 
 Dependency direction: app -> processes -> pages -> features -> entities -> shared. Layers can import lower layers directly, skipping intermediate layers.
 

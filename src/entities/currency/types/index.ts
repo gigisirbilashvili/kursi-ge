@@ -25,6 +25,7 @@ export interface ICurrencyQuote {
 }
 
 export interface IMarketSnapshot {
+  history: Readonly<Record<string, readonly IPricePoint[]>>
   status: TMarketStatus
   quotes: Readonly<Record<string, ICurrencyQuote>>
   message: string | null
@@ -32,6 +33,7 @@ export interface IMarketSnapshot {
 }
 
 export interface IMarketSocket {
+  send: (message: string) => void
   onopen: (() => void) | null
   onmessage: ((data: unknown) => void) | null
   onclose: (() => void) | null
@@ -40,8 +42,14 @@ export interface IMarketSocket {
 }
 
 export interface IMarketFeedOptions {
+  symbols?: readonly string[]
   createSocket?: (url: string) => IMarketSocket
   now?: () => number
   schedule?: (callback: () => void, delay: number) => ReturnType<typeof setTimeout>
   cancel?: (timer: ReturnType<typeof setTimeout>) => void
+}
+
+export interface IPricePoint {
+  time: number
+  price: number
 }

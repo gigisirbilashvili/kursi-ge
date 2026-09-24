@@ -1,4 +1,4 @@
-import { CURRENCIES } from '../config/constants.ts'
+import { AVAILABLE_CURRENCIES } from '../config/constants.ts'
 import type { IMarketTick } from '../types/index.ts'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -14,7 +14,7 @@ export function parseMarketMessage(raw: unknown): IMarketTick | null {
     if (
       data.e !== '24hrMiniTicker' ||
       typeof data.s !== 'string' ||
-      !CURRENCIES.some(({ symbol }) => symbol === data.s) ||
+      !AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === data.s) ||
       envelope.stream !== `${data.s.toLowerCase()}@miniTicker` ||
       typeof data.c !== 'string' ||
       !/^\d+(?:\.\d+)?$/.test(data.c) ||

@@ -28,7 +28,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CURRENCIES, STALE_TIMEOUT_MS } from '../../../../entities/currency'
+import { AVAILABLE_CURRENCIES, STALE_TIMEOUT_MS } from '../../../../entities/currency'
 import { selectCurrencies, useMarketPreferences } from '../../../../features/market-preferences'
 import type {
   TMarketFilter,
@@ -42,7 +42,7 @@ import { MarketPrice } from '../MarketPrice/MarketPrice'
 import { SessionChange } from '../SessionChange/SessionChange'
 import type { IMarketPanelProps } from './types'
 
-export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
+export function MarketPanel({ snapshot, onRetry, currencies }: IMarketPanelProps) {
   const [now, setNow] = useState(Date.now)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<TMarketFilter>('all')
@@ -58,7 +58,7 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
   }, [])
 
   const visibleCurrencies = selectCurrencies(
-    CURRENCIES,
+    currencies,
     snapshot,
     preferences,
     search,
@@ -66,7 +66,7 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
     sortField,
     sortDirection,
   )
-  const hiddenCurrencies = CURRENCIES.filter(({ symbol }) => preferences.hidden.includes(symbol))
+  const hiddenCurrencies = currencies.filter(({ symbol }) => preferences.hidden.includes(symbol))
   const hasPrices = Object.keys(snapshot.quotes).length > 0
   const isConnected = snapshot.status === 'connected'
   const isWaiting =
@@ -94,7 +94,7 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
           </Typography>
 
           <Chip
-            label={`${CURRENCIES.length - preferences.hidden.length} visible`}
+            label={`${currencies.length - hiddenCurrencies.length} visible`}
             size="small"
             className="bg-brand-soft text-xs font-medium text-brand"
           />
@@ -139,7 +139,7 @@ export function MarketPanel({ snapshot, onRetry }: IMarketPanelProps) {
           className="gap-2 border-b border-border p-5 sm:p-6"
         >
           {alerts.map((alert) => {
-            const currency = CURRENCIES.find(({ symbol }) => symbol === alert.symbol)
+            const currency = AVAILABLE_CURRENCIES.find(({ symbol }) => symbol === alert.symbol)
             return (
               <Alert
                 key={alert.id}

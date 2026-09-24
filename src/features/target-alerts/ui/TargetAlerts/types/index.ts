@@ -1,6 +1,6 @@
 import type { ICurrency, IMarketSnapshot } from '../../../../../entities/currency'
 
-export interface IConversionCalculatorProps {
+export interface ITargetAlertsProps {
   currencies: readonly ICurrency[]
   market: IMarketSnapshot
 }

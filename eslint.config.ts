@@ -91,18 +91,6 @@ export default defineConfig([
       "no-console": "error",
       "no-duplicate-imports": ["error", { allowSeparateTypeImports: true }],
       "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
-      "react/jsx-curly-spacing": ["error", { when: "never", children: true }],
-      "react/jsx-tag-spacing": [
-        "error",
-        {
-          closingSlash: "never",
-          beforeSelfClosing: "always",
-          afterOpening: "never",
-          beforeClosing: "never",
-        },
-      ],
-      "react/jsx-equals-spacing": ["error", "never"],
-      "react/jsx-props-no-multi-spaces": "error",
       "local/todo-comments-only": "error",
       "local/type-files-only": "error",
       "local/constant-names": "error",

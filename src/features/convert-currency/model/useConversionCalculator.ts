@@ -15,7 +15,8 @@ export function useConversionCalculator(market: IMarketSnapshot) {
 
   const setSource = (source: string) => setCurrencies((current) => ({ ...current, source }))
   const setTarget = (target: string) => setCurrencies((current) => ({ ...current, target }))
-  const swap = () => setCurrencies((current) => ({ source: current.target, target: current.source }))
+  const swap = () =>
+    setCurrencies((current) => ({ source: current.target, target: current.source }))
   const result = getConversionResult(amount, currencies.source, currencies.target, market, now)
 
   return { amount, setAmount, ...currencies, setSource, setTarget, swap, result }

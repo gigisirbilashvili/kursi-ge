@@ -1,6 +1,12 @@
 import { createBrowserSocket } from '../api/createBrowserSocket.ts'
 import { parseMarketMessage } from '../api/parseMarketMessage.ts'
-import { CONNECT_TIMEOUT_MS, INITIAL_RETRY_DELAY_MS, MARKET_STREAM_URL, MAX_RETRY_DELAY_MS, STALE_TIMEOUT_MS } from '../config/constants.ts'
+import {
+  CONNECT_TIMEOUT_MS,
+  INITIAL_RETRY_DELAY_MS,
+  MARKET_STREAM_URL,
+  MAX_RETRY_DELAY_MS,
+  STALE_TIMEOUT_MS,
+} from '../config/constants.ts'
 import { updateQuote } from '../lib/updateQuote.ts'
 import type { IMarketFeedOptions, IMarketSnapshot, IMarketSocket } from '../types/index.ts'
 
@@ -41,7 +47,11 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     release()
     if (!isActive) return
     if (!isOnline) {
-      publish({ status: 'disconnected', message: 'You are offline. Reconnection will resume when your network returns.', retryAt: null })
+      publish({
+        status: 'disconnected',
+        message: 'You are offline. Reconnection will resume when your network returns.',
+        retryAt: null,
+      })
       return
     }
     const delay = Math.min(INITIAL_RETRY_DELAY_MS * 2 ** Math.min(attempt, 5), MAX_RETRY_DELAY_MS)
@@ -58,28 +68,46 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     const isCurrent = () => isActive && generation === connectionGeneration
     try {
       socket = createSocket(MARKET_STREAM_URL)
-      timer = schedule(() => { if (isCurrent()) reconnect('The market connection timed out. Retrying automatically.') }, CONNECT_TIMEOUT_MS)
+      timer = schedule(() => {
+        if (isCurrent()) reconnect('The market connection timed out. Retrying automatically.')
+      }, CONNECT_TIMEOUT_MS)
       socket.onopen = () => {
         if (!isCurrent()) return
         if (timer !== undefined) cancel(timer)
-        timer = schedule(() => { if (isCurrent()) reconnect('No valid market prices received. Retrying automatically.') }, STALE_TIMEOUT_MS)
+        timer = schedule(() => {
+          if (isCurrent()) reconnect('No valid market prices received. Retrying automatically.')
+        }, STALE_TIMEOUT_MS)
       }
       socket.onmessage = (data) => {
         if (!isCurrent()) return
         const tick = parseMarketMessage(data)
         if (!tick) {
-          publish({ status: 'error', message: 'An invalid market update was ignored. Waiting for valid prices.' })
+          publish({
+            status: 'error',
+            message: 'An invalid market update was ignored. Waiting for valid prices.',
+          })
           return
         }
         const previous = snapshot.quotes[tick.symbol]
         if (previous && tick.eventTime <= previous.eventTime) return
         if (timer !== undefined) cancel(timer)
-        timer = schedule(() => { if (isCurrent()) reconnect('Market updates stopped. Last-known prices may be stale.') }, STALE_TIMEOUT_MS)
+        timer = schedule(() => {
+          if (isCurrent()) reconnect('Market updates stopped. Last-known prices may be stale.')
+        }, STALE_TIMEOUT_MS)
         attempt = 0
-        publish({ status: 'connected', message: null, retryAt: null, quotes: { ...snapshot.quotes, [tick.symbol]: updateQuote(previous, tick, now()) } })
+        publish({
+          status: 'connected',
+          message: null,
+          retryAt: null,
+          quotes: { ...snapshot.quotes, [tick.symbol]: updateQuote(previous, tick, now()) },
+        })
       }
-      socket.onclose = () => { if (isCurrent()) reconnect('The connection was lost. Retrying automatically.') }
-      socket.onerror = () => { if (isCurrent()) reconnect('Could not reach Binance. Retrying automatically.') }
+      socket.onclose = () => {
+        if (isCurrent()) reconnect('The connection was lost. Retrying automatically.')
+      }
+      socket.onerror = () => {
+        if (isCurrent()) reconnect('Could not reach Binance. Retrying automatically.')
+      }
     } catch {
       reconnect('Could not open the market connection. Retrying automatically.')
     }
@@ -89,7 +117,9 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
       listeners.add(listener)
-      return () => { listeners.delete(listener) }
+      return () => {
+        listeners.delete(listener)
+      }
     },
     start(hasNetwork = true) {
       if (isActive) return
@@ -105,8 +135,10 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     setOnline(hasNetwork: boolean) {
       isOnline = hasNetwork
       if (!isActive) return
-      if (isOnline) { attempt = 0; connect() }
-      else reconnect('You are offline.')
+      if (isOnline) {
+        attempt = 0
+        connect()
+      } else reconnect('You are offline.')
     },
     retry() {
       if (!isActive || !isOnline) return

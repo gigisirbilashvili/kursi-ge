@@ -77,10 +77,10 @@ The current dashboard includes:
 - Search by name or symbol, with Clear inside the search field and an empty-results state.
 - Ascending/descending sorting by name, current price, or signed session percentage change. Search and visibility filters apply before sorting; unpriced currencies stay at the bottom. Live updates can change the order when sorting by price or change.
 - Dismissible alerts at ±2% from the first session price. Each alert records the currency, initial/current prices, percentage, and direction. Repeated updates beyond the same threshold do not create duplicates. Returning inside the range rearms the alert; crossing directly to the opposite threshold also triggers a new alert. The latest ten alerts are retained for the current page session.
-- A conversion calculator with source/target selectors, decimal amount input, Swap, and a result that updates with live quotes. It supports all five tracked currencies, including currencies hidden from the market list.
+- A conversion calculator with source/target selectors, decimal amount input, Swap, and a result that refreshes from the latest quotes every 30 seconds. Editing inputs or currency selections updates immediately.
 - Responsive market cards below 900px and a table on wider screens, plus connection, loading, error, stale-price, and empty states.
 
-The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Component styling uses Tailwind classes rather than sx or inline styles. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
+The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Component styling uses Tailwind classes rather than sx or inline styles. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. Light and dark palettes follow the saved preference or, on first visit, the system setting. A system sans-serif fallback is used when Inter is unavailable.
 
 ## Live market behavior
 
@@ -97,13 +97,13 @@ The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, 
 
 ## Calculator behavior
 
-The calculator uses `amount × (source USDT price / target USDT price)`. It derives the result from the latest snapshot without another request or WebSocket connection. Swapping exchanges the two selected currencies and preserves the entered amount. Selecting the same currency gives a 1:1 conversion once its live price is available.
+The calculator uses `amount × (source USDT price / target USDT price)`. It samples the latest result every 30 seconds without another request or WebSocket connection. The first result appears as soon as valid prices arrive. Editing the amount, changing currencies, or swapping updates immediately and restarts the refresh interval. Invalid inputs and stale or disconnected states are reported immediately. Swapping preserves the entered amount. Selecting the same currency gives a 1:1 conversion once its live price is available.
 
 Zero and positive decimal amounts are accepted. Empty input prompts for an amount; negative values, text, comma decimals, exponential input, non-finite values, and amounts above `Number.MAX_SAFE_INTEGER` produce no result. Computation keeps numeric precision until display; results use up to twelve significant digits, with scientific notation for very small values. Results are estimates and exclude fees. Input and currency choices reset on a fresh page load.
 
-## Remaining bonus work
+## Bonus features
 
-The requested core dashboard features are implemented. Calculator and percentage-change unit tests cover one bonus task. Remaining planned bonuses are a session price-history chart, dynamic pair selection, WebSocket subscribe/unsubscribe, configurable target-price alerts, and light/dark themes.
+The session price chart samples collected updates every 10 seconds and shows up to 360 points per tracked pair. The first two points and currency selection changes display immediately. Pair management adds or removes markets from a curated catalog of ten USDT pairs and persists the selection. Pair changes use WebSocket subscribe/unsubscribe commands on the existing connection. Target-price alerts are saved locally, fire once at a chosen threshold, and can be rearmed. New target alerts and ±2% session-change alerts also appear as dismissible toasts in the top-right corner for six seconds; queued alerts appear in order, and saved alerts do not replay on reload. The header offers a saved light/dark theme switch. Unit tests cover conversion, session percentage changes, subscriptions, history retention, and target alerts.
 
 ## Rules for future implementation
 

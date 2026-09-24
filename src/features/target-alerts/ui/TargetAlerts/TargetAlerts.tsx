@@ -1,17 +1,24 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Alert, Box, Button, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { parseTarget } from '../../lib/createTargetAlerts'
-import { useTargetAlerts } from '../../model/useTargetAlerts'
 import type { ITargetAlertsProps } from './types'
 
-export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
-  const { alerts, add, rearm, remove } = useTargetAlerts(market)
+export function TargetAlerts({
+  currencies,
+  market,
+  alerts,
+  onAdd,
+  onRearm,
+  onRemove,
+}: ITargetAlertsProps) {
   const [selection, setSelection] = useState('BTCUSDT')
   const [direction, setDirection] = useState<'above' | 'below'>('above')
   const [target, setTarget] = useState('')
   const [hasSubmitted, setHasSubmitted] = useState(false)
+  const currencySelectRef = useRef<HTMLDivElement>(null)
+  const conditionSelectRef = useRef<HTMLDivElement>(null)
   const symbol = currencies.some((currency) => currency.symbol === selection)
     ? selection
     : (currencies[0]?.symbol ?? '')
@@ -42,16 +49,24 @@ export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
           event.preventDefault()
           setHasSubmitted(true)
           if (price === null || isFull) return
-          add({ id: crypto.randomUUID(), symbol, target: price, direction })
+          onAdd({ id: crypto.randomUUID(), symbol, target: price, direction })
           setTarget('')
           setHasSubmitted(false)
         }}
       >
         <TextField
+          ref={currencySelectRef}
           select
           label="Alert currency"
           value={symbol}
           size="small"
+          slotProps={{
+            select: {
+              onClose: () =>
+                currencySelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
+              MenuProps: { ['disableEnforceFocus']: true },
+            },
+          }}
           onChange={(event) => setSelection(event.target.value)}
         >
           {currencies.map((currency) => (
@@ -62,10 +77,18 @@ export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
         </TextField>
 
         <TextField
+          ref={conditionSelectRef}
           select
           label="Condition"
           value={direction}
           size="small"
+          slotProps={{
+            select: {
+              onClose: () =>
+                conditionSelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
+              MenuProps: { ['disableEnforceFocus']: true },
+            },
+          }}
           onChange={(event) => setDirection(event.target.value === 'above' ? 'above' : 'below')}
         >
           <MenuItem value="above">At or above</MenuItem>
@@ -129,11 +152,11 @@ export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
 
                 <Stack className="flex-row gap-2">
                   {hasTriggered && (
-                    <Button onClick={() => rearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
+                    <Button onClick={() => onRearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
                       Rearm
                     </Button>
                   )}
-                  <Button onClick={() => remove(alert.id)} aria-label={`Remove ${ticker} alert`}>
+                  <Button onClick={() => onRemove(alert.id)} aria-label={`Remove ${ticker} alert`}>
                     Remove
                   </Button>
                 </Stack>

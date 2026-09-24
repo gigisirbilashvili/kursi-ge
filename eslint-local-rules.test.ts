@@ -161,6 +161,11 @@ const results = await lint.lintText(
   "interface BadName {}\nenum Status { Ready }\nconst active = true;\nconsole.log(active);\nexport { BadName, Status };",
   { filePath: "src/app/App.tsx" },
 );
+const [spacingResult] = await lint.lintText(
+  'export default function App() { return (\n<div  title = "value" >\n\n  { "Readable JSX" }\n\n</div>\n) }',
+  { filePath: "src/app/App.tsx" },
+);
+assert.equal(spacingResult.messages.length, 0);
 assert.ok(
   results[0].messages.some((message) => message.ruleId === "no-console"),
 );
@@ -173,11 +178,6 @@ for (const [code, expectedRule, filePath] of [
   [
     'import { useState } from "react"; export const value = 1;',
     "@typescript-eslint/no-unused-vars",
-    "src/app/App.tsx",
-  ],
-  [
-    'export default function App() { return <div title = "value" /> }',
-    "react/jsx-equals-spacing",
     "src/app/App.tsx",
   ],
   [

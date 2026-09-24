@@ -15,7 +15,9 @@ export function createAlertTracker(): IAlertTracker {
     getSnapshot: () => alerts,
     subscribe(listener) {
       listeners.add(listener)
-      return () => { listeners.delete(listener) }
+      return () => {
+        listeners.delete(listener)
+      }
     },
     update(snapshot: IMarketSnapshot) {
       if (snapshot.status !== 'connected') return
@@ -23,14 +25,24 @@ export function createAlertTracker(): IAlertTracker {
       for (const [symbol, quote] of Object.entries(snapshot.quotes)) {
         if (lastEvents.get(symbol) === quote.eventTime) continue
         lastEvents.set(symbol, quote.eventTime)
-        const zone: TAlertZone = quote.percentageChange >= 2 ? 'up' : quote.percentageChange <= -2 ? 'down' : 'inside'
+        const zone: TAlertZone =
+          quote.percentageChange >= 2 ? 'up' : quote.percentageChange <= -2 ? 'down' : 'inside'
         if (zone !== 'inside' && zones.get(symbol) !== zone) {
-          additions.push({ id: nextId++, symbol, initialPrice: quote.initialPrice, currentPrice: quote.price, percentageChange: quote.percentageChange, direction: zone === 'up' ? 'increased' : 'decreased' })
+          additions.push({
+            id: nextId++,
+            symbol,
+            initialPrice: quote.initialPrice,
+            currentPrice: quote.price,
+            percentageChange: quote.percentageChange,
+            direction: zone === 'up' ? 'increased' : 'decreased',
+          })
         }
         zones.set(symbol, zone)
       }
       if (additions.length) publish([...additions, ...alerts].slice(0, 10))
     },
-    dismiss(id: number) { publish(alerts.filter((alert) => alert.id !== id)) },
+    dismiss(id: number) {
+      publish(alerts.filter((alert) => alert.id !== id))
+    },
   }
 }

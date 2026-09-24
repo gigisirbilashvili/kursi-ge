@@ -56,7 +56,7 @@ Example layout:
 
 ## JSX, comments, and logging
 
-- No spaces inside JSX expression braces, around attribute equals signs, or immediately after opening/before closing angle brackets. Self-closing tags use one space before />. No multiple spaces between props.
+- JSX spacing and blank lines are not restricted by ESLint. Use multiline props and blank lines between logical sections to keep components readable.
 - Intentional spaces in displayed text, including {' '} between inline elements, remain allowed.
 - No console methods, including log, warn, and error.
 - JavaScript/TypeScript comments must start with TODO:: and a nonempty future task: // TODO:: Add reconnect coverage. Block and JSX comments follow the same format. Bare TODO::, TODO:, ordinary explanations, JSDoc, and lint-disable comments are rejected. ESLint checks the prefix and task presence, not whether prose truly describes future work.

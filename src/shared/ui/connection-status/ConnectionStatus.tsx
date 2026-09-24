@@ -10,7 +10,13 @@ export function ConnectionStatus({ status }: IConnectionStatusProps) {
       aria-live="polite"
       aria-atomic="true"
       aria-label={`Market connection: ${CONNECTION_STATUS_LABELS[status]}`}
-      icon={<Box component="span" aria-hidden="true" className={`size-2 rounded-full ${CONNECTION_STATUS_CLASSES[status]}`} />}
+      icon={
+        <Box
+          component="span"
+          aria-hidden="true"
+          className={`size-2 rounded-full ${CONNECTION_STATUS_CLASSES[status]}`}
+        />
+      }
       label={CONNECTION_STATUS_LABELS[status]}
       variant="outlined"
       size="small"

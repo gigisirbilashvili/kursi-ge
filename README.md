@@ -19,6 +19,7 @@ npm run build
 npm run test:market
 npm run test:dashboard
 npm run test:calculator
+npm run test:bonuses
 ```
 
 Use `npm run preview` after building to preview the production output.
@@ -47,9 +48,12 @@ src/
     market-preferences/     Favorites, hiding, filtering, sorting, persistence
     significant-alerts/     Session threshold tracking and notifications
     convert-currency/       Live conversion, input validation, and calculator UI
+    manage-pairs/           Persistent pair selection and add/remove controls
+    price-history/          Session chart from collected WebSocket prices
+    target-alerts/          Persistent one-shot target-price alerts
   entities/currency/        Binance transport, quote model, market-feed hook
     api/                    Browser socket adapter and message validation
-    config/                 Five supported USDT pairs and timing limits
+    config/                 Default pairs, supported market catalog, and timing limits
     model/                  Feed lifecycle and React subscription
     lib/                    Session percentage and tick-direction calculations
     types/                  Domain and transport contracts
@@ -62,7 +66,7 @@ The processes layer follows the requested article and stays empty until needed.
 
 The responsive header and pale background follow the [visual reference](https://pixel-perfect-canvas-2478.lovable.app/). The implementation is written independently. The app-owned Material UI theme provides the Kursi palette, typography, breakpoints, and component defaults. The main content shares the header's 1280px container and responsive gutters.
 
-The app starts one Binance market feed and passes its current connection status to the header and its snapshot to the home page. The feed uses a single combined WebSocket connection for BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, and XRP/USDT. The header supports connecting, connected, reconnecting, disconnected, and error states with text and a colored indicator. Connected means a valid market update has arrived, not merely that the socket opened.
+The app starts one Binance market feed and passes its current connection status to the header and its snapshot to the home page. The feed uses a single combined WebSocket connection, initially tracking BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, and XRP/USDT. Users can add or remove pairs from a curated catalog of ten USDT markets. The header supports connecting, connected, reconnecting, disconnected, and error states with text and a colored indicator. Connected means a valid market update has arrived, not merely that the socket opened.
 
 The current dashboard includes:
 
@@ -72,15 +76,15 @@ The current dashboard includes:
 - Search by name or symbol, with Clear inside the search field and an empty-results state.
 - Ascending/descending sorting by name, current price, or signed session percentage change. Search and visibility filters apply before sorting; unpriced currencies stay at the bottom. Live updates can change the order when sorting by price or change.
 - Dismissible alerts at ±2% from the first session price. Each alert records the currency, initial/current prices, percentage, and direction. Repeated updates beyond the same threshold do not create duplicates. Returning inside the range rearms the alert; crossing directly to the opposite threshold also triggers a new alert. The latest ten alerts are retained for the current page session.
-- A conversion calculator with source/target selectors, decimal amount input, Swap, and a result that updates with live quotes. It supports all five tracked currencies, including currencies hidden from the market list.
+- A conversion calculator with source/target selectors, decimal amount input, Swap, and a result that updates with live quotes. It supports all currently tracked currencies, including currencies hidden from the market list. Removing a selected currency makes the calculator fall back to an available pair.
 - Responsive market cards below 900px and a table on wider screens, plus connection, loading, error, stale-price, and empty states.
 
-The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Component styling uses Tailwind classes rather than sx or inline styles. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. It follows a light palette regardless of system theme; optional theme switching remains future work. A system sans-serif fallback is used when Inter is unavailable.
+The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Component styling uses Tailwind classes rather than sx or inline styles. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. The header switches between light and dark Kursi palettes. The first visit follows the system preference; an explicit choice is saved in localStorage. A system sans-serif fallback is used when Inter is unavailable.
 
 ## Live market behavior
 
 - Data source: Binance Spot's public market-data endpoint, using combined `@miniTicker` streams. The close-price field `c` supplies the latest price; Binance's 24-hour statistics are not used for session change. See the [official stream documentation](https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md).
-- The first valid price for each symbol becomes its session baseline. It survives reconnects and resets when the app is freshly loaded. Percentage change is `(current - initial) / initial * 100`.
+- The first valid price for each symbol becomes its session baseline. It survives reconnects and resets when the app is freshly loaded or a removed pair is added again. Percentage change is `(current - initial) / initial * 100`.
 - Tick arrows compare current and previous prices. An unchanged tick is neutral. Session change is calculated independently and may point in the opposite direction.
 - Prices stay at full numeric precision in the model; formatting occurs only in the UI. Low-priced assets retain additional decimal places.
 - Messages must contain the expected stream, event type, supported symbol, a finite positive price, and a positive integer event timestamp. Invalid messages are ignored with an error status; the next valid update clears the error. Older and duplicate timestamps do not overwrite current quotes.
@@ -96,9 +100,16 @@ The calculator uses `amount × (source USDT price / target USDT price)`. It deri
 
 Zero and positive decimal amounts are accepted. Empty input prompts for an amount; negative values, text, comma decimals, exponential input, non-finite values, and amounts above `Number.MAX_SAFE_INTEGER` produce no result. Computation keeps numeric precision until display; results use up to twelve significant digits, with scientific notation for very small values. Results are estimates and exclude fees. Input and currency choices reset on a fresh page load.
 
-## Remaining bonus work
+## Implemented bonuses
 
-The requested core dashboard features are implemented. Calculator and percentage-change unit tests cover one bonus task. Remaining planned bonuses are a session price-history chart, dynamic pair selection, WebSocket subscribe/unsubscribe, configurable target-price alerts, and light/dark themes.
+- **Session history:** a responsive, accessible chart shows the latest 360 accepted updates for a selected pair, collected from this session's WebSocket. Timestamps determine horizontal spacing. History survives reconnects but resets on reload or removing a pair. The point limit bounds memory usage; flat prices and loading/disconnected states are supported.
+- **Dynamic pairs:** Manage pairs adds/removes BTC, ETH, SOL, BNB, XRP, ADA, DOGE, LINK, AVAX, and LTC against USDT. Five are selected initially; at least one stays selected. The curated catalog avoids accepting nonexistent symbols. Selection persists. Favorites and hidden preferences remain saved when removing a pair.
+- **Live subscriptions:** pair changes are batched into Binance SUBSCRIBE/UNSUBSCRIBE commands on the existing connection. Requests are spaced at least 500ms apart, with one awaiting acknowledgment at a time. Rapid edits are coalesced. Removed symbols are ignored immediately; acknowledgments are not parsed as prices. Failed or unacknowledged commands trigger recovery. Reconnects use the latest selection, and cleanup cancels subscription timers.
+- **Target alerts:** choose a tracked currency, a positive USDT target, and an inclusive at-or-above/at-or-below condition. Up to 20 alerts are saved locally, including their triggered state. Each fires once and records the triggering price. Rearm enables another trigger; a condition already satisfied fires immediately when a fresh quote is available. Removing a pair pauses its pending alerts until re-added. Missing, stale, and disconnected prices never trigger alerts. These are in-page alerts monitored while the app is open, without background push or email.
+- **Light/dark theme:** MUI palettes and Tailwind semantic tokens switch together, including chart, inputs, price changes, and status colors. The choice persists across reloads.
+- **Unit tests:** calculator and percentage-change coverage is joined by deterministic subscription, history-retention, target-validation, firing/rearming, saved-state restoration, and stale-data tests.
+
+No additional runtime library was needed. The chart uses an SVG plot rendered through MUI Box; the rest of the UI continues to use MUI and Tailwind classes.
 
 ## Rules for future implementation
 
@@ -119,4 +130,4 @@ ESLint restricts upward imports with path patterns. Same-layer isolation and pub
 
 Run npm run test:lint after lint rule changes. Run npm run docs:lint after lint configuration changes to regenerate ../rule.md.
 
-Run `npm run test:calculator` for cross-rate calculations, validation, live quote changes, missing prices, and stale/disconnected handling. Run `npm run test:dashboard` for market preference selection and alert threshold behavior. Run `npm run test:market` for deterministic parser, session-price, out-of-order-message, reconnection/backoff, timeout, offline/retry, and cleanup tests. These use controlled sockets and timers without depending on external market movement. Browser smoke checks should also confirm all five real prices update and that desktop and mobile layouts remain readable.
+Run `npm run test:calculator` for cross-rate calculations, validation, live quote changes, missing prices, and stale/disconnected handling. Run `npm run test:dashboard` for market preference selection and alert threshold behavior. Run `npm run test:market` for deterministic parser, session-price, out-of-order-message, reconnection/backoff, timeout, offline/retry, and cleanup tests. These use controlled sockets and timers without depending on external market movement. Run `npm run test:bonuses` for target-price validation, firing/rearming, saved-state restoration, and stale/missing quote protection. Browser smoke checks should also confirm real prices update and that desktop and mobile layouts remain readable.

@@ -32,10 +32,6 @@ Use `npm run preview` after building to preview the production output.
 - there are multiple options to choose, for example: feature-based or component-based architecture, which sounds good it is simple for this kind of task, but while I we already imagined that it is large scale application let's think further..
 - I know for this kind of simple task it is overkill to use feature-sliced design architecture.it has benefits and trade-offs, which we can discuss in the interview.
 
-this is how it looks \/
-
-![Frontend Architecture Guide](https://feature-sliced.design/img/blog/frontend-architecture-guide.jpg)
-
 Dependency direction: app -> processes -> pages -> features -> entities -> shared. Layers can import lower layers directly, skipping intermediate layers.
 
 ```text

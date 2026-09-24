@@ -37,11 +37,11 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           </Typography>
 
           <Typography variant="body2" className="mt-1 text-muted">
-            Convert using live Binance prices.
+            Convert using Binance prices, refreshed every 30 seconds.
           </Typography>
         </Box>
 
-        <Chip label="Live conversion" size="small" className="bg-brand-soft text-xs text-brand" />
+        <Chip label="Updates every 30s" size="small" className="bg-brand-soft text-xs text-brand" />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">

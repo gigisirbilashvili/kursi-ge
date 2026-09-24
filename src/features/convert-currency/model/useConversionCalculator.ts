@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import type { ICurrency, IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { useSampledValue } from '../../../shared/lib/useSampledValue'
 import { getConversionResult } from '../lib/convertCurrency.ts'
 
 export function useConversionCalculator(market: IMarketSnapshot, available: readonly ICurrency[]) {
@@ -22,7 +23,14 @@ export function useConversionCalculator(market: IMarketSnapshot, available: read
     ? currencies.target
     : (available[1]?.symbol ?? source)
   const swap = () => setCurrencies({ source: target, target: source })
-  const result = getConversionResult(amount, source, target, market, now)
+  const liveResult = getConversionResult(amount, source, target, market, now)
+  const sampledResult = useSampledValue(
+    liveResult,
+    30_000,
+    `${source}/${target}/${amount}/${market.status}`,
+    liveResult.status === 'ready',
+  )
+  const result = liveResult.status === 'ready' ? sampledResult : liveResult
 
   return { amount, setAmount, source, target, setSource, setTarget, swap, result }
 }

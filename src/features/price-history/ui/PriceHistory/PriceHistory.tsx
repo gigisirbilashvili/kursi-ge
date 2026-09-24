@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Box, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
 
+import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
   const [selection, setSelection] = useState('BTCUSDT')
   const currency = currencies.find(({ symbol }) => symbol === selection) ?? currencies[0]
-  const points = market.history[currency?.symbol ?? ''] ?? []
+  const livePoints = market.history[currency?.symbol ?? ''] ?? []
+  const points = useSampledValue(livePoints, 10_000, currency?.symbol ?? '', livePoints.length >= 2)
   const min = Math.min(...points.map(({ price }) => price))
   const max = Math.max(...points.map(({ price }) => price))
   const first = points[0]
@@ -39,7 +41,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
           </Typography>
 
           <Typography className="mt-1 text-muted">
-            Latest 360 updates collected while this pair is tracked. Prices in USDT.
+            Refreshes every 10 seconds. Latest 360 session updates, priced in USDT.
           </Typography>
         </Box>
 

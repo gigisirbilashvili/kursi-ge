@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Alert, Box, Button, Card, Stack, TextField, Typography } from '@mui/material'
+import { useRef, useState } from 'react'
+import { Alert, Box, Button, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { parseTarget } from '../../lib/createTargetAlerts'
@@ -17,6 +17,8 @@ export function TargetAlerts({
   const [direction, setDirection] = useState<'above' | 'below'>('above')
   const [target, setTarget] = useState('')
   const [hasSubmitted, setHasSubmitted] = useState(false)
+  const currencySelectRef = useRef<HTMLDivElement>(null)
+  const conditionSelectRef = useRef<HTMLDivElement>(null)
   const symbol = currencies.some((currency) => currency.symbol === selection)
     ? selection
     : (currencies[0]?.symbol ?? '')
@@ -53,30 +55,44 @@ export function TargetAlerts({
         }}
       >
         <TextField
+          ref={currencySelectRef}
           select
           label="Alert currency"
           value={symbol}
           size="small"
-          slotProps={{ select: { ['native']: true } }}
+          slotProps={{
+            select: {
+              onClose: () =>
+                currencySelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
+              MenuProps: { ['disableEnforceFocus']: true },
+            },
+          }}
           onChange={(event) => setSelection(event.target.value)}
         >
           {currencies.map((currency) => (
-            <option key={currency.symbol} value={currency.symbol}>
+            <MenuItem key={currency.symbol} value={currency.symbol}>
               {currency.ticker}/USDT
-            </option>
+            </MenuItem>
           ))}
         </TextField>
 
         <TextField
+          ref={conditionSelectRef}
           select
           label="Condition"
           value={direction}
           size="small"
-          slotProps={{ select: { ['native']: true } }}
+          slotProps={{
+            select: {
+              onClose: () =>
+                conditionSelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
+              MenuProps: { ['disableEnforceFocus']: true },
+            },
+          }}
           onChange={(event) => setDirection(event.target.value === 'above' ? 'above' : 'below')}
         >
-          <option value="above">At or above</option>
-          <option value="below">At or below</option>
+          <MenuItem value="above">At or above</MenuItem>
+          <MenuItem value="below">At or below</MenuItem>
         </TextField>
 
         <TextField

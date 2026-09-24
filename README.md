@@ -103,7 +103,7 @@ Zero and positive decimal amounts are accepted. Empty input prompts for an amoun
 
 ## Bonus features
 
-The session price chart samples collected updates every 10 seconds and shows up to 360 points per tracked pair. The first two points and currency selection changes display immediately. Pair management adds or removes markets from a curated catalog of ten USDT pairs and persists the selection. Pair changes use WebSocket subscribe/unsubscribe commands on the existing connection. Target-price alerts are saved locally, fire once at a chosen threshold, and can be rearmed. The header offers a saved light/dark theme switch. Unit tests cover conversion, session percentage changes, subscriptions, history retention, and target alerts.
+The session price chart samples collected updates every 10 seconds and shows up to 360 points per tracked pair. The first two points and currency selection changes display immediately. Pair management adds or removes markets from a curated catalog of ten USDT pairs and persists the selection. Pair changes use WebSocket subscribe/unsubscribe commands on the existing connection. Target-price alerts are saved locally, fire once at a chosen threshold, and can be rearmed. New target alerts and ±2% session-change alerts also appear as dismissible toasts in the top-right corner for six seconds; queued alerts appear in order, and saved alerts do not replay on reload. The header offers a saved light/dark theme switch. Unit tests cover conversion, session percentage changes, subscriptions, history retention, and target alerts.
 
 ## Rules for future implementation
 

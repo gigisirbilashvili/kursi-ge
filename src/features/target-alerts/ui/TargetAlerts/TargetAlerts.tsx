@@ -3,11 +3,16 @@ import { Alert, Box, Button, Card, MenuItem, Stack, TextField, Typography } from
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { parseTarget } from '../../lib/createTargetAlerts'
-import { useTargetAlerts } from '../../model/useTargetAlerts'
 import type { ITargetAlertsProps } from './types'
 
-export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
-  const { alerts, add, rearm, remove } = useTargetAlerts(market)
+export function TargetAlerts({
+  currencies,
+  market,
+  alerts,
+  onAdd,
+  onRearm,
+  onRemove,
+}: ITargetAlertsProps) {
   const [selection, setSelection] = useState('BTCUSDT')
   const [direction, setDirection] = useState<'above' | 'below'>('above')
   const [target, setTarget] = useState('')
@@ -42,7 +47,7 @@ export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
           event.preventDefault()
           setHasSubmitted(true)
           if (price === null || isFull) return
-          add({ id: crypto.randomUUID(), symbol, target: price, direction })
+          onAdd({ id: crypto.randomUUID(), symbol, target: price, direction })
           setTarget('')
           setHasSubmitted(false)
         }}
@@ -129,11 +134,11 @@ export function TargetAlerts({ currencies, market }: ITargetAlertsProps) {
 
                 <Stack className="flex-row gap-2">
                   {hasTriggered && (
-                    <Button onClick={() => rearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
+                    <Button onClick={() => onRearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
                       Rearm
                     </Button>
                   )}
-                  <Button onClick={() => remove(alert.id)} aria-label={`Remove ${ticker} alert`}>
+                  <Button onClick={() => onRemove(alert.id)} aria-label={`Remove ${ticker} alert`}>
                     Remove
                   </Button>
                 </Stack>

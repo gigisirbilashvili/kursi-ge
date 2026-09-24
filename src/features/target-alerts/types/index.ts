@@ -4,4 +4,5 @@ export interface ITargetAlert {
   target: number
   direction: 'above' | 'below'
   triggeredPrice?: number
+  triggerCount?: number
 }

@@ -27,6 +27,10 @@ export function createTargetAlerts(
             alert.target > 0 &&
             alert.target <= Number.MAX_SAFE_INTEGER &&
             (alert.direction === 'above' || alert.direction === 'below') &&
+            (alert.triggerCount === undefined ||
+              (typeof alert.triggerCount === 'number' &&
+                Number.isSafeInteger(alert.triggerCount) &&
+                alert.triggerCount >= 0)) &&
             (alert.triggeredPrice === undefined ||
               (typeof alert.triggeredPrice === 'number' &&
                 Number.isFinite(alert.triggeredPrice) &&
@@ -87,7 +91,11 @@ export function createTargetAlerts(
           alert.direction === 'above' ? quote.price >= alert.target : quote.price <= alert.target
         ) {
           hasChanges = true
-          return { ...alert, triggeredPrice: quote.price }
+          return {
+            ...alert,
+            triggeredPrice: quote.price,
+            triggerCount: (alert.triggerCount ?? 0) + 1,
+          }
         }
         return alert
       })

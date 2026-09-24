@@ -35,14 +35,19 @@ import type {
   TSortDirection,
   TSortField,
 } from '../../../../features/market-preferences'
-import { useSignificantAlerts } from '../../../../features/significant-alerts'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import { MarketPrice } from '../MarketPrice/MarketPrice'
 import { SessionChange } from '../SessionChange/SessionChange'
 import type { IMarketPanelProps } from './types'
 
-export function MarketPanel({ snapshot, onRetry, currencies }: IMarketPanelProps) {
+export function MarketPanel({
+  snapshot,
+  onRetry,
+  currencies,
+  alerts,
+  onDismissAlert,
+}: IMarketPanelProps) {
   const [now, setNow] = useState(Date.now)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<TMarketFilter>('all')
@@ -50,7 +55,6 @@ export function MarketPanel({ snapshot, onRetry, currencies }: IMarketPanelProps
   const [sortDirection, setSortDirection] = useState<TSortDirection>('asc')
   const [isShowingHidden, setIsShowingHidden] = useState(false)
   const { preferences, toggleFavorite, hide, restore } = useMarketPreferences()
-  const { alerts, dismiss } = useSignificantAlerts(snapshot)
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
@@ -144,7 +148,7 @@ export function MarketPanel({ snapshot, onRetry, currencies }: IMarketPanelProps
               <Alert
                 key={alert.id}
                 severity={alert.direction === 'increased' ? 'success' : 'warning'}
-                onClose={() => dismiss(alert.id)}
+                onClose={() => onDismissAlert(alert.id)}
               >
                 <Typography variant="body2" className="font-semibold">
                   {currency?.name ?? alert.symbol} ({currency?.ticker ?? alert.symbol}/USDT){' '}

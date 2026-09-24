@@ -1,10 +1,13 @@
 import { Box, Chip, Typography } from '@mui/material'
 
+import { PairManager } from '../../../features/manage-pairs'
+import { PriceHistory } from '../../../features/price-history'
+import { TargetAlerts } from '../../../features/target-alerts'
 import { ConversionCalculator } from '../../../features/convert-currency'
 import { MarketPanel } from './MarketPanel/MarketPanel'
 import type { IHomePageProps } from './types'
 
-function HomePage({ market, onRetry }: IHomePageProps) {
+function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHomePageProps) {
   return (
     <Box component="section" aria-labelledby="market-heading">
       <Typography component="h1" variant="h1" id="market-heading" className="text-2xl sm:text-3xl">
@@ -21,9 +24,15 @@ function HomePage({ market, onRetry }: IHomePageProps) {
         className="mt-3 bg-brand-soft text-xs font-medium text-brand"
       />
 
-      <MarketPanel snapshot={market} onRetry={onRetry} />
+      <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />
 
-      <ConversionCalculator market={market} />
+      <MarketPanel snapshot={market} onRetry={onRetry} currencies={currencies} />
+
+      <ConversionCalculator market={market} currencies={currencies} />
+
+      <PriceHistory market={market} currencies={currencies} />
+
+      <TargetAlerts market={market} currencies={currencies} />
     </Box>
   )
 }

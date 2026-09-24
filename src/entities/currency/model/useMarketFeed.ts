@@ -2,9 +2,13 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 
 import { createMarketFeed } from './createMarketFeed.ts'
 
-export function useMarketFeed() {
-  const [feed] = useState(createMarketFeed)
+export function useMarketFeed(symbols: readonly string[]) {
+  const [feed] = useState(() => createMarketFeed({ symbols }))
   const snapshot = useSyncExternalStore(feed.subscribe, feed.getSnapshot, feed.getSnapshot)
+
+  useEffect(() => {
+    feed.setSymbols(symbols)
+  }, [feed, symbols])
 
   useEffect(() => {
     const handleOnline = () => feed.setOnline(true)

@@ -2,8 +2,10 @@ import { createBrowserSocket } from '../api/createBrowserSocket.ts'
 import { parseMarketMessage } from '../api/parseMarketMessage.ts'
 import {
   CONNECT_TIMEOUT_MS,
+  AVAILABLE_CURRENCIES,
+  CURRENCIES,
+  HISTORY_LIMIT,
   INITIAL_RETRY_DELAY_MS,
-  MARKET_STREAM_URL,
   MAX_RETRY_DELAY_MS,
   STALE_TIMEOUT_MS,
 } from '../config/constants.ts'
@@ -16,7 +18,24 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
   const schedule = options.schedule ?? setTimeout
   const cancel = options.cancel ?? clearTimeout
   const listeners = new Set<() => void>()
-  let snapshot: IMarketSnapshot = { status: 'connecting', quotes: {}, message: null, retryAt: null }
+  let snapshot: IMarketSnapshot = {
+    status: 'connecting',
+    quotes: {},
+    history: {},
+    message: null,
+    retryAt: null,
+  }
+  const validSymbols = new Set(AVAILABLE_CURRENCIES.map(({ symbol }) => symbol))
+  let symbols = new Set(
+    options.symbols?.filter((symbol) => validSymbols.has(symbol)) ??
+      CURRENCIES.map(({ symbol }) => symbol),
+  )
+  if (!symbols.size) symbols = new Set(CURRENCIES.map(({ symbol }) => symbol))
+  let subscribed = new Set<string>()
+  let isOpen = false
+  let requestId = 0
+  let pendingId: number | null = null
+  let subscriptionTimer: ReturnType<typeof setTimeout> | undefined
   let socket: IMarketSocket | null = null
   let timer: ReturnType<typeof setTimeout> | undefined
   let attempt = 0
@@ -30,6 +49,10 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
   }
 
   function release() {
+    isOpen = false
+    pendingId = null
+    if (subscriptionTimer !== undefined) cancel(subscriptionTimer)
+    subscriptionTimer = undefined
     generation += 1
     if (timer !== undefined) cancel(timer)
     timer = undefined
@@ -41,6 +64,40 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
       socket.close()
       socket = null
     }
+  }
+
+  function queueSubscriptions() {
+    if (!isOpen || pendingId !== null || subscriptionTimer !== undefined) return
+    if (symbols.size === subscribed.size && [...symbols].every((symbol) => subscribed.has(symbol)))
+      return
+    subscriptionTimer = schedule(() => {
+      subscriptionTimer = undefined
+      const removed = [...subscribed].filter((symbol) => !symbols.has(symbol))
+      const added = [...symbols].filter((symbol) => !subscribed.has(symbol))
+      const changes = removed.length ? removed : added
+      if (!changes.length || !socket) return
+      const method = removed.length ? 'UNSUBSCRIBE' : 'SUBSCRIBE'
+      pendingId = ++requestId
+      try {
+        socket.send(
+          JSON.stringify({
+            method,
+            params: changes.map((symbol) => `${symbol.toLowerCase()}@miniTicker`),
+            id: pendingId,
+          }),
+        )
+        changes.forEach((symbol) => {
+          if (removed.length) subscribed.delete(symbol)
+          else subscribed.add(symbol)
+        })
+        subscriptionTimer = schedule(() => {
+          subscriptionTimer = undefined
+          reconnect('Binance did not confirm the pair change. Retrying automatically.')
+        }, CONNECT_TIMEOUT_MS)
+      } catch {
+        reconnect('Could not update market subscriptions. Retrying automatically.')
+      }
+    }, 500)
   }
 
   function reconnect(message: string) {
@@ -67,12 +124,17 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     const connectionGeneration = generation
     const isCurrent = () => isActive && generation === connectionGeneration
     try {
-      socket = createSocket(MARKET_STREAM_URL)
+      subscribed = new Set(symbols)
+      socket = createSocket(
+        `wss://data-stream.binance.vision/stream?streams=${[...symbols].map((symbol) => `${symbol.toLowerCase()}@miniTicker`).join('/')}`,
+      )
       timer = schedule(() => {
         if (isCurrent()) reconnect('The market connection timed out. Retrying automatically.')
       }, CONNECT_TIMEOUT_MS)
       socket.onopen = () => {
         if (!isCurrent()) return
+        isOpen = true
+        queueSubscriptions()
         if (timer !== undefined) cancel(timer)
         timer = schedule(() => {
           if (isCurrent()) reconnect('No valid market prices received. Retrying automatically.')
@@ -80,6 +142,26 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
       }
       socket.onmessage = (data) => {
         if (!isCurrent()) return
+        if (typeof data === 'string') {
+          try {
+            const response: unknown = JSON.parse(data)
+            if (response && typeof response === 'object' && 'id' in response) {
+              if (response.id !== pendingId || pendingId === null) return
+              if (!('result' in response) || response.result !== null) {
+                reconnect('Binance rejected the pair change. Retrying automatically.')
+                return
+              }
+              if (subscriptionTimer !== undefined) cancel(subscriptionTimer)
+              subscriptionTimer = undefined
+              pendingId = null
+              queueSubscriptions()
+              return
+            }
+          } catch {
+            publish({ status: 'error', message: 'An invalid market update was ignored.' })
+            return
+          }
+        }
         const tick = parseMarketMessage(data)
         if (!tick) {
           publish({
@@ -88,6 +170,7 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
           })
           return
         }
+        if (!symbols.has(tick.symbol)) return
         const previous = snapshot.quotes[tick.symbol]
         if (previous && tick.eventTime <= previous.eventTime) return
         if (timer !== undefined) cancel(timer)
@@ -100,6 +183,13 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
           message: null,
           retryAt: null,
           quotes: { ...snapshot.quotes, [tick.symbol]: updateQuote(previous, tick, now()) },
+          history: {
+            ...snapshot.history,
+            [tick.symbol]: [
+              ...(snapshot.history[tick.symbol] ?? []),
+              { time: tick.eventTime, price: tick.price },
+            ].slice(-HISTORY_LIMIT),
+          },
         })
       }
       socket.onclose = () => {
@@ -114,6 +204,24 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
   }
 
   return {
+    setSymbols(next: readonly string[]) {
+      const selected = new Set(next.filter((symbol) => validSymbols.has(symbol)))
+      if (
+        !selected.size ||
+        (selected.size === symbols.size && [...selected].every((symbol) => symbols.has(symbol)))
+      )
+        return
+      symbols = selected
+      publish({
+        quotes: Object.fromEntries(
+          Object.entries(snapshot.quotes).filter(([symbol]) => symbols.has(symbol)),
+        ),
+        history: Object.fromEntries(
+          Object.entries(snapshot.history).filter(([symbol]) => symbols.has(symbol)),
+        ),
+      })
+      queueSubscriptions()
+    },
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
       listeners.add(listener)

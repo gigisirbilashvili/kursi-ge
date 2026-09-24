@@ -7,6 +7,9 @@ export function createBrowserSocket(url: string): IMarketSocket {
     onmessage: null,
     onclose: null,
     onerror: null,
+    send(message) {
+      nativeSocket.send(message)
+    },
     close() {
       nativeSocket.onopen = null
       nativeSocket.onmessage = null

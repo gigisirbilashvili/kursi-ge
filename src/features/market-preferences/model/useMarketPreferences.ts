@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
-import { CURRENCIES } from '../../../entities/currency/index.ts'
+import { AVAILABLE_CURRENCIES } from '../../../entities/currency/index.ts'
 import { normalizePreferences } from '../lib/preferences.ts'
 import type { IMarketPreferences } from '../types/index.ts'
 
 const STORAGE_KEY = 'kursi-market-preferences-v1'
-const VALID_SYMBOLS = new Set(CURRENCIES.map(({ symbol }) => symbol))
+const VALID_SYMBOLS = new Set(AVAILABLE_CURRENCIES.map(({ symbol }) => symbol))
 
 function readPreferences(): IMarketPreferences {
   try {

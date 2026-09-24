@@ -1,3 +1,9 @@
-export { CURRENCIES, STALE_TIMEOUT_MS } from './config/constants.ts'
+export { CURRENCIES, AVAILABLE_CURRENCIES, STALE_TIMEOUT_MS } from './config/constants.ts'
 export { useMarketFeed } from './model/useMarketFeed.ts'
-export type { ICurrency, ICurrencyQuote, IMarketSnapshot, TMarketStatus } from './types/index.ts'
+export type {
+  ICurrency,
+  ICurrencyQuote,
+  IMarketSnapshot,
+  IPricePoint,
+  TMarketStatus,
+} from './types/index.ts'

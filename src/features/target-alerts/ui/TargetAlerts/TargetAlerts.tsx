@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Box, Button, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Card, Stack, TextField, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { parseTarget } from '../../lib/createTargetAlerts'
@@ -57,12 +57,13 @@ export function TargetAlerts({
           label="Alert currency"
           value={symbol}
           size="small"
+          slotProps={{ select: { ['native']: true } }}
           onChange={(event) => setSelection(event.target.value)}
         >
           {currencies.map((currency) => (
-            <MenuItem key={currency.symbol} value={currency.symbol}>
+            <option key={currency.symbol} value={currency.symbol}>
               {currency.ticker}/USDT
-            </MenuItem>
+            </option>
           ))}
         </TextField>
 
@@ -71,10 +72,11 @@ export function TargetAlerts({
           label="Condition"
           value={direction}
           size="small"
+          slotProps={{ select: { ['native']: true } }}
           onChange={(event) => setDirection(event.target.value === 'above' ? 'above' : 'below')}
         >
-          <MenuItem value="above">At or above</MenuItem>
-          <MenuItem value="below">At or below</MenuItem>
+          <option value="above">At or above</option>
+          <option value="below">At or below</option>
         </TextField>
 
         <TextField

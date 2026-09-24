@@ -34,7 +34,7 @@ Use `npm run preview` after building to preview the production output.
 
 this is how it looks \/
 
-![Feature-Sliced Design architecture](https://feature-sliced.design/kr/assets/ideal-img/visual_schema.5d0b672.640.jpg)
+![Feature-Sliced Design architecture](<[https://feature-sliced.design/kr/assets/ideal-img/visual_schema.5d0b672.640.jpg](https://medium.com/@ignatovich.dm/feature-sliced-design-in-frontend-development-a-basic-exploration-82706d49d97f)>)
 
 Dependency direction: app -> processes -> pages -> features -> entities -> shared. Layers can import lower layers directly, skipping intermediate layers.
 

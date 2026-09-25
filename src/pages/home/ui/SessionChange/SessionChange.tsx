@@ -7,7 +7,7 @@ import type { ISessionChangeProps } from './types'
 export function SessionChange({ quote }: ISessionChangeProps) {
   if (!quote)
     return (
-      <Typography component="span" className="text-muted" aria-label="Session change unavailable">
+      <Typography color="textSecondary" component="span" aria-label="Session change unavailable">
         —
       </Typography>
     )

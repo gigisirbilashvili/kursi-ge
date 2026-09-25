@@ -20,7 +20,7 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
         Crypto market
       </Typography>
 
-      <Typography className="mt-2 max-w-2xl text-muted">
+      <Typography color="textSecondary" className="mt-2 max-w-2xl">
         Live prices, favorites, alerts, and currency conversions.
       </Typography>
 

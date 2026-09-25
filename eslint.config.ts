@@ -162,12 +162,12 @@ export default defineConfig([
         "error",
         {
           selector: "typeProperty",
-          filter: { regex: "^(spanBold|body2Bold)$", match: true },
+          filter: { regex: "^(spanBold|body2Bold|headerPrimary|headerMuted|headerCaption)$", match: true },
           format: ["camelCase"],
         },
         {
           selector: "interface",
-          filter: { regex: "^Typography(Variants|VariantsOptions|PropsVariantOverrides)$", match: true },
+          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|Palette|PaletteOptions)$", match: true },
           format: ["PascalCase"],
         },
         ...namingOptions,

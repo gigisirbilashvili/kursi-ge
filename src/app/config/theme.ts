@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material/styles'
 
 function createColorTheme(mode: 'light' | 'dark') {
   const isDark = mode === 'dark'
+  const secondaryText = isDark ? '#beafba' : '#7c7278'
   return createTheme({
     palette: {
       mode,
@@ -11,7 +12,13 @@ function createColorTheme(mode: 'light' | 'dark') {
         default: isDark ? '#181218' : '#FCF7F9',
         paper: isDark ? '#251d25' : '#ffffff',
       },
-      text: { primary: isDark ? '#f7edf3' : '#3A0B1F', secondary: isDark ? '#beafba' : '#7c7278' },
+      text: {
+        primary: isDark ? '#f7edf3' : '#3A0B1F',
+        secondary: secondaryText,
+      },
+      headerPrimary: { main: '#ffffff' },
+      headerMuted: { main: '#d6bac9' },
+      headerCaption: { main: 'rgba(255, 255, 255, 0.6)' },
       divider: isDark ? '#493a46' : '#eadde3',
       success: { main: isDark ? '#6bd4a4' : '#27815b' },
       error: { main: isDark ? '#ff91a8' : '#ba2646' },
@@ -32,6 +39,11 @@ function createColorTheme(mode: 'light' | 'dark') {
       MuiTypography: {
         defaultProps: {
           variantMapping: { spanBold: 'span', body2Bold: 'p' },
+        },
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          head: { color: secondaryText },
         },
       },
     },

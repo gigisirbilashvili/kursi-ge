@@ -41,7 +41,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
             Session price history
           </Typography>
 
-          <Typography className="mt-1 text-muted">
+          <Typography color="textSecondary" className="mt-1">
             Refreshes every 10 seconds. Latest 360 session updates, priced in USDT.
           </Typography>
         </Box>
@@ -63,12 +63,12 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       </Stack>
 
       {points.length < 2 ? (
-        <Box role="status" className="flex min-h-48 items-center justify-center text-muted">
+        <Box role="status" color="text.secondary" className="flex min-h-48 items-center justify-center">
           Waiting for two live updates to draw the chart…
         </Box>
       ) : (
         <Box component="figure" className="mx-0 mt-5 mb-0">
-          <Stack className="flex-row flex-wrap justify-between gap-2 text-muted">
+          <Stack color="text.secondary" className="flex-row flex-wrap justify-between gap-2">
             <Typography variant="caption">Low {format(min)}</Typography>
             <Typography variant="caption">High {format(max)}</Typography>
           </Stack>
@@ -81,7 +81,8 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
 
           <Stack
             component="figcaption"
-            className="flex-row flex-wrap justify-between gap-2 text-muted"
+            color="text.secondary"
+            className="flex-row flex-wrap justify-between gap-2"
           >
             <Typography variant="caption">{first && time(first.time)}</Typography>
             <Typography variant="caption">
@@ -92,7 +93,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       )}
 
       {market.status !== 'connected' && (
-        <Typography role="status" className="mt-2 text-stale">
+        <Typography color="warning" role="status" className="mt-2">
           History is paused until live prices return.
         </Typography>
       )}

@@ -38,7 +38,7 @@ export function TargetAlerts({
         Price alerts
       </Typography>
 
-      <Typography className="mt-1 text-muted">
+      <Typography color="textSecondary" className="mt-1">
         Choose a target in USDT. Alerts fire once when the condition is met, including if it is
         already met. Saved on this device; monitored while this page is open.
       </Typography>
@@ -119,13 +119,13 @@ export function TargetAlerts({
       </Box>
 
       {isFull && (
-        <Typography role="status" className="mt-3 text-muted">
+        <Typography color="textSecondary" role="status" className="mt-3">
           Limit of 20 alerts reached. Remove an alert to add another.
         </Typography>
       )}
 
       <Stack className="mt-5 gap-3">
-        {!alerts.length && <Typography className="text-muted">No target alerts yet.</Typography>}
+        {!alerts.length && <Typography color="textSecondary">No target alerts yet.</Typography>}
         {alerts.map((alert) => {
           const ticker =
             AVAILABLE_CURRENCIES.find((currency) => currency.symbol === alert.symbol)?.ticker ??

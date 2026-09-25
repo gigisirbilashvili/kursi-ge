@@ -37,7 +37,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             Currency calculator
           </Typography>
 
-          <Typography variant="body2" className="mt-1 text-muted">
+          <Typography color="textSecondary" variant="body2" className="mt-1">
             Convert using Binance prices, refreshed every 30 seconds.
           </Typography>
         </Box>
@@ -109,7 +109,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
         </Stack>
 
         <Box className="min-w-0 rounded-xl border border-solid border-border bg-background p-5">
-          <Typography variant="body1" className="text-muted">You receive</Typography>
+          <Typography color="textSecondary" variant="body1">You receive</Typography>
           {result.status === 'ready' ? (
             <>
               <Typography
@@ -121,7 +121,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
                 {formatConversionValue(result.value)} {targetTicker}
               </Typography>
 
-              <Typography variant="body2" className="mt-3 break-words text-muted">
+              <Typography color="textSecondary" variant="body2" className="mt-3 break-words">
                 1 {sourceTicker} ≈ {formatConversionValue(result.rate)} {targetTicker}
               </Typography>
             </>
@@ -129,7 +129,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <Stack className="gap-2">
               <Skeleton className="h-10 w-full max-w-48 motion-reduce:animate-none" />
 
-              <Typography role="status" variant="body2" className="text-muted">
+              <Typography color="textSecondary" role="status" variant="body2">
                 {result.message}
               </Typography>
             </Stack>
@@ -138,13 +138,13 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
               {result.message}
             </Alert>
           ) : (
-            <Typography role="status" variant="body2" className="mt-3 text-muted">
+            <Typography color="textSecondary" role="status" variant="body2" className="mt-3">
               {result.status === 'empty'
                 ? result.message
                 : 'Correct the amount to see the conversion.'}
             </Typography>
           )}
-          <Typography variant="caption" className="mt-4 block text-muted">
+          <Typography color="textSecondary" variant="caption" className="mt-4 block">
             Estimated conversion using USDT prices. Excludes fees.
           </Typography>
         </Box>

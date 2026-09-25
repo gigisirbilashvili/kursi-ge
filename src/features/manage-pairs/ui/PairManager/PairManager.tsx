@@ -34,7 +34,7 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
             Tracked markets
           </Typography>
 
-          <Typography className="mt-1 text-muted">
+          <Typography color="textSecondary" className="mt-1">
             Add a USDT pair or remove its live subscription. Keep at least one pair. Hiding a
             currency only changes its visibility.
           </Typography>
@@ -71,7 +71,7 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
               </Button>
             </Stack>
           ) : (
-            <Typography className="mt-3 text-muted">All available pairs are tracked.</Typography>
+            <Typography color="textSecondary" className="mt-3">All available pairs are tracked.</Typography>
           )}
         </Box>
       )}

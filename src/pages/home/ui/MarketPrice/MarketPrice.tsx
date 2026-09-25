@@ -10,7 +10,7 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
       <Stack className="items-end">
         <Skeleton className="h-6 w-24 motion-reduce:animate-none motion-reduce:after:animate-none" />
 
-        <Typography variant="caption" className="text-muted">
+        <Typography color="textSecondary" variant="caption">
           Awaiting price
         </Typography>
       </Stack>
@@ -43,7 +43,7 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
         </Typography>
       </Stack>
       {isStale && (
-        <Typography variant="caption" className="text-stale">
+        <Typography color="warning" variant="caption">
           Last-known price
         </Typography>
       )}

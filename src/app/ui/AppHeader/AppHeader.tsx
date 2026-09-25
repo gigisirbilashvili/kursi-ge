@@ -18,15 +18,16 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
               href="/"
               aria-label="Kursi Crypto home"
               underline="none"
-              className="shrink-0 text-base font-semibold text-white"
+              color="headerPrimary"
+              className="shrink-0 text-base font-semibold"
             >
               Kursi{' '}
-              <Typography variant="spanBold" className="text-brand-muted">
+              <Typography variant="spanBold" color="headerMuted">
                 Crypto
               </Typography>
             </Link>
 
-            <Typography variant="caption" className="text-white/60">
+            <Typography variant="caption" color="headerCaption">
               Market dashboard
             </Typography>
           </Stack>

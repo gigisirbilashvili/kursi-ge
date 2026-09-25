@@ -104,7 +104,7 @@ export function MarketPanel({
           />
         </Stack>
 
-        <Typography variant="caption" className="text-muted">
+        <Typography color="textSecondary" variant="caption">
           Binance · USDT pairs
         </Typography>
       </Stack>
@@ -114,10 +114,10 @@ export function MarketPanel({
         aria-live="polite"
         severity={isUnavailable ? 'warning' : isConnected ? 'success' : 'info'}
         icon={false}
-        className={`rounded-none border-b border-border px-5 sm:px-6 [&_.MuiAlert-message]:w-full ${isUnavailable ? 'bg-warning-soft text-stale' : 'bg-background text-muted'}`}
+        className={`rounded-none border-b border-border px-5 sm:px-6 [&_.MuiAlert-message]:w-full ${isUnavailable ? 'bg-warning-soft' : 'bg-background'}`}
       >
         <Stack className="flex-row flex-wrap items-center justify-between gap-3">
-          <Typography variant="body2">
+          <Typography variant="body2" color={isUnavailable ? 'warning' : 'textSecondary'}>
             {snapshot.message ??
               (isConnected
                 ? 'Receiving market prices from Binance.'
@@ -253,7 +253,7 @@ export function MarketPanel({
             Hidden currencies
           </Typography>
           {hiddenCurrencies.length === 0 ? (
-            <Typography className="text-muted">No hidden currencies.</Typography>
+            <Typography color="textSecondary">No hidden currencies.</Typography>
           ) : (
             <Stack className="flex-row flex-wrap gap-2">
               {hiddenCurrencies.map((currency) => (
@@ -277,14 +277,14 @@ export function MarketPanel({
             No currencies found
           </Typography>
 
-          <Typography className="mt-1 text-muted">
+          <Typography color="textSecondary" className="mt-1">
             Try another search, switch to All, or restore a hidden currency.
           </Typography>
         </Box>
       ) : (
         <>
           <TableContainer className="hidden md:block">
-            <Table className="table-fixed [&_.MuiTableCell-root]:border-border [&_.MuiTableCell-root]:px-6 [&_.MuiTableCell-root]:py-5 [&_.MuiTableCell-head]:py-4 [&_.MuiTableCell-head]:text-xs [&_.MuiTableCell-head]:text-muted">
+            <Table className="table-fixed [&_.MuiTableCell-root]:border-border [&_.MuiTableCell-root]:px-6 [&_.MuiTableCell-root]:py-5 [&_.MuiTableCell-head]:py-4 [&_.MuiTableCell-head]:text-xs">
               <Box component="caption" className="sr-only">
                 Live cryptocurrency prices in USDT, latest tick direction, percentage change since
                 opening, favorite status, and visibility actions.
@@ -331,7 +331,7 @@ export function MarketPanel({
 
                           <Box>
                             <Typography component="p" variant="spanBold">{currency.name}</Typography>
-                            <Typography variant="caption" className="text-muted">
+                            <Typography color="textSecondary" variant="caption">
                               {currency.ticker}/USDT
                             </Typography>
                           </Box>
@@ -397,7 +397,7 @@ export function MarketPanel({
 
                       <Box>
                         <Typography component="p" variant="spanBold">{currency.name}</Typography>
-                        <Typography variant="caption" className="text-muted">
+                        <Typography color="textSecondary" variant="caption">
                           {currency.ticker}/USDT
                         </Typography>
                       </Box>
@@ -410,7 +410,7 @@ export function MarketPanel({
                   </Stack>
 
                   <Stack className="mt-4 flex-row items-center justify-between gap-2">
-                    <Typography variant="caption" className="text-muted">
+                    <Typography color="textSecondary" variant="caption">
                       Since opening
                     </Typography>
 
@@ -444,7 +444,7 @@ export function MarketPanel({
           </List>
         </>
       )}
-      <Stack className="flex-row flex-wrap justify-between gap-2 border-t border-border bg-background px-5 py-4 text-muted sm:px-6">
+      <Stack color="text.secondary" className="flex-row flex-wrap justify-between gap-2 border-t border-border bg-background px-5 py-4 sm:px-6">
         <Typography variant="caption">
           Arrows beside prices show the latest tick. Percentages compare with your first session
           price.

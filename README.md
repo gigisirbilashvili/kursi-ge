@@ -107,7 +107,7 @@ The session price chart samples collected updates every 10 seconds and shows up 
 
 ## Rules for future implementation
 
-- Keep static images in `public/images`. Use SVG React components from `shared/ui/icons` for UI icons, with explicit numeric `width` and `height` props on every use. Icons share `TSVGIconProps`, default to `currentColor`, and are decorative by default; the surrounding control supplies its accessible name. For example: `<SortIcon width={15} height={15} />`. The public `sort.svg` is a standalone static version; UI code uses the typed component.
+- Keep static images in `public/images`. All UI SVGs belong in reusable React components with optional `size`, `width`, `height`, and `color` props. Explicit width/height override size; otherwise each component uses its default dimensions. Icons from `shared/ui/icons` share `TSVGIconProps`, default to `currentColor`, and are decorative by default; the surrounding control supplies its accessible name. Examples: `<SortIcon />`, `<FavoriteIcon size={20} color="red" />`. The price chart uses `shared/ui/LineChart`. The browser favicon remains a static asset in `public/favicon.svg`.
 - Slices on the same layer remain independent. Compose separate features in a page or higher layer.
 - Expose each slice through index.ts. Consumers import the public API, never another slice's internal files.
 - Within a slice, use direct relative imports rather than its own barrel. The project currently uses relative paths; no aliases are configured.

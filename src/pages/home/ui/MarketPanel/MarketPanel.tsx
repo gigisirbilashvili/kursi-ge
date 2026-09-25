@@ -226,8 +226,7 @@ export function MarketPanel({
             size="small"
           >
             <SortIcon
-              width={18}
-              height={18}
+              size={18}
               className={sortDirection === 'desc' ? 'rotate-180' : undefined}
             />
           </IconButton>
@@ -362,7 +361,7 @@ export function MarketPanel({
                               aria-pressed={isFavorite}
                               onClick={() => toggleFavorite(currency.symbol)}
                             >
-                              <FavoriteIcon width={20} height={20} isFilled={isFavorite} />
+                              <FavoriteIcon size={20} isFilled={isFavorite} />
                             </IconButton>
                           </Tooltip>
 
@@ -427,7 +426,7 @@ export function MarketPanel({
                         aria-pressed={isFavorite}
                         onClick={() => toggleFavorite(currency.symbol)}
                       >
-                        <FavoriteIcon width={20} height={20} isFilled={isFavorite} />
+                        <FavoriteIcon size={20} isFilled={isFavorite} />
                       </IconButton>
                     </Tooltip>
 

@@ -1,8 +1,9 @@
 import type { IArrowIconProps } from './types'
 
 export function ArrowIcon({
-  width,
-  height,
+  size = 24,
+  width = size,
+  height = size,
   direction,
   color = 'currentColor',
   ...props

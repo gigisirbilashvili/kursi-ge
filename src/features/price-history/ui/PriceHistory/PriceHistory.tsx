@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Box, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
+import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
@@ -72,35 +73,11 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
             <Typography variant="caption">High {format(max)}</Typography>
           </Stack>
 
-          <Box
-            component="svg"
-            width={800}
-            height={200}
-            viewBox="0 0 800 200"
-            role="img"
+          <LineChart
+            points={coordinates}
             aria-label={`${currency?.name} session price chart. From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
             className="block h-48 w-full overflow-visible text-brand"
-            preserveAspectRatio="none"
-          >
-            <Box
-              component="line"
-              x1={16}
-              x2={784}
-              y1={180}
-              y2={180}
-              stroke="currentColor"
-              className="text-border"
-            />
-
-            <Box
-              component="polyline"
-              points={coordinates}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              vectorEffect="non-scaling-stroke"
-            />
-          </Box>
+          />
 
           <Stack
             component="figcaption"

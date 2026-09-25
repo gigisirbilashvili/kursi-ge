@@ -24,7 +24,16 @@ function createColorTheme(mode: 'light' | 'dark') {
       h2: { fontSize: '1rem', fontWeight: 600 },
       body1: { fontSize: '0.875rem', lineHeight: 1.7 },
       body2: { fontSize: '0.875rem' },
+      spanBold: { fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.7 },
+      body2Bold: { fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.43 },
       button: { textTransform: 'none', fontWeight: 600 },
+    },
+    components: {
+      MuiTypography: {
+        defaultProps: {
+          variantMapping: { spanBold: 'span', body2Bold: 'p' },
+        },
+      },
     },
     shape: { borderRadius: 12 },
   })

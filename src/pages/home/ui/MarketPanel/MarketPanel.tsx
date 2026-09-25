@@ -150,7 +150,7 @@ export function MarketPanel({
                 severity={alert.direction === 'increased' ? 'success' : 'warning'}
                 onClose={() => onDismissAlert(alert.id)}
               >
-                <Typography variant="body2" className="font-semibold">
+                <Typography variant="body2Bold">
                   {currency?.name ?? alert.symbol} ({currency?.ticker ?? alert.symbol}/USDT){' '}
                   {alert.direction} by {Math.abs(alert.percentageChange).toFixed(2)}% since you
                   opened the page.
@@ -249,7 +249,7 @@ export function MarketPanel({
           aria-label="Hidden currencies"
           className="border-b border-border bg-background p-5 sm:p-6"
         >
-          <Typography component="h3" className="mb-2 font-semibold">
+          <Typography component="h3" variant="spanBold" className="mb-2">
             Hidden currencies
           </Typography>
           {hiddenCurrencies.length === 0 ? (
@@ -273,7 +273,7 @@ export function MarketPanel({
       )}
       {visibleCurrencies.length === 0 ? (
         <Box role="status" className="px-5 py-12 text-center sm:px-6">
-          <Typography component="h3" className="font-semibold">
+          <Typography component="h3" variant="spanBold">
             No currencies found
           </Typography>
 
@@ -330,7 +330,7 @@ export function MarketPanel({
                           </Avatar>
 
                           <Box>
-                            <Typography className="font-semibold">{currency.name}</Typography>
+                            <Typography component="p" variant="spanBold">{currency.name}</Typography>
                             <Typography variant="caption" className="text-muted">
                               {currency.ticker}/USDT
                             </Typography>
@@ -396,7 +396,7 @@ export function MarketPanel({
                       </Avatar>
 
                       <Box>
-                        <Typography className="font-semibold">{currency.name}</Typography>
+                        <Typography component="p" variant="spanBold">{currency.name}</Typography>
                         <Typography variant="caption" className="text-muted">
                           {currency.ticker}/USDT
                         </Typography>

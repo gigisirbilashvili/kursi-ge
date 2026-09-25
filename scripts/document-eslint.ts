@@ -5,7 +5,7 @@ import { ESLint } from 'eslint'
 const eslint = new ESLint()
 type RuleSetting = [0 | 1 | 2, ...unknown[]]
 type ResolvedConfig = { rules: Record<string, RuleSetting> }
-const scopes = ['src/app/App.tsx', 'src/processes/example/index.ts', 'src/pages/home/ui/HomePage.tsx', 'src/features/example/index.ts', 'src/entities/example/index.ts', 'src/shared/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js', 'src/features/manage-pairs/ui/PairManager/PairManager.test.tsx']
+const scopes = ['src/app/App.tsx', 'src/app/config/typography.d.ts', 'src/processes/example/index.ts', 'src/pages/home/ui/HomePage.tsx', 'src/features/example/index.ts', 'src/entities/example/index.ts', 'src/shared/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js', 'src/features/manage-pairs/ui/PairManager/PairManager.test.tsx']
 const rows = new Map<string, { name: string; setting: RuleSetting; scopes: string[] }>()
 for (const scope of scopes) {
   const config = await eslint.calculateConfigForFile(scope) as ResolvedConfig

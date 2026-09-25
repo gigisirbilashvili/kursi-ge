@@ -36,8 +36,8 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
 
         <Typography
           component="span"
-          variant="body2"
-          className="min-w-[10ch] text-right font-semibold tabular-nums"
+          variant="body2Bold"
+          className="min-w-[10ch] text-right tabular-nums"
         >
           {formatPrice(quote.price)}
         </Typography>

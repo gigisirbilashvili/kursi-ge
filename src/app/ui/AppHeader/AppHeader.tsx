@@ -21,7 +21,7 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
               className="shrink-0 text-base font-semibold text-white"
             >
               Kursi{' '}
-              <Typography component="span" className="font-semibold text-brand-muted">
+              <Typography variant="spanBold" className="text-brand-muted">
                 Crypto
               </Typography>
             </Link>

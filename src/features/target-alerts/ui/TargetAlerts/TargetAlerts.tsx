@@ -142,7 +142,7 @@ export function TargetAlerts({
             >
               <Stack className="flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <Box>
-                  <Typography className="font-semibold">
+                  <Typography component="p" variant="spanBold">
                     {ticker}/USDT {alert.direction === 'above' ? '≥' : '≤'}{' '}
                     {alert.target.toLocaleString('en-US', { maximumSignificantDigits: 12 })}
                   </Typography>

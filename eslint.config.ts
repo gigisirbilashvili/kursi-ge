@@ -156,6 +156,25 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/app/config/typography.d.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "typeProperty",
+          filter: { regex: "^(spanBold|body2Bold)$", match: true },
+          format: ["camelCase"],
+        },
+        {
+          selector: "interface",
+          filter: { regex: "^Typography(Variants|VariantsOptions|PropsVariantOverrides)$", match: true },
+          format: ["PascalCase"],
+        },
+        ...namingOptions,
+      ],
+    },
+  },
+  {
     files: ["eslint.config.ts", "eslint-local-rules.test.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [

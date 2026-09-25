@@ -109,7 +109,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
         </Stack>
 
         <Box className="min-w-0 rounded-xl border border-solid border-border bg-background p-5">
-          <Typography className="text-sm text-muted">You receive</Typography>
+          <Typography variant="body1" className="text-muted">You receive</Typography>
           {result.status === 'ready' ? (
             <>
               <Typography

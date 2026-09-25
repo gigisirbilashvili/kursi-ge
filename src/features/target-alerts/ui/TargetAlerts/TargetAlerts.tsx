@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Alert, Box, Button, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { notify } from '../../../../shared/lib/notify'
 import { parseTarget } from '../../lib/createTargetAlerts'
 import type { ITargetAlertsProps } from './types'
 
@@ -48,7 +49,14 @@ export function TargetAlerts({
         onSubmit={(event) => {
           event.preventDefault()
           setHasSubmitted(true)
-          if (price === null || isFull) return
+          if (price === null) {
+            notify.error('Enter a positive decimal target price.', { toastId: 'target-invalid' })
+            return
+          }
+          if (isFull) {
+            notify.error('Limit of 20 alerts reached. Remove an alert to add another.', { toastId: 'target-limit' })
+            return
+          }
           onAdd({ id: crypto.randomUUID(), symbol, target: price, direction })
           setTarget('')
           setHasSubmitted(false)

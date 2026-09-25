@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { ICurrency, IMarketSnapshot } from '../../../entities/currency/index.ts'
 import { useSampledValue } from '../../../shared/lib/useSampledValue'
+import { notify } from '../../../shared/lib/notify'
 import { getConversionResult } from '../lib/convertCurrency.ts'
 
 export function useConversionCalculator(market: IMarketSnapshot, available: readonly ICurrency[]) {
@@ -31,6 +32,12 @@ export function useConversionCalculator(market: IMarketSnapshot, available: read
     liveResult.status === 'ready',
   )
   const result = liveResult.status === 'ready' ? sampledResult : liveResult
+  const staleMessage = result.status === 'stale' && market.status === 'connected' ? result.message : null
+
+  useEffect(() => {
+    if (staleMessage) notify.warning(staleMessage, { toastId: 'conversion-stale' })
+    else notify.dismiss('conversion-stale')
+  }, [staleMessage])
 
   return { amount, setAmount, source, target, setSource, setTarget, swap, result }
 }

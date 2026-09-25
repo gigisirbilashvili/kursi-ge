@@ -135,3 +135,9 @@ Jest runs unit tests in Node and React component tests in jsdom. Use React Testi
 - Every `test` or `it` description must start with `should `, for example `test('should add the selected currency', ...)`. ESLint enforces this through `jest/valid-title`, including parameterized and skipped tests.
 - Run all tests with `npm test -- --runInBand`, or use `npm run test:watch` while developing. Existing focused test commands remain available.
 - `scripts/` contains development utilities only; test files are colocated with their implementations.
+
+### Notifications
+
+The app mounts one React Toastify `Toaster` with the current light/dark theme. Use `notify.success(message)`, `notify.error(message)`, `notify.warning(message)`, or `notify.info(message)` from `shared/lib/notify`; these render the reusable `ToastMessage` component. For custom content, use `toast.success(<ToastMessage title="Complete" message="Price alert created." />)` from a `.tsx` file.
+
+Notifications cover connection failures and recovery, unavailable or malformed device storage, invalid form submissions, pair and target-alert actions, and price alerts. Use a stable `toastId` for recurring errors. Keep contextual inline validation and retry controls; show form-error toasts on submission or blur rather than on every keystroke. Up to three notifications display at once, with additional messages queued.

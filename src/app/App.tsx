@@ -3,6 +3,7 @@ import { Container, Link, StyledEngineProvider, ThemeProvider } from '@mui/mater
 import { HomePage } from '../pages/home'
 import { useMarketFeed } from '../entities/currency'
 import { useSelectedPairs } from '../features/manage-pairs'
+import { Toaster } from '../shared/ui/Toaster/Toaster'
 import { themes } from './config/theme'
 import { useColorMode } from './model/useColorMode'
 import { AppHeader } from './ui/AppHeader/AppHeader'
@@ -14,6 +15,7 @@ export function App() {
   return (
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={themes[mode]}>
+        <Toaster mode={mode} />
         <Link
           href="#main-content"
           className="fixed top-2 left-4 z-[1500] -translate-y-[200%] rounded-xl bg-white px-4 py-2 focus:translate-y-0"

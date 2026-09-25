@@ -1,4 +1,4 @@
-import { Alert, Box, Chip, Snackbar, Typography } from '@mui/material'
+import { Box, Chip, Typography } from '@mui/material'
 
 import { PairManager } from '../../../features/manage-pairs'
 import { PriceHistory } from '../../../features/price-history'
@@ -12,8 +12,7 @@ import type { IHomePageProps } from './types'
 function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHomePageProps) {
   const { alerts: sessionAlerts, dismiss: dismissSessionAlert } = useSignificantAlerts(market)
   const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts(market)
-  const { toasts, dismiss: dismissToast } = usePriceToasts(sessionAlerts, targetAlerts)
-  const toast = toasts[0]
+  usePriceToasts(sessionAlerts, targetAlerts)
 
   return (
     <Box component="section" aria-labelledby="market-heading">
@@ -53,28 +52,6 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
         onRearm={rearm}
         onRemove={remove}
       />
-
-      <Snackbar
-        key={toast?.id ?? 'closed'}
-        open={Boolean(toast)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        autoHideDuration={6000}
-        onClose={(_, reason) => {
-          if (reason !== 'clickaway' && toast) dismissToast(toast.id)
-        }}
-        className="top-4 right-4 max-w-[calc(100vw-2rem)] sm:top-6 sm:right-6"
-      >
-        <Alert
-          severity={toast?.severity ?? 'info'}
-          variant="filled"
-          onClose={() => {
-            if (toast) dismissToast(toast.id)
-          }}
-          className="w-full shadow-lg"
-        >
-          {toast?.message}
-        </Alert>
-      </Snackbar>
     </Box>
   )
 }

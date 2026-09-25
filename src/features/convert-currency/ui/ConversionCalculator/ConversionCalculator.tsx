@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 
 import { formatConversionValue } from '../../lib/convertCurrency'
+import { notify } from '../../../../shared/lib/notify'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -93,6 +94,9 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             size="small"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
+            onBlur={() => {
+              if (hasError) notify.error(result.message, { toastId: 'conversion-invalid' })
+            }}
             error={hasError}
             helperText={hasError ? result.message : 'Enter zero or a positive amount.'}
             slotProps={{

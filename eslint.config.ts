@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import jest from "eslint-plugin-jest";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -141,6 +142,18 @@ export default defineConfig([
   {
     files: ["vite.config.ts", "eslint*.ts", "scripts/**/*.ts"],
     languageOptions: { globals: globals.node },
+  },
+  {
+    files: ["**/*.{test,spec}.{ts,tsx}"],
+    plugins: { jest },
+    rules: {
+      "jest/valid-title": ["error", {
+        mustMatch: {
+          test: ["^should\\s", 'Test names must start with "should".'],
+          it: ["^should\\s", 'Test names must start with "should".'],
+        },
+      }],
+    },
   },
   {
     files: ["eslint.config.ts", "eslint-local-rules.test.ts"],

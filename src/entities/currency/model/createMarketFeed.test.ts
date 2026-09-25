@@ -1,14 +1,13 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from '@jest/globals'
 
-import { parseMarketMessage } from '../src/entities/currency/api/parseMarketMessage.ts'
 import {
   CONNECT_TIMEOUT_MS,
   MAX_RETRY_DELAY_MS,
   STALE_TIMEOUT_MS,
-} from '../src/entities/currency/config/constants.ts'
-import { createMarketFeed } from '../src/entities/currency/model/createMarketFeed.ts'
-import type { IMarketSocket } from '../src/entities/currency/types/index.ts'
+} from '../config/constants'
+import { createMarketFeed } from './createMarketFeed'
+import type { IMarketSocket } from '../types/index'
 
 function message(price: string, eventTime = 1, symbol = 'BTCUSDT') {
   return JSON.stringify({
@@ -62,37 +61,7 @@ function setup() {
   return { feed, sockets, closed, tasks, next, sent, urls }
 }
 
-await test('parses only valid supported Binance prices', () => {
-  assert.deepEqual(parseMarketMessage(message('123.45')), {
-    symbol: 'BTCUSDT',
-    price: 123.45,
-    eventTime: 1,
-  })
-  for (const price of ['0', '-1', '', 'Infinity', 'NaN', '1e3', ' 2 '])
-    assert.equal(parseMarketMessage(message(price)), null)
-  for (const value of [
-    'not json',
-    'null',
-    '{}',
-    message('2', 1, 'FAKEUSDT'),
-    message('2', -1),
-    message('2', 1.5),
-    123,
-    null,
-  ])
-    assert.equal(parseMarketMessage(value), null)
-  assert.equal(
-    parseMarketMessage(
-      JSON.stringify({
-        stream: 'ethusdt@miniTicker',
-        data: { e: '24hrMiniTicker', s: 'BTCUSDT', c: '5', E: 1 },
-      }),
-    ),
-    null,
-  )
-})
-
-await test('tracks initial, previous and current prices without stale or duplicate updates', () => {
+test('should track initial, previous and current prices without stale or duplicate updates', () => {
   const { feed, sockets } = setup()
   feed.start()
   sockets[0].onopen?.()
@@ -116,7 +85,7 @@ await test('tracks initial, previous and current prices without stale or duplica
   feed.stop()
 })
 
-await test('reconnects with capped backoff, preserves prices and ignores old socket callbacks', () => {
+test('should reconnect with capped backoff, preserve prices and ignore old socket callbacks', () => {
   const { feed, sockets, closed, tasks, next } = setup()
   feed.start()
   sockets[0].onmessage?.(message('100'))
@@ -142,7 +111,7 @@ await test('reconnects with capped backoff, preserves prices and ignores old soc
   assert.equal(tasks.size, 0)
 })
 
-await test('recovers from malformed data and times out silent connections', () => {
+test('should recover from malformed data and time out silent connections', () => {
   const { feed, sockets, tasks, next } = setup()
   feed.start()
   assert.equal([...tasks.values()][0].delay, CONNECT_TIMEOUT_MS)
@@ -159,7 +128,7 @@ await test('recovers from malformed data and times out silent connections', () =
   feed.stop()
 })
 
-await test('handles offline state, manual retry and Strict Mode start/stop without leaked sockets', () => {
+test('should handle offline state, manual retry and Strict Mode start/stop without leaked sockets', () => {
   const { feed, sockets, closed, tasks } = setup()
   feed.start(false)
   assert.equal(feed.getSnapshot().status, 'disconnected')
@@ -185,7 +154,7 @@ await test('handles offline state, manual retry and Strict Mode start/stop witho
   assert.equal(closed.size, sockets.length)
 })
 
-await test('constructor failures retry and subscribers unsubscribe cleanly', () => {
+test('should retry constructor failures and unsubscribe subscribers cleanly', () => {
   const { feed, sockets } = setup()
   let count = 0
   const unsubscribe = feed.subscribe(() => {
@@ -207,7 +176,7 @@ await test('constructor failures retry and subscribers unsubscribe cleanly', () 
   brokenFeed.stop()
 })
 
-await test('changes subscriptions on the same socket and ignores removed pairs', () => {
+test('should change subscriptions on the same socket and ignore removed pairs', () => {
   const { feed, sockets, tasks, sent, urls } = setup()
   const flush = () => {
     const task = [...tasks.entries()].find(([, value]) => value.delay === 500)
@@ -255,7 +224,7 @@ await test('changes subscriptions on the same socket and ignores removed pairs',
   assert.equal(tasks.size, 0)
 })
 
-await test('coalesces rapid selection changes and handles rejected subscription requests', () => {
+test('should coalesce rapid selection changes and handle rejected subscription requests', () => {
   const { feed, sockets, tasks, sent } = setup()
   feed.start()
   feed.setSymbols(['ETHUSDT'])
@@ -272,7 +241,7 @@ await test('coalesces rapid selection changes and handles rejected subscription 
   assert.equal(tasks.size, 0)
 })
 
-await test('retains bounded chronological session history and preserves it through reconnects', () => {
+test('should retain bounded chronological session history and preserve it through reconnects', () => {
   const { feed, sockets } = setup()
   feed.start()
   for (let index = 1; index <= 400; index += 1)

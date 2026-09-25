@@ -1,13 +1,12 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from '@jest/globals'
 
-import { CURRENCIES } from '../src/entities/currency/config/constants.ts'
+import { CURRENCIES } from '../../../entities/currency/config/constants'
 import {
   normalizePreferences,
   selectCurrencies,
-} from '../src/features/market-preferences/lib/preferences.ts'
-import { createAlertTracker } from '../src/features/significant-alerts/lib/createAlertTracker.ts'
-import type { IMarketSnapshot } from '../src/entities/currency/types/index.ts'
+} from './preferences'
+import type { IMarketSnapshot } from '../../../entities/currency/types/index'
 
 const symbolSet = new Set(CURRENCIES.map(({ symbol }) => symbol))
 const snapshot = (percentageChange: number, eventTime: number): IMarketSnapshot => ({
@@ -28,7 +27,7 @@ const snapshot = (percentageChange: number, eventTime: number): IMarketSnapshot 
   },
 })
 
-await test('market preferences accept only supported symbols and filter, sort and search accurately', () => {
+test('should accept only supported symbols and filter, sort and search accurately', () => {
   const preferences = normalizePreferences(
     { favorites: ['BTCUSDT', 'BTCUSDT', 'FAKE'], hidden: ['ETHUSDT', 42] },
     symbolSet,
@@ -57,21 +56,3 @@ await test('market preferences accept only supported symbols and filter, sort an
   )
 })
 
-await test('significant alerts trigger at both thresholds, stay quiet beyond them, and rearm inside range', () => {
-  const tracker = createAlertTracker()
-  tracker.update(snapshot(1.99, 1))
-  assert.equal(tracker.getSnapshot().length, 0)
-  tracker.update(snapshot(2, 2))
-  assert.equal(tracker.getSnapshot().length, 1)
-  assert.equal(tracker.getSnapshot()[0].direction, 'increased')
-  tracker.update(snapshot(3, 3))
-  assert.equal(tracker.getSnapshot().length, 1)
-  tracker.dismiss(tracker.getSnapshot()[0].id)
-  tracker.update(snapshot(4, 4))
-  assert.equal(tracker.getSnapshot().length, 0)
-  tracker.update(snapshot(0, 5))
-  tracker.update(snapshot(-2, 6))
-  assert.equal(tracker.getSnapshot()[0].direction, 'decreased')
-  tracker.update(snapshot(-3, 6))
-  assert.equal(tracker.getSnapshot().length, 1)
-})

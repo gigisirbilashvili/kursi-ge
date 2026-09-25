@@ -5,7 +5,7 @@ import { ESLint } from 'eslint'
 const eslint = new ESLint()
 type RuleSetting = [0 | 1 | 2, ...unknown[]]
 type ResolvedConfig = { rules: Record<string, RuleSetting> }
-const scopes = ['src/app/App.tsx', 'src/processes/example/index.ts', 'src/pages/home/ui/HomePage.tsx', 'src/features/example/index.ts', 'src/entities/example/index.ts', 'src/shared/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js']
+const scopes = ['src/app/App.tsx', 'src/processes/example/index.ts', 'src/pages/home/ui/HomePage.tsx', 'src/features/example/index.ts', 'src/entities/example/index.ts', 'src/shared/ui/Example.tsx', 'vite.config.ts', 'eslint-local-rules.ts', 'eslint.config.ts', 'eslint-local-rules.test.ts', 'scripts/example.js', 'src/features/manage-pairs/ui/PairManager/PairManager.test.tsx']
 const rows = new Map<string, { name: string; setting: RuleSetting; scopes: string[] }>()
 for (const scope of scopes) {
   const config = await eslint.calculateConfigForFile(scope) as ResolvedConfig
@@ -32,6 +32,7 @@ Run commands from kursi-ge. Warnings are advisory; errors fail lint. Unused vari
 
 ## Naming and file conventions
 
+- Test files: colocate Module.test.ts or Component.test.tsx beside the implementation. Every test/it description starts with should followed by a space, enforced by jest/valid-title.
 - Interfaces: I followed by PascalCase, e.g. IMarketPrice, IButtonProps.
 - Enums: E followed by PascalCase, e.g. EConnectionStatus. Runtime enums belong outside types folders.
 - Boolean variables, parameters, and properties: is, has, can, should, will, did, was, are, does, or needs followed by PascalCase, e.g. isConnected, hasPrice, canConvert. UPPER_SNAKE_CASE boolean constants are exempt from the prefix rule. External contracts with incompatible boolean keys must be adapted at the boundary or handled with a narrowly scoped config exception.

@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 
+import { describe, test } from "@jest/globals";
 import { ESLint, Linter, RuleTester } from "eslint";
+import jestPlugin from "eslint-plugin-jest";
 import tseslint from "typescript-eslint";
 
 import local from "./eslint-local-rules.ts";
+
+RuleTester.describe = describe;
+RuleTester.it = (name, callback) => test(`should ${name}`, callback);
 
 const tester = new RuleTester({
   languageOptions: {
@@ -146,84 +151,103 @@ tester.run("component-props", local.rules["component-props"], {
   ],
 });
 
-const lint = new ESLint();
-const appConfig = (await lint.calculateConfigForFile("src/app/App.tsx")) as {
-  rules: Record<string, [0 | 1 | 2, ...unknown[]]>;
-};
-for (const name of [
-  "no-console",
-  "local/component-props",
-  "local/import-order",
-  "@typescript-eslint/naming-convention",
-])
-  assert.equal(appConfig.rules[name][0], 2);
-const results = await lint.lintText(
-  "interface BadName {}\nenum Status { Ready }\nconst active = true;\nconsole.log(active);\nexport { BadName, Status };",
-  { filePath: "src/app/App.tsx" },
-);
-const [spacingResult] = await lint.lintText(
-  'export default function App() { return (\n<div  title = "value" >\n\n  { "Readable JSX" }\n\n</div>\n) }',
-  { filePath: "src/app/App.tsx" },
-);
-assert.equal(spacingResult.messages.length, 0);
-assert.ok(
-  results[0].messages.some((message) => message.ruleId === "no-console"),
-);
-assert.ok(
-  results[0].messages.filter(
-    (message) => message.ruleId === "@typescript-eslint/naming-convention",
-  ).length >= 3,
-);
-for (const [code, expectedRule, filePath] of [
-  [
-    'import { useState } from "react"; export const value = 1;',
-    "@typescript-eslint/no-unused-vars",
-    "src/app/App.tsx",
-  ],
-  [
-    "export default function App() { return <div /> }",
-    "react/jsx-filename-extension",
-    "src/Example.jsx",
-  ],
-]) {
-  const [result] = await lint.lintText(code, { filePath });
-  assert.ok(
-    result.messages.some((message) => message.ruleId === expectedRule),
-    expectedRule,
-  );
-}
-const boundaryLint = new Linter();
-for (const [layer, forbidden, allowed] of [
-  ["processes", "app", "pages"],
-  ["pages", "processes", "features"],
-  ["features", "pages", "entities"],
-  ["entities", "features", "shared"],
-  ["shared", "entities", null],
-]) {
-  const config = (await lint.calculateConfigForFile(
-    `src/${layer}/example/index.ts`,
-  )) as { rules: Record<string, [0 | 1 | 2, ...unknown[]]> };
-  const rules = {
-    "no-restricted-imports": config.rules["no-restricted-imports"],
+test("should enforce configured lint rules and layer boundaries", async () => {
+  const lint = new ESLint();
+  const appConfig = (await lint.calculateConfigForFile("src/app/App.tsx")) as {
+    rules: Record<string, [0 | 1 | 2, ...unknown[]]>;
   };
-  for (const prefix of ["@/", "../../", "src/"]) {
-    const messages = boundaryLint.verify(
-      `import { value } from '${prefix}${forbidden}/example';`,
-      { rules },
-    );
+  for (const name of [
+    "no-console",
+    "local/component-props",
+    "local/import-order",
+    "@typescript-eslint/naming-convention",
+  ])
+    assert.equal(appConfig.rules[name][0], 2);
+  const results = await lint.lintText(
+    "interface BadName {}\nenum Status { Ready }\nconst active = true;\nconsole.log(active);\nexport { BadName, Status };",
+    { filePath: "src/app/App.tsx" },
+  );
+  const [spacingResult] = await lint.lintText(
+    'export default function App() { return (\n<div  title = "value" >\n\n  { "Readable JSX" }\n\n</div>\n) }',
+    { filePath: "src/app/App.tsx" },
+  );
+  assert.equal(spacingResult.messages.length, 0);
+  assert.ok(
+    results[0].messages.some((message) => message.ruleId === "no-console"),
+  );
+  assert.ok(
+    results[0].messages.filter(
+      (message) => message.ruleId === "@typescript-eslint/naming-convention",
+    ).length >= 3,
+  );
+  for (const [code, expectedRule, filePath] of [
+    [
+      'import { useState } from "react"; export const value = 1;',
+      "@typescript-eslint/no-unused-vars",
+      "src/app/App.tsx",
+    ],
+    [
+      "export default function App() { return <div /> }",
+      "react/jsx-filename-extension",
+      "src/Example.jsx",
+    ],
+  ]) {
+    const [result] = await lint.lintText(code, { filePath });
     assert.ok(
-      messages.some((message) => message.ruleId === "no-restricted-imports"),
-      `${layer} must not import ${forbidden}`,
+      result.messages.some((message) => message.ruleId === expectedRule),
+      expectedRule,
     );
   }
-  if (allowed) {
-    const messages = boundaryLint.verify(
-      `import { value } from '../../${allowed}/example';`,
-      { rules },
-    );
-    assert.equal(messages.length, 0, `${layer} can import ${allowed}`);
+  const boundaryLint = new Linter();
+  for (const [layer, forbidden, allowed] of [
+    ["processes", "app", "pages"],
+    ["pages", "processes", "features"],
+    ["features", "pages", "entities"],
+    ["entities", "features", "shared"],
+    ["shared", "entities", null],
+  ]) {
+    const config = (await lint.calculateConfigForFile(
+      `src/${layer}/example/index.ts`,
+    )) as { rules: Record<string, [0 | 1 | 2, ...unknown[]]> };
+    const rules = {
+      "no-restricted-imports": config.rules["no-restricted-imports"],
+    };
+    for (const prefix of ["@/", "../../", "src/"]) {
+      const messages = boundaryLint.verify(
+        `import { value } from '${prefix}${forbidden}/example';`,
+        { rules },
+      );
+      assert.ok(
+        messages.some((message) => message.ruleId === "no-restricted-imports"),
+        `${layer} must not import ${forbidden}`,
+      );
+    }
+    if (allowed) {
+      const messages = boundaryLint.verify(
+        `import { value } from '../../${allowed}/example';`,
+        { rules },
+      );
+      assert.equal(messages.length, 0, `${layer} can import ${allowed}`);
+    }
   }
-}
-process.stdout.write(
-  "Custom ESLint rule tests, typed naming, and layer boundary checks passed.\n",
-);
+}, 30_000);
+
+test("should require the should prefix for test and it descriptions", async () => {
+  const lint = new ESLint();
+  const config = (await lint.calculateConfigForFile("src/app/App.test.tsx")) as {
+    rules: Record<string, [0 | 1 | 2, ...unknown[]]>;
+  };
+  const linter = new Linter();
+  for (const call of ["test", "it", "test.skip", "it.only", "test.each([1])", "it.each([1])", "test.todo"]) {
+    for (const title of ["should render", "renders", "shoulder render"]) {
+      const messages = linter.verify(
+        `import { test, it } from '@jest/globals'; ${call}('${title}', () => {});`,
+        {
+          plugins: { jest: jestPlugin },
+          rules: { "jest/valid-title": config.rules["jest/valid-title"] },
+        },
+      );
+      assert.equal(messages.length, title === "should render" ? 0 : 1, `${call}: ${title}`);
+    }
+  }
+});

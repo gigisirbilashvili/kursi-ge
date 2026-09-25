@@ -16,6 +16,7 @@ Open the URL printed by Vite. The public Binance market feed needs no API key or
 ```bash
 npm run lint
 npm run build
+npm test -- --runInBand
 npm run test:market
 npm run test:dashboard
 npm run test:calculator
@@ -125,3 +126,12 @@ ESLint restricts upward imports with path patterns. Same-layer isolation and pub
 Run npm run test:lint after lint rule changes. Run npm run docs:lint after lint configuration changes to regenerate ../rule.md.
 
 Run `npm run test:calculator` for cross-rate calculations, validation, live quote changes, missing prices, and stale/disconnected handling. Run `npm run test:dashboard` for market preference selection and alert threshold behavior. Run `npm run test:market` for deterministic parser, session-price, out-of-order-message, reconnection/backoff, timeout, offline/retry, and cleanup tests. These use controlled sockets and timers without depending on external market movement. Browser smoke checks should also confirm all five real prices update and that desktop and mobile layouts remain readable.
+
+### Test conventions
+
+Jest runs unit tests in Node and React component tests in jsdom. Use React Testing Library, jest-dom matchers, and user-event for component behavior. Import test APIs from `@jest/globals`.
+
+- Place `Module.test.ts` beside the module or `Component.test.tsx` beside the component it tests. Split tests that cover unrelated modules into their respective folders.
+- Every `test` or `it` description must start with `should `, for example `test('should add the selected currency', ...)`. ESLint enforces this through `jest/valid-title`, including parameterized and skipped tests.
+- Run all tests with `npm test -- --runInBand`, or use `npm run test:watch` while developing. Existing focused test commands remain available.
+- `scripts/` contains development utilities only; test files are colocated with their implementations.

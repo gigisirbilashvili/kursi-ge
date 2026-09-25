@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { test } from '@jest/globals'
 
 import {
   getConversionResult,
   formatConversionValue,
-} from '../src/features/convert-currency/lib/convertCurrency.ts'
-import { STALE_TIMEOUT_MS } from '../src/entities/currency/config/constants.ts'
-import type { ICurrencyQuote, IMarketSnapshot } from '../src/entities/currency/types/index.ts'
+} from './convertCurrency'
+import { STALE_TIMEOUT_MS } from '../../../entities/currency/config/constants'
+import type { ICurrencyQuote, IMarketSnapshot } from '../../../entities/currency/types/index'
 
 function quote(price: number, receivedAt = 1000): ICurrencyQuote {
   return {
@@ -29,7 +29,7 @@ function market(): IMarketSnapshot {
   }
 }
 
-await test('converts crypto through USDT rates, including zero, decimals and same-currency amounts', () => {
+test('should convert crypto through USDT rates, including zero, decimals and same-currency amounts', () => {
   const snapshot = market()
   assert.deepEqual(getConversionResult('0.5', 'BTCUSDT', 'ETHUSDT', snapshot, 1000), {
     status: 'ready',
@@ -57,7 +57,7 @@ await test('converts crypto through USDT rates, including zero, decimals and sam
   })
 })
 
-await test('rejects invalid, negative, non-finite and out-of-range amounts', () => {
+test('should reject invalid, negative, non-finite and out-of-range amounts', () => {
   for (const value of [
     '-1',
     '-0',
@@ -82,7 +82,7 @@ await test('rejects invalid, negative, non-finite and out-of-range amounts', () 
   assert.notEqual(formatConversionValue(0.00000000001), '0')
 })
 
-await test('updates conversion from new quotes and withholds missing, stale or disconnected prices', () => {
+test('should update conversion from new quotes and withhold missing, stale or disconnected prices', () => {
   const snapshot = market()
   const next = { ...snapshot, quotes: { ...snapshot.quotes, ETHUSDT: quote(6000) } }
   assert.deepEqual(getConversionResult('1', 'BTCUSDT', 'ETHUSDT', next, 1000), {

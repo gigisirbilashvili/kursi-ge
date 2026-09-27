@@ -167,7 +167,7 @@ export default defineConfig([
         },
         {
           selector: "interface",
-          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|Palette|PaletteOptions)$", match: true },
+          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|ButtonPropsColorOverrides|Palette|PaletteOptions)$", match: true },
           format: ["PascalCase"],
         },
         ...namingOptions,

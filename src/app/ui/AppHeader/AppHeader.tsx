@@ -37,7 +37,7 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
             <Button
               onClick={onToggleMode}
               size="small"
-              className="text-white"
+              color="headerPrimary"
               aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} theme`}
             >
               {mode === 'light' ? 'Dark mode' : 'Light mode'}

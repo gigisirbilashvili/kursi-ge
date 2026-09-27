@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { PaletteColor, PaletteColorOptions } from '@mui/material/styles'
+import type {} from '@mui/material/Button'
 import type {} from '@mui/material/Typography'
 
 declare module '@mui/material/styles' {
@@ -36,5 +37,11 @@ declare module '@mui/material/Typography' {
     headerPrimary: true
     headerMuted: true
     headerCaption: true
+  }
+}
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides {
+    headerPrimary: true
   }
 }

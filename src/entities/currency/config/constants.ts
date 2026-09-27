@@ -73,3 +73,4 @@ export const CONNECT_TIMEOUT_MS = 12_000;
 export const STALE_TIMEOUT_MS = 30_000;
 export const MAX_RETRY_DELAY_MS = 30_000;
 export const INITIAL_RETRY_DELAY_MS = 1_000;
+export const BINANCE_DECIMAL_PRICE_PATTERN = /^\d+(?:\.\d+)?$/;

@@ -36,7 +36,7 @@ export function useSelectedPairs() {
     const next = [...current, symbol]
     symbolsRef.current = next
     setSymbols(next)
-    notify.successLatest(`${currency.ticker}/USDT added.`, PAIR_CHANGE_TOAST_ID)
+    notify.success(`${currency.ticker}/USDT added.`, { toastId: PAIR_CHANGE_TOAST_ID })
   }
   const removePair = (symbol: string) => {
     const current = symbolsRef.current
@@ -49,7 +49,7 @@ export function useSelectedPairs() {
     symbolsRef.current = next
     setSymbols(next)
     const ticker = AVAILABLE_CURRENCIES.find((currency) => currency.symbol === symbol)?.ticker ?? symbol
-    notify.successLatest(`${ticker}/USDT removed.`, PAIR_CHANGE_TOAST_ID)
+    notify.success(`${ticker}/USDT removed.`, { toastId: PAIR_CHANGE_TOAST_ID })
   }
   const currencies = AVAILABLE_CURRENCIES.filter(({ symbol }) => symbols.includes(symbol))
 

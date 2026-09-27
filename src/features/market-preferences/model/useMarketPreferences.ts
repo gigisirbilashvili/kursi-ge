@@ -34,14 +34,14 @@ export function useMarketPreferences() {
       ...current,
       hidden: current.hidden.includes(symbol) ? current.hidden : [...current.hidden, symbol],
     }))
-    notify.success('Currency hidden from the market list.')
+    notify.success('Currency hidden from the market list.', { toastId: 'market-visibility' })
   }
   const restore = (symbol: string) => {
     setPreferences((current) => ({
       ...current,
       hidden: current.hidden.filter((item) => item !== symbol),
     }))
-    notify.success('Currency restored to the market list.')
+    notify.success('Currency restored to the market list.', { toastId: 'market-visibility' })
   }
   return { preferences, toggleFavorite, hide, restore }
 }

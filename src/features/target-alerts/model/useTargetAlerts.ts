@@ -41,19 +41,19 @@ export function useTargetAlerts(market: IMarketSnapshot) {
       notify.error('Unable to create this alert. Check the currency, target price, and 20-alert limit.')
       return
     }
-    notify.success('Price alert created.')
+    notify.success('Price alert created.', { toastId: 'target-alert-management' })
     store.update(market, Date.now())
   }
   const rearm = (id: string) => {
     if (!store.getSnapshot().some((alert) => alert.id === id)) return
     store.rearm(id)
-    notify.success('Price alert rearmed.')
+    notify.success('Price alert rearmed.', { toastId: 'target-alert-management' })
     store.update(market, Date.now())
   }
   const remove = (id: string) => {
     if (!store.getSnapshot().some((alert) => alert.id === id)) return
     store.remove(id)
-    notify.success('Price alert removed.')
+    notify.success('Price alert removed.', { toastId: 'target-alert-management' })
   }
   return { alerts, add, rearm, remove }
 }

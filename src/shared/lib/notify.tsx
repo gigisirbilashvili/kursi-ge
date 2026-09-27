@@ -2,32 +2,34 @@ import { toast } from 'react-toastify'
 import type { ToastOptions } from 'react-toastify'
 
 import { ToastMessage } from '../ui/ToastMessage/ToastMessage'
-import { LATEST_SUCCESS_CONTAINER_ID } from './toastContainers'
+
+type TNotificationType = 'success' | 'error' | 'warning' | 'info'
+
+function show(type: TNotificationType, message: string, options?: ToastOptions) {
+  const toastId = options?.toastId ?? `${type}:${message}`
+  const role = options?.role ?? (type === 'success' || type === 'info' ? 'status' : 'alert')
+  const content = (
+    <ToastMessage title={type === 'error' ? 'Something went wrong' : undefined} message={message} />
+  )
+
+  if (toast.isActive(toastId)) {
+    toast.update(toastId, {
+      ...options,
+      render: content,
+      type,
+      role,
+      autoClose: options?.autoClose ?? null,
+    })
+    return toastId
+  }
+
+  return toast(content, { ...options, toastId, type, role })
+}
 
 export const notify = {
-  success: (message: string, options?: ToastOptions) =>
-    toast.success(<ToastMessage message={message} />, { role: 'status', ...options }),
-  successLatest: (message: string, toastId: string) => {
-    const content = <ToastMessage message={message} />
-    if (toast.isActive(toastId, LATEST_SUCCESS_CONTAINER_ID)) {
-      toast.update(toastId, {
-        render: content,
-        autoClose: null,
-        containerId: LATEST_SUCCESS_CONTAINER_ID,
-      })
-      return
-    }
-    toast.success(content, {
-      toastId,
-      role: 'status',
-      containerId: LATEST_SUCCESS_CONTAINER_ID,
-    })
-  },
-  error: (message: string, options?: ToastOptions) =>
-    toast.error(<ToastMessage title="Something went wrong" message={message} />, options),
-  warning: (message: string, options?: ToastOptions) =>
-    toast.warning(<ToastMessage message={message} />, options),
-  info: (message: string, options?: ToastOptions) =>
-    toast.info(<ToastMessage message={message} />, { role: 'status', ...options }),
+  success: (message: string, options?: ToastOptions) => show('success', message, options),
+  error: (message: string, options?: ToastOptions) => show('error', message, options),
+  warning: (message: string, options?: ToastOptions) => show('warning', message, options),
+  info: (message: string, options?: ToastOptions) => show('info', message, options),
   dismiss: (id: string) => toast.dismiss(id),
 }

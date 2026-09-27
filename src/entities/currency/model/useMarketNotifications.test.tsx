@@ -12,8 +12,7 @@ afterEach(() => {
 
 test('should notify once per connection failure and announce recovery', () => {
   const error = jest.spyOn(notify, 'error').mockReturnValue('market-connection')
-  const success = jest.spyOn(notify, 'success').mockReturnValue('market-restored')
-  const dismiss = jest.spyOn(notify, 'dismiss').mockImplementation(() => {})
+  const success = jest.spyOn(notify, 'success').mockReturnValue('market-connection')
   const initial: IMarketSnapshot = {
     status: 'reconnecting', message: 'Retrying connection.', retryAt: 1000, quotes: {}, history: {},
   }
@@ -25,7 +24,9 @@ test('should notify once per connection failure and announce recovery', () => {
   expect(error).toHaveBeenCalledTimes(1)
 
   rerender({ ...initial, status: 'connected', message: null })
-  expect(dismiss).toHaveBeenCalledWith('market-connection')
+  expect(success).toHaveBeenCalledWith('Live market prices are connected again.', {
+    toastId: 'market-connection',
+  })
   expect(success).toHaveBeenCalledTimes(1)
   rerender({ ...initial, status: 'connected', message: null, retryAt: null })
   expect(success).toHaveBeenCalledTimes(1)

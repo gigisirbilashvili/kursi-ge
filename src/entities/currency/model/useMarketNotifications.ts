@@ -11,8 +11,8 @@ export function useMarketNotifications({ status, message }: IMarketSnapshot) {
     if (previousStatus.current === status) return
     previousStatus.current = status
     if (status === 'connected') {
-      notify.dismiss('market-connection')
-      if (hasFailed.current) notify.success('Live market prices are connected again.', { toastId: 'market-restored' })
+      if (hasFailed.current)
+        notify.success('Live market prices are connected again.', { toastId: 'market-connection' })
       hasFailed.current = false
     } else if (status === 'error' || status === 'disconnected' || status === 'reconnecting') {
       hasFailed.current = true

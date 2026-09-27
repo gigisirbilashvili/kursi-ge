@@ -1,6 +1,6 @@
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer } from "react-toastify";
 
-import type { IToasterProps } from './types'
+import type { IToasterProps } from "./types";
 
 export function Toaster({ mode }: IToasterProps) {
   return (
@@ -9,10 +9,10 @@ export function Toaster({ mode }: IToasterProps) {
       autoClose={6000}
       limit={3}
       theme={mode}
-      pauseOnHover
-      pauseOnFocusLoss
+      pauseOnHover={false}
+      pauseOnFocusLoss={false}
       closeOnClick={false}
       aria-label="Notifications"
     />
-  )
+  );
 }

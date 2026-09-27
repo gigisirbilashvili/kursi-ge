@@ -1,10 +1,18 @@
 import { useState } from 'react'
-import { Box, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
+import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
+import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
+  const theme = useTheme()
   const [selection, setSelection] = useState('BTCUSDT')
   const currency = currencies.find(({ symbol }) => symbol === selection) ?? currencies[0]
   const livePoints = market.history[currency?.symbol ?? ''] ?? []
@@ -24,87 +32,50 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       return `${x},${y}`
     })
     .join(' ')
-  const format = (price: number) => price.toLocaleString('en-US', { maximumSignificantDigits: 8 })
+  const format = (price: number) => formatSignificantNumber(price, 8)
   const time = (value: number) => new Date(value).toLocaleTimeString()
 
   return (
-    <Card
-      component="section"
-      variant="outlined"
-      aria-labelledby="history-heading"
-      className="mt-8 rounded-2xl p-5 sm:p-6"
-    >
+    <SectionCard headingId="history-heading" className="p-5 sm:p-6">
       <Stack className="flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <Box>
-          <Typography component="h2" variant="h2" id="history-heading">
-            Session price history
-          </Typography>
+        <SectionHeader
+          headingId="history-heading"
+          title="Session price history"
+          description="Refreshes every 10 seconds. Latest 360 session updates, priced in USDT."
+        />
 
-          <Typography className="mt-1 text-muted">
-            Refreshes every 10 seconds. Latest 360 session updates, priced in USDT.
-          </Typography>
-        </Box>
-
-        <TextField
-          select
-          size="small"
+        <OptionSelect
           label="Chart currency"
           value={currency?.symbol ?? ''}
-          onChange={(event) => setSelection(event.target.value)}
+          onChange={setSelection}
+          options={currencies.map(({ symbol, ticker }) => ({ value: symbol, label: `${ticker}/USDT` }))}
           className="min-w-36"
-        >
-          {currencies.map((item) => (
-            <MenuItem key={item.symbol} value={item.symbol}>
-              {item.ticker}/USDT
-            </MenuItem>
-          ))}
-        </TextField>
+        />
       </Stack>
 
       {points.length < 2 ? (
-        <Box role="status" className="flex min-h-48 items-center justify-center text-muted">
+        <Box role="status" color="text.secondary" className="flex min-h-48 items-center justify-center">
           Waiting for two live updates to draw the chart…
         </Box>
       ) : (
         <Box component="figure" className="mx-0 mt-5 mb-0">
-          <Stack className="flex-row flex-wrap justify-between gap-2 text-muted">
+          <Stack color="text.secondary" className="flex-row flex-wrap justify-between gap-2">
             <Typography variant="caption">Low {format(min)}</Typography>
             <Typography variant="caption">High {format(max)}</Typography>
           </Stack>
 
-          <Box
-            component="svg"
-            width={800}
-            height={200}
-            viewBox="0 0 800 200"
-            role="img"
+          <LineChart
+            points={coordinates}
+            color={theme.palette.primary.main}
+            borderColor={theme.palette.divider}
             aria-label={`${currency?.name} session price chart. From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
-            className="block h-48 w-full overflow-visible text-brand"
-            preserveAspectRatio="none"
-          >
-            <Box
-              component="line"
-              x1={16}
-              x2={784}
-              y1={180}
-              y2={180}
-              stroke="currentColor"
-              className="text-border"
-            />
-
-            <Box
-              component="polyline"
-              points={coordinates}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              vectorEffect="non-scaling-stroke"
-            />
-          </Box>
+            className="block h-48 w-full overflow-visible"
+          />
 
           <Stack
             component="figcaption"
-            className="flex-row flex-wrap justify-between gap-2 text-muted"
+            color="text.secondary"
+            className="flex-row flex-wrap justify-between gap-2"
           >
             <Typography variant="caption">{first && time(first.time)}</Typography>
             <Typography variant="caption">
@@ -115,10 +86,10 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       )}
 
       {market.status !== 'connected' && (
-        <Typography role="status" className="mt-2 text-stale">
+        <StatusText tone="warning" className="mt-2">
           History is paused until live prices return.
-        </Typography>
+        </StatusText>
       )}
-    </Card>
+    </SectionCard>
   )
 }

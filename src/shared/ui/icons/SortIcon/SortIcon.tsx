@@ -1,6 +1,12 @@
 import type { ISortIconProps } from './types'
 
-export function SortIcon({ width, height, color = 'currentColor', ...props }: ISortIconProps) {
+export function SortIcon({
+  size = 15,
+  width = size,
+  height = size,
+  color = 'currentColor',
+  ...props
+}: ISortIconProps) {
   return (
     <svg
       aria-hidden="true"

@@ -1,4 +1,5 @@
 import { AVAILABLE_CURRENCIES } from '../../../entities/currency/index.ts'
+import { formatSignificantNumber } from '../../../shared/lib/formatSignificantNumber'
 import type { IPriceToast, IPriceToastSessionAlert, IPriceToastTargetAlert } from '../types/priceToast.ts'
 
 export function createPriceToastQueue(initialTargets: readonly IPriceToastTargetAlert[]) {
@@ -34,7 +35,7 @@ export function createPriceToastQueue(initialTargets: readonly IPriceToastTarget
         next.push({
           id,
           severity: alert.direction === 'increased' ? 'success' : 'warning',
-          message: `${ticker}/USDT ${alert.direction} ${Math.abs(alert.percentageChange).toFixed(2)}% from its first session price. Now ${alert.currentPrice.toLocaleString('en-US', { maximumSignificantDigits: 12 })} USDT.`,
+          message: `${ticker}/USDT ${alert.direction} ${Math.abs(alert.percentageChange).toFixed(2)}% from its first session price. Now ${formatSignificantNumber(alert.currentPrice)} USDT.`,
         })
       }
       for (const alert of targetAlerts) {
@@ -47,7 +48,7 @@ export function createPriceToastQueue(initialTargets: readonly IPriceToastTarget
         next.push({
           id,
           severity: 'success',
-          message: `${ticker}/USDT reached your ${alert.direction === 'above' ? 'at or above' : 'at or below'} ${alert.target.toLocaleString('en-US', { maximumSignificantDigits: 12 })} USDT alert. Price: ${alert.triggeredPrice.toLocaleString('en-US', { maximumSignificantDigits: 12 })} USDT.`,
+          message: `${ticker}/USDT reached your ${alert.direction === 'above' ? 'at or above' : 'at or below'} ${formatSignificantNumber(alert.target)} USDT alert. Price: ${formatSignificantNumber(alert.triggeredPrice)} USDT.`,
         })
       }
       if (next.length) publish([...toasts, ...next])

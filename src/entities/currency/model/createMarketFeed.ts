@@ -12,7 +12,7 @@ import {
 import { updateQuote } from '../lib/updateQuote.ts'
 import type { IMarketFeedOptions, IMarketSnapshot, IMarketSocket } from '../types/index.ts'
 
-export function createMarketFeed(options: IMarketFeedOptions = {}) {
+export function createMarketFeed(options: IMarketFeedOptions) {
   const createSocket = options.createSocket ?? createBrowserSocket
   const now = options.now ?? Date.now
   const schedule = options.schedule ?? setTimeout
@@ -126,7 +126,7 @@ export function createMarketFeed(options: IMarketFeedOptions = {}) {
     try {
       subscribed = new Set(symbols)
       socket = createSocket(
-        `wss://data-stream.binance.vision/stream?streams=${[...symbols].map((symbol) => `${symbol.toLowerCase()}@miniTicker`).join('/')}`,
+        `${options.streamEndpoint}?streams=${[...symbols].map((symbol) => `${symbol.toLowerCase()}@miniTicker`).join('/')}`,
       )
       timer = schedule(() => {
         if (isCurrent()) reconnect('The market connection timed out. Retrying automatically.')

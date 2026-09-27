@@ -1,11 +1,6 @@
 import {
-  Alert,
   Box,
-  Button,
-  Card,
-  Chip,
   InputAdornment,
-  MenuItem,
   Skeleton,
   Stack,
   TextField,
@@ -13,6 +8,14 @@ import {
 } from '@mui/material'
 
 import { formatConversionValue } from '../../lib/convertCurrency'
+import { notify } from '../../../../shared/lib/notify'
+import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -21,70 +24,52 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
     useConversionCalculator(market, currencies)
   const sourceTicker = currencies.find(({ symbol }) => symbol === source)?.ticker ?? source
   const targetTicker = currencies.find(({ symbol }) => symbol === target)?.ticker ?? target
+  const currencyOptions = currencies.map(({ symbol, ticker, name }) => ({
+    value: symbol,
+    label: `${ticker} - ${name}`,
+  }))
   const hasError = result.status === 'invalid'
 
   return (
-    <Card
-      component="section"
-      aria-labelledby="conversion-heading"
-      variant="outlined"
-      className="mt-8 rounded-2xl p-5 shadow-[0_1px_3px_#24040a08] sm:p-6"
-    >
+    <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
-        <Box>
-          <Typography component="h2" variant="h2" id="conversion-heading">
-            Currency calculator
-          </Typography>
+        <SectionHeader
+          headingId="conversion-heading"
+          title="Currency calculator"
+          description="Convert using Binance prices, refreshed every 30 seconds."
+          descriptionVariant="body2"
+        />
 
-          <Typography variant="body2" className="mt-1 text-muted">
-            Convert using Binance prices, refreshed every 30 seconds.
-          </Typography>
-        </Box>
-
-        <Chip label="Updates every 30s" size="small" className="bg-brand-soft text-xs text-brand" />
+        <AppChip label="Updates every 30s" isBrand />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Stack className="min-w-0 gap-4">
           <Box className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-            <TextField
-              select
+            <OptionSelect
               label="Source currency"
-              size="small"
               value={source}
-              onChange={(event) => setSource(event.target.value)}
+              onChange={setSource}
+              options={currencyOptions}
               className="min-w-0"
-            >
-              {currencies.map((currency) => (
-                <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} - {currency.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
 
-            <Button
+            <AppButton
               variant="outlined"
               aria-label="Swap currencies"
               onClick={swap}
               className="min-h-10"
             >
               Swap
-            </Button>
+            </AppButton>
 
-            <TextField
-              select
+            <OptionSelect
               label="Target currency"
-              size="small"
               value={target}
-              onChange={(event) => setTarget(event.target.value)}
+              onChange={setTarget}
+              options={currencyOptions}
               className="min-w-0"
-            >
-              {currencies.map((currency) => (
-                <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} - {currency.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
           </Box>
 
           <TextField
@@ -93,6 +78,9 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             size="small"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
+            onBlur={() => {
+              if (hasError) notify.error(result.message, { toastId: 'conversion-invalid' })
+            }}
             error={hasError}
             helperText={hasError ? result.message : 'Enter zero or a positive amount.'}
             slotProps={{
@@ -104,8 +92,11 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           />
         </Stack>
 
-        <Box className="min-w-0 rounded-xl border border-solid border-border bg-background p-5">
-          <Typography className="text-sm text-muted">You receive</Typography>
+        <Box
+          sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
+          className="min-w-0 rounded-xl border border-solid p-5"
+        >
+          <Typography color="textSecondary" variant="body1">You receive</Typography>
           {result.status === 'ready' ? (
             <>
               <Typography
@@ -117,7 +108,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
                 {formatConversionValue(result.value)} {targetTicker}
               </Typography>
 
-              <Typography variant="body2" className="mt-3 break-words text-muted">
+              <Typography color="textSecondary" variant="body2" className="mt-3 break-words">
                 1 {sourceTicker} ≈ {formatConversionValue(result.rate)} {targetTicker}
               </Typography>
             </>
@@ -125,26 +116,26 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <Stack className="gap-2">
               <Skeleton className="h-10 w-full max-w-48 motion-reduce:animate-none" />
 
-              <Typography role="status" variant="body2" className="text-muted">
+              <StatusText variant="body2">
                 {result.message}
-              </Typography>
+              </StatusText>
             </Stack>
           ) : result.status === 'stale' ? (
-            <Alert severity="warning" className="mt-3" role="status">
+            <AppAlert severity="warning" className="mt-3">
               {result.message}
-            </Alert>
+            </AppAlert>
           ) : (
-            <Typography role="status" variant="body2" className="mt-3 text-muted">
+            <StatusText variant="body2" className="mt-3">
               {result.status === 'empty'
                 ? result.message
                 : 'Correct the amount to see the conversion.'}
-            </Typography>
+            </StatusText>
           )}
-          <Typography variant="caption" className="mt-4 block text-muted">
+          <Typography color="textSecondary" variant="caption" className="mt-4 block">
             Estimated conversion using USDT prices. Excludes fees.
           </Typography>
         </Box>
       </Box>
-    </Card>
+    </SectionCard>
   )
 }

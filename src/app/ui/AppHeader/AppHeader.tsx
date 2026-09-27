@@ -1,5 +1,6 @@
-import { AppBar, Button, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
+import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
@@ -9,7 +10,9 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
       component="header"
       position="static"
       elevation={0}
-      className="border-b border-white/10 bg-header"
+      color="header"
+      sx={{ borderColor: 'headerBorder.main' }}
+      className="border-b"
     >
       <Container maxWidth="lg">
         <Toolbar disableGutters className="flex-wrap justify-between gap-3 py-4">
@@ -18,29 +21,30 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
               href="/"
               aria-label="Kursi Crypto home"
               underline="none"
-              className="shrink-0 text-base font-semibold text-white"
+              color="headerPrimary"
+              className="shrink-0 text-base font-semibold"
             >
               Kursi{' '}
-              <Typography component="span" className="font-semibold text-brand-muted">
+              <Typography variant="spanBold" color="headerMuted">
                 Crypto
               </Typography>
             </Link>
 
-            <Typography variant="caption" className="text-white/60">
+            <Typography variant="caption" color="headerCaption">
               Market dashboard
             </Typography>
           </Stack>
 
           <Stack className="flex-row flex-wrap items-center gap-2">
             <ConnectionStatus status={connectionStatus} />
-            <Button
+            <AppButton
               onClick={onToggleMode}
               size="small"
-              className="text-white"
+              color="headerPrimary"
               aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} theme`}
             >
               {mode === 'light' ? 'Dark mode' : 'Light mode'}
-            </Button>
+            </AppButton>
           </Stack>
         </Toolbar>
       </Container>

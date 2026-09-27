@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+scripts/document-eslint.ts
 
 # Editor directories and files
 .vscode/*

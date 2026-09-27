@@ -1,7 +1,12 @@
 import { useState } from 'react'
-import { Box, Button, Chip, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPairManagerProps } from './types'
 
 export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
@@ -16,34 +21,32 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
 
   return (
     <Box className="mt-6">
-      <Button
+      <AppButton
         variant="outlined"
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
         aria-controls="pair-manager"
       >
         Manage pairs ({currencies.length})
-      </Button>
+      </AppButton>
 
       {isExpanded && (
         <Box
           id="pair-manager"
-          className="mt-3 rounded-xl border border-solid border-border bg-background p-4"
+          sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
+          className="mt-3 rounded-xl border border-solid p-4"
         >
-          <Typography component="h2" variant="h2">
-            Tracked markets
-          </Typography>
-
-          <Typography className="mt-1 text-muted">
-            Add a USDT pair or remove its live subscription. Keep at least one pair. Hiding a
-            currency only changes its visibility.
-          </Typography>
+          <SectionHeader
+            title="Tracked markets"
+            description="Add a USDT pair or remove its live subscription. Keep at least one pair. Hiding a currency only changes its visibility."
+          />
 
           <Stack className="mt-3 flex-row flex-wrap gap-2">
             {currencies.map((currency) => (
-              <Chip
+              <AppChip
                 key={currency.symbol}
                 label={`${currency.ticker}/USDT`}
+                size="medium"
                 onDelete={currencies.length > 1 ? () => onRemove(currency.symbol) : undefined}
               />
             ))}
@@ -51,27 +54,23 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
 
           {available.length ? (
             <Stack className="mt-4 flex-col gap-3 sm:flex-row">
-              <TextField
-                select
+              <OptionSelect
                 label="Pair to add"
-                size="small"
                 value={selected}
-                onChange={(event) => setSelection(event.target.value)}
+                onChange={setSelection}
+                options={available.map(({ symbol, name, ticker }) => ({
+                  value: symbol,
+                  label: `${name} (${ticker}/USDT)`,
+                }))}
                 className="min-w-48"
-              >
-                {available.map((currency) => (
-                  <MenuItem key={currency.symbol} value={currency.symbol}>
-                    {currency.name} ({currency.ticker}/USDT)
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
 
-              <Button variant="contained" onClick={() => onAdd(selected)}>
+              <AppButton variant="contained" onClick={() => onAdd(selected)}>
                 Add pair
-              </Button>
+              </AppButton>
             </Stack>
           ) : (
-            <Typography className="mt-3 text-muted">All available pairs are tracked.</Typography>
+            <StatusText className="mt-3">All available pairs are tracked.</StatusText>
           )}
         </Box>
       )}

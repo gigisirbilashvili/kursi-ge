@@ -5,7 +5,7 @@ export interface ICurrency {
   symbol: string
   ticker: string
   name: string
-  badgeClass: string
+  badgeTone: 'badgeAmber' | 'badgeViolet' | 'badgeEmerald' | 'badgeYellow' | 'badgeSlate' | 'badgeBlue' | 'badgeRed'
 }
 
 export interface IMarketTick {
@@ -42,6 +42,7 @@ export interface IMarketSocket {
 }
 
 export interface IMarketFeedOptions {
+  streamEndpoint: string
   symbols?: readonly string[]
   createSocket?: (url: string) => IMarketSocket
   now?: () => number

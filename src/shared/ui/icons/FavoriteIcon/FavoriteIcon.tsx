@@ -1,8 +1,9 @@
 import type { IFavoriteIconProps } from './types'
 
 export function FavoriteIcon({
-  width,
-  height,
+  size = 24,
+  width = size,
+  height = size,
   isFilled = false,
   color = 'currentColor',
   ...props

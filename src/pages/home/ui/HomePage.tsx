@@ -1,10 +1,11 @@
-import { Alert, Box, Chip, Snackbar, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 import { PairManager } from '../../../features/manage-pairs'
 import { PriceHistory } from '../../../features/price-history'
 import { useSignificantAlerts } from '../../../features/significant-alerts'
 import { TargetAlerts, useTargetAlerts } from '../../../features/target-alerts'
 import { ConversionCalculator } from '../../../features/convert-currency'
+import { AppChip } from '../../../shared/ui/AppChip/AppChip'
 import { usePriceToasts } from '../model/usePriceToasts'
 import { MarketPanel } from './MarketPanel/MarketPanel'
 import type { IHomePageProps } from './types'
@@ -12,8 +13,7 @@ import type { IHomePageProps } from './types'
 function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHomePageProps) {
   const { alerts: sessionAlerts, dismiss: dismissSessionAlert } = useSignificantAlerts(market)
   const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts(market)
-  const { toasts, dismiss: dismissToast } = usePriceToasts(sessionAlerts, targetAlerts)
-  const toast = toasts[0]
+  usePriceToasts(sessionAlerts, targetAlerts)
 
   return (
     <Box component="section" aria-labelledby="market-heading">
@@ -21,14 +21,14 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
         Crypto market
       </Typography>
 
-      <Typography className="mt-2 max-w-2xl text-muted">
+      <Typography color="textSecondary" className="mt-2 max-w-2xl">
         Live prices, favorites, alerts, and currency conversions.
       </Typography>
 
-      <Chip
+      <AppChip
         label="Prices quoted in USDT · Binance Spot"
-        size="small"
-        className="mt-3 bg-brand-soft text-xs font-medium text-brand"
+        isBrand
+        className="mt-3"
       />
 
       <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />
@@ -53,28 +53,6 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
         onRearm={rearm}
         onRemove={remove}
       />
-
-      <Snackbar
-        key={toast?.id ?? 'closed'}
-        open={Boolean(toast)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        autoHideDuration={6000}
-        onClose={(_, reason) => {
-          if (reason !== 'clickaway' && toast) dismissToast(toast.id)
-        }}
-        className="top-4 right-4 max-w-[calc(100vw-2rem)] sm:top-6 sm:right-6"
-      >
-        <Alert
-          severity={toast?.severity ?? 'info'}
-          variant="filled"
-          onClose={() => {
-            if (toast) dismissToast(toast.id)
-          }}
-          className="w-full shadow-lg"
-        >
-          {toast?.message}
-        </Alert>
-      </Snackbar>
     </Box>
   )
 }

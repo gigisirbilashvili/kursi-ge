@@ -8,10 +8,10 @@ export const CONNECTION_STATUS_LABELS: Record<TConnectionStatus, string> = {
   error: 'Connection error',
 }
 
-export const CONNECTION_STATUS_CLASSES: Record<TConnectionStatus, string> = {
-  connecting: 'bg-status-pending',
-  connected: 'bg-status-connected',
-  reconnecting: 'bg-status-pending',
-  disconnected: 'bg-status-disconnected',
-  error: 'bg-status-disconnected',
+export const CONNECTION_STATUS_COLORS: Record<TConnectionStatus, string> = {
+  connecting: 'statusPending.main',
+  connected: 'success.main',
+  reconnecting: 'statusPending.main',
+  disconnected: 'error.main',
+  error: 'error.main',
 }

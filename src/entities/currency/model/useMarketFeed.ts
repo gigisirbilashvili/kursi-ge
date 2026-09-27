@@ -1,10 +1,12 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 
 import { createMarketFeed } from './createMarketFeed.ts'
+import { useMarketNotifications } from './useMarketNotifications'
 
-export function useMarketFeed(symbols: readonly string[]) {
-  const [feed] = useState(() => createMarketFeed({ symbols }))
+export function useMarketFeed(symbols: readonly string[], streamEndpoint: string) {
+  const [feed] = useState(() => createMarketFeed({ symbols, streamEndpoint }))
   const snapshot = useSyncExternalStore(feed.subscribe, feed.getSnapshot, feed.getSnapshot)
+  useMarketNotifications(snapshot)
 
   useEffect(() => {
     feed.setSymbols(symbols)

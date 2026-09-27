@@ -1,5 +1,7 @@
 import { STALE_TIMEOUT_MS } from '../../../entities/currency/index.ts'
 import type { IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { formatSignificantNumber } from '../../../shared/lib/formatSignificantNumber'
+import { NON_NEGATIVE_DECIMAL_INPUT_PATTERN } from '../../../shared/config/constants.ts'
 import type { TConversionResult } from '../types/index.ts'
 
 export function getConversionResult(
@@ -11,7 +13,7 @@ export function getConversionResult(
 ): TConversionResult {
   const input = rawAmount.trim()
   if (!input) return { status: 'empty', message: 'Enter an amount to see the conversion.' }
-  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(input)) {
+  if (!NON_NEGATIVE_DECIMAL_INPUT_PATTERN.test(input)) {
     return {
       status: 'invalid',
       message: 'Enter zero or a positive decimal amount, using a dot for decimals.',
@@ -66,5 +68,5 @@ export function getConversionResult(
 
 export function formatConversionValue(value: number) {
   if (value > 0 && value < 0.00000001) return value.toExponential(6)
-  return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 12 }).format(value)
+  return formatSignificantNumber(value)
 }

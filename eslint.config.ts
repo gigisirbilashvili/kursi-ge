@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import jest from "eslint-plugin-jest";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -143,7 +144,38 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   {
-    files: ["eslint.config.ts", "eslint-local-rules.test.ts"],
+    files: ["**/*.{test,spec}.{ts,tsx}"],
+    plugins: { jest },
+    rules: {
+      "jest/valid-title": ["error", {
+        mustMatch: {
+          test: ["^should\\s", 'Test names must start with "should".'],
+          it: ["^should\\s", 'Test names must start with "should".'],
+        },
+      }],
+    },
+  },
+  {
+    files: ["src/app/config/typography.d.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "typeProperty",
+          filter: { regex: "^(spanBold|body2Bold|headerPrimary|headerMuted|headerCaption|header|headerStatus|brandSoft|positiveSoft|negativeSoft|neutralSoft)$", match: true },
+          format: ["camelCase"],
+        },
+        {
+          selector: "interface",
+          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|ButtonPropsColorOverrides|AppBarPropsColorOverrides|ChipPropsColorOverrides|Palette|PaletteOptions)$", match: true },
+          format: ["PascalCase"],
+        },
+        ...namingOptions,
+      ],
+    },
+  },
+  {
+    files: ["eslint.config.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",

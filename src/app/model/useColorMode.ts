@@ -1,24 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
-function readMode(): 'light' | 'dark' {
-  try {
-    const saved = localStorage.getItem('kursi-color-mode')
-    if (saved === 'light' || saved === 'dark') return saved
-  } catch {
-    return 'light'
-  }
+import { useStoredState } from '../../shared/lib/useStoredState'
+
+function readMode(saved: string | null): 'light' | 'dark' {
+  if (saved === 'light' || saved === 'dark') return saved
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function useColorMode() {
-  const [mode, setMode] = useState(readMode)
+  const [mode, setMode] = useStoredState('kursi-color-mode', readMode, String)
   useEffect(() => {
     document.documentElement.dataset.theme = mode
-    try {
-      localStorage.setItem('kursi-color-mode', mode)
-    } catch {
-      return
-    }
   }, [mode])
   return { mode, toggleMode: () => setMode((current) => (current === 'light' ? 'dark' : 'light')) }
 }

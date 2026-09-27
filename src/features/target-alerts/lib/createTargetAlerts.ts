@@ -1,11 +1,52 @@
 import { AVAILABLE_CURRENCIES, STALE_TIMEOUT_MS } from '../../../entities/currency/index.ts'
 import type { IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { NON_NEGATIVE_DECIMAL_INPUT_PATTERN } from '../../../shared/config/constants.ts'
 import type { ITargetAlert } from '../types/index.ts'
 
+const MAX_TARGET_ALERTS = 20
+
+function isSupportedSymbol(value: unknown): value is string {
+  return typeof value === 'string' && AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === value)
+}
+
+function isValidTargetPrice(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isFinite(value) &&
+    value > 0 &&
+    value <= Number.MAX_SAFE_INTEGER
+  )
+}
+
+function isValidAlertDirection(value: unknown): value is ITargetAlert['direction'] {
+  return value === 'above' || value === 'below'
+}
+
+function isStoredTargetAlert(item: unknown): item is ITargetAlert {
+  if (!item || typeof item !== 'object') return false
+  const alert = item as Record<string, unknown>
+
+  if (typeof alert.id !== 'string') return false
+  if (!isSupportedSymbol(alert.symbol) || !isValidTargetPrice(alert.target)) return false
+  if (!isValidAlertDirection(alert.direction)) return false
+
+  if (alert.triggerCount !== undefined) {
+    const count = alert.triggerCount
+    if (typeof count !== 'number' || !Number.isSafeInteger(count) || count < 0) return false
+  }
+
+  if (alert.triggeredPrice !== undefined) {
+    const price = alert.triggeredPrice
+    if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) return false
+  }
+
+  return true
+}
+
 export function parseTarget(value: string): number | null {
-  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value.trim())) return null
+  if (!NON_NEGATIVE_DECIMAL_INPUT_PATTERN.test(value.trim())) return null
   const number = Number(value)
-  return Number.isFinite(number) && number > 0 && number <= Number.MAX_SAFE_INTEGER ? number : null
+  return isValidTargetPrice(number) ? number : null
 }
 
 export function createTargetAlerts(
@@ -15,30 +56,9 @@ export function createTargetAlerts(
   const listeners = new Set<() => void>()
   let alerts: readonly ITargetAlert[] = Array.isArray(saved)
     ? saved
-        .filter((item: unknown): item is ITargetAlert => {
-          if (!item || typeof item !== 'object') return false
-          const alert = item as Record<string, unknown>
-          return (
-            typeof alert.id === 'string' &&
-            typeof alert.symbol === 'string' &&
-            AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === alert.symbol) &&
-            typeof alert.target === 'number' &&
-            Number.isFinite(alert.target) &&
-            alert.target > 0 &&
-            alert.target <= Number.MAX_SAFE_INTEGER &&
-            (alert.direction === 'above' || alert.direction === 'below') &&
-            (alert.triggerCount === undefined ||
-              (typeof alert.triggerCount === 'number' &&
-                Number.isSafeInteger(alert.triggerCount) &&
-                alert.triggerCount >= 0)) &&
-            (alert.triggeredPrice === undefined ||
-              (typeof alert.triggeredPrice === 'number' &&
-                Number.isFinite(alert.triggeredPrice) &&
-                alert.triggeredPrice > 0))
-          )
-        })
+        .filter(isStoredTargetAlert)
         .filter((alert, index, all) => all.findIndex((item) => item.id === alert.id) === index)
-        .slice(0, 20)
+        .slice(0, MAX_TARGET_ALERTS)
     : []
 
   const publish = (next: readonly ITargetAlert[]) => {
@@ -56,16 +76,9 @@ export function createTargetAlerts(
       }
     },
     add(alert: ITargetAlert) {
-      if (
-        alerts.length >= 20 ||
-        alerts.some((item) => item.id === alert.id) ||
-        !AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === alert.symbol) ||
-        !Number.isFinite(alert.target) ||
-        alert.target <= 0 ||
-        alert.target > Number.MAX_SAFE_INTEGER ||
-        (alert.direction !== 'above' && alert.direction !== 'below')
-      )
-        return
+      if (alerts.length >= MAX_TARGET_ALERTS || alerts.some((item) => item.id === alert.id)) return
+      if (!isSupportedSymbol(alert.symbol) || !isValidTargetPrice(alert.target)) return
+      if (!isValidAlertDirection(alert.direction)) return
       publish([...alerts, alert])
     },
     remove(id: string) {

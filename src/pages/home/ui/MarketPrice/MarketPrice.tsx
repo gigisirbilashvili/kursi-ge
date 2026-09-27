@@ -10,22 +10,22 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
       <Stack className="items-end">
         <Skeleton className="h-6 w-24 motion-reduce:animate-none motion-reduce:after:animate-none" />
 
-        <Typography variant="caption" className="text-muted">
+        <Typography color="textSecondary" variant="caption">
           Awaiting price
         </Typography>
       </Stack>
     )
   const color =
     quote.direction === 'up'
-      ? 'text-status-connected'
+      ? 'success.main'
       : quote.direction === 'down'
-        ? 'text-status-disconnected'
-        : 'text-muted'
+        ? 'error.main'
+        : 'text.secondary'
   return (
     <Stack className="items-end gap-1">
       <Stack className="flex-row items-center gap-2">
         <Tooltip title={`Latest tick: ${quote.direction}`}>
-          <Box component="span" className={`inline-flex w-4 shrink-0 ${color}`}>
+          <Box component="span" color={color} className="inline-flex w-4 shrink-0">
             <ArrowIcon width={16} height={20} direction={quote.direction} />
 
             <Box component="span" className="sr-only">
@@ -36,14 +36,14 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
 
         <Typography
           component="span"
-          variant="body2"
-          className="min-w-[10ch] text-right font-semibold tabular-nums"
+          variant="body2Bold"
+          className="min-w-[10ch] text-right tabular-nums"
         >
           {formatPrice(quote.price)}
         </Typography>
       </Stack>
       {isStale && (
-        <Typography variant="caption" className="text-stale">
+        <Typography color="warning" variant="caption">
           Last-known price
         </Typography>
       )}

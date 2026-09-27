@@ -11,7 +11,10 @@ import { AppHeader } from './ui/AppHeader/AppHeader'
 export function App() {
   const { mode, toggleMode } = useColorMode()
   const { symbols, currencies, addPair, removePair } = useSelectedPairs()
-  const { snapshot, retry } = useMarketFeed(symbols)
+  const streamEndpoint: unknown = import.meta.env.VITE_MARKET_STREAM_ENDPOINT
+  if (typeof streamEndpoint !== 'string' || !streamEndpoint)
+    throw new Error('VITE_MARKET_STREAM_ENDPOINT is required')
+  const { snapshot, retry } = useMarketFeed(symbols, streamEndpoint)
   return (
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={themes[mode]}>

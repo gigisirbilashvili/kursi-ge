@@ -1,5 +1,6 @@
 import { STALE_TIMEOUT_MS } from '../../../entities/currency/index.ts'
 import type { IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { NON_NEGATIVE_DECIMAL_INPUT_PATTERN } from '../../../shared/config/constants.ts'
 import type { TConversionResult } from '../types/index.ts'
 
 export function getConversionResult(
@@ -11,7 +12,7 @@ export function getConversionResult(
 ): TConversionResult {
   const input = rawAmount.trim()
   if (!input) return { status: 'empty', message: 'Enter an amount to see the conversion.' }
-  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(input)) {
+  if (!NON_NEGATIVE_DECIMAL_INPUT_PATTERN.test(input)) {
     return {
       status: 'invalid',
       message: 'Enter zero or a positive decimal amount, using a dot for decimals.',

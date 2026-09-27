@@ -1,9 +1,10 @@
 import { AVAILABLE_CURRENCIES, STALE_TIMEOUT_MS } from '../../../entities/currency/index.ts'
 import type { IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { NON_NEGATIVE_DECIMAL_INPUT_PATTERN } from '../../../shared/config/constants.ts'
 import type { ITargetAlert } from '../types/index.ts'
 
 export function parseTarget(value: string): number | null {
-  if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value.trim())) return null
+  if (!NON_NEGATIVE_DECIMAL_INPUT_PATTERN.test(value.trim())) return null
   const number = Number(value)
   return Number.isFinite(number) && number > 0 && number <= Number.MAX_SAFE_INTEGER ? number : null
 }

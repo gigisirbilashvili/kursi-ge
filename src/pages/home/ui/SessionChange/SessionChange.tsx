@@ -1,5 +1,6 @@
-import { Chip, Tooltip, Typography } from '@mui/material'
+import { Tooltip, Typography } from '@mui/material'
 
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { ArrowIcon } from '../../../../shared/ui/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import type { ISessionChangeProps } from './types'
@@ -23,8 +24,7 @@ export function SessionChange({ quote }: ISessionChangeProps) {
   const color = change > 0 ? 'positiveSoft' : change < 0 ? 'negativeSoft' : 'neutralSoft'
   return (
     <Tooltip title={`Since the first session price of ${formatPrice(quote.initialPrice)} USDT`}>
-      <Chip
-        size="small"
+      <AppChip
         color={color}
         icon={
           <ArrowIcon

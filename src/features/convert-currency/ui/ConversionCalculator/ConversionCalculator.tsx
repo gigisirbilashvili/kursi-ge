@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  Chip,
   InputAdornment,
   Skeleton,
   Stack,
@@ -12,6 +11,7 @@ import {
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
@@ -40,7 +40,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           descriptionVariant="body2"
         />
 
-        <Chip label="Updates every 30s" size="small" color="brandSoft" className="text-xs font-medium" />
+        <AppChip label="Updates every 30s" isBrand />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">

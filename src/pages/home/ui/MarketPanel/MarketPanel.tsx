@@ -3,7 +3,6 @@ import {
   Alert,
   Avatar,
   Box,
-  Chip,
   IconButton,
   InputAdornment,
   List,
@@ -31,6 +30,7 @@ import type {
 } from '../../../../features/market-preferences'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
@@ -90,11 +90,9 @@ export function MarketPanel({
             Spot markets
           </Typography>
 
-          <Chip
+          <AppChip
             label={`${currencies.length - hiddenCurrencies.length} visible`}
-            size="small"
-            color="brandSoft"
-            className="text-xs font-medium"
+            isBrand
           />
         </Stack>
 

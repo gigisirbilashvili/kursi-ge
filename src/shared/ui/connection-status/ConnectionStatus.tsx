@@ -1,11 +1,12 @@
-import { Box, Chip } from '@mui/material'
+import { Box } from '@mui/material'
 
+import { AppChip } from '../AppChip/AppChip'
 import { CONNECTION_STATUS_COLORS, CONNECTION_STATUS_LABELS } from './constants'
 import type { IConnectionStatusProps } from './types'
 
 export function ConnectionStatus({ status }: IConnectionStatusProps) {
   return (
-    <Chip
+    <AppChip
       role="status"
       aria-live="polite"
       aria-atomic="true"
@@ -21,7 +22,6 @@ export function ConnectionStatus({ status }: IConnectionStatusProps) {
       label={CONNECTION_STATUS_LABELS[status]}
       variant="outlined"
       color="headerStatus"
-      size="small"
       className="h-7.5 shrink-0 font-medium [&_.MuiChip-icon]:mr-0.5 [&_.MuiChip-icon]:ml-3"
     />
   )

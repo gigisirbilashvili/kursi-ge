@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Box, Chip, Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
+import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
@@ -42,9 +43,10 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
 
           <Stack className="mt-3 flex-row flex-wrap gap-2">
             {currencies.map((currency) => (
-              <Chip
+              <AppChip
                 key={currency.symbol}
                 label={`${currency.ticker}/USDT`}
+                size="medium"
                 onDelete={currencies.length > 1 ? () => onRemove(currency.symbol) : undefined}
               />
             ))}

@@ -1,10 +1,11 @@
-import { Box, Chip, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 
 import { PairManager } from '../../../features/manage-pairs'
 import { PriceHistory } from '../../../features/price-history'
 import { useSignificantAlerts } from '../../../features/significant-alerts'
 import { TargetAlerts, useTargetAlerts } from '../../../features/target-alerts'
 import { ConversionCalculator } from '../../../features/convert-currency'
+import { AppChip } from '../../../shared/ui/AppChip/AppChip'
 import { usePriceToasts } from '../model/usePriceToasts'
 import { MarketPanel } from './MarketPanel/MarketPanel'
 import type { IHomePageProps } from './types'
@@ -24,11 +25,10 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
         Live prices, favorites, alerts, and currency conversions.
       </Typography>
 
-      <Chip
+      <AppChip
         label="Prices quoted in USDT · Binance Spot"
-        size="small"
-        color="brandSoft"
-        className="mt-3 text-xs font-medium"
+        isBrand
+        className="mt-3"
       />
 
       <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />

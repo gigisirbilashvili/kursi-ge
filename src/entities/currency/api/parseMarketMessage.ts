@@ -9,23 +9,25 @@ export function parseMarketMessage(raw: unknown): IMarketTick | null {
   if (typeof raw !== 'string') return null
   try {
     const envelope: unknown = JSON.parse(raw)
-    if (!isRecord(envelope) || !isRecord(envelope.data)) return null
+    if (!isRecord(envelope)) return null
+
     const data = envelope.data
-    if (
-      data.e !== '24hrMiniTicker' ||
-      typeof data.s !== 'string' ||
-      !AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === data.s) ||
-      envelope.stream !== `${data.s.toLowerCase()}@miniTicker` ||
-      typeof data.c !== 'string' ||
-      !BINANCE_DECIMAL_PRICE_PATTERN.test(data.c) ||
-      typeof data.E !== 'number' ||
-      !Number.isSafeInteger(data.E) ||
-      data.E <= 0
-    )
-      return null
-    const price = Number(data.c)
+    if (!isRecord(data) || data.e !== '24hrMiniTicker') return null
+
+    const symbol = data.s
+    if (typeof symbol !== 'string') return null
+    if (!AVAILABLE_CURRENCIES.some((currency) => currency.symbol === symbol)) return null
+    if (envelope.stream !== `${symbol.toLowerCase()}@miniTicker`) return null
+
+    const rawPrice = data.c
+    if (typeof rawPrice !== 'string' || !BINANCE_DECIMAL_PRICE_PATTERN.test(rawPrice)) return null
+    const price = Number(rawPrice)
     if (!Number.isFinite(price) || price <= 0) return null
-    return { symbol: data.s, price, eventTime: data.E }
+
+    const eventTime = data.E
+    if (typeof eventTime !== 'number' || !Number.isSafeInteger(eventTime) || eventTime <= 0) return null
+
+    return { symbol, price, eventTime }
   } catch {
     return null
   }

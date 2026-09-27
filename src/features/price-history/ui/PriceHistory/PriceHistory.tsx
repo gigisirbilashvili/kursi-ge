@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Box, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { Box, Card, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
@@ -48,20 +49,13 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
           </Typography>
         </Box>
 
-        <TextField
-          select
-          size="small"
+        <OptionSelect
           label="Chart currency"
           value={currency?.symbol ?? ''}
-          onChange={(event) => setSelection(event.target.value)}
+          onChange={setSelection}
+          options={currencies.map(({ symbol, ticker }) => ({ value: symbol, label: `${ticker}/USDT` }))}
           className="min-w-36"
-        >
-          {currencies.map((item) => (
-            <MenuItem key={item.symbol} value={item.symbol}>
-              {item.ticker}/USDT
-            </MenuItem>
-          ))}
-        </TextField>
+        />
       </Stack>
 
       {points.length < 2 ? (

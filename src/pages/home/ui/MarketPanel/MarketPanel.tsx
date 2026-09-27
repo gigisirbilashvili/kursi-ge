@@ -6,14 +6,10 @@ import {
   Button,
   Card,
   Chip,
-  FormControl,
   IconButton,
   InputAdornment,
-  InputLabel,
   List,
   ListItem,
-  MenuItem,
-  Select,
   Stack,
   Table,
   TableBody,
@@ -36,6 +32,7 @@ import type {
   TSortField,
 } from '../../../../features/market-preferences'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { formatPrice } from '../../lib/formatPrice'
 import { MarketPrice } from '../MarketPrice/MarketPrice'
 import { SessionChange } from '../SessionChange/SessionChange'
@@ -208,19 +205,17 @@ export function MarketPanel({
           <ToggleButton value="favorites">Favorites</ToggleButton>
         </ToggleButtonGroup>
 
-        <FormControl size="small" className="min-w-36">
-          <InputLabel id="market-sort-label">Sort by</InputLabel>
-          <Select
-            labelId="market-sort-label"
-            label="Sort by"
-            value={sortField}
-            onChange={(event) => setSortField(event.target.value as TSortField)}
-          >
-            <MenuItem value="name">Name</MenuItem>
-            <MenuItem value="price">Current price</MenuItem>
-            <MenuItem value="change">Price change</MenuItem>
-          </Select>
-        </FormControl>
+        <OptionSelect
+          label="Sort by"
+          value={sortField}
+          onChange={(value) => setSortField(value as TSortField)}
+          options={[
+            { value: 'name', label: 'Name' },
+            { value: 'price', label: 'Current price' },
+            { value: 'change', label: 'Price change' },
+          ]}
+          className="min-w-36"
+        />
 
         <Tooltip title={`Sort ${sortDirection === 'asc' ? 'descending' : 'ascending'}`}>
           <IconButton

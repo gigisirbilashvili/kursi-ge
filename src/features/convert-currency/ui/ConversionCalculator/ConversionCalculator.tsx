@@ -5,7 +5,6 @@ import {
   Card,
   Chip,
   InputAdornment,
-  MenuItem,
   Skeleton,
   Stack,
   TextField,
@@ -14,6 +13,7 @@ import {
 
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -22,6 +22,10 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
     useConversionCalculator(market, currencies)
   const sourceTicker = currencies.find(({ symbol }) => symbol === source)?.ticker ?? source
   const targetTicker = currencies.find(({ symbol }) => symbol === target)?.ticker ?? target
+  const currencyOptions = currencies.map(({ symbol, ticker, name }) => ({
+    value: symbol,
+    label: `${ticker} - ${name}`,
+  }))
   const hasError = result.status === 'invalid'
 
   return (
@@ -49,20 +53,13 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Stack className="min-w-0 gap-4">
           <Box className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-            <TextField
-              select
+            <OptionSelect
               label="Source currency"
-              size="small"
               value={source}
-              onChange={(event) => setSource(event.target.value)}
+              onChange={setSource}
+              options={currencyOptions}
               className="min-w-0"
-            >
-              {currencies.map((currency) => (
-                <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} - {currency.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
 
             <Button
               variant="outlined"
@@ -73,20 +70,13 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
               Swap
             </Button>
 
-            <TextField
-              select
+            <OptionSelect
               label="Target currency"
-              size="small"
               value={target}
-              onChange={(event) => setTarget(event.target.value)}
+              onChange={setTarget}
+              options={currencyOptions}
               className="min-w-0"
-            >
-              {currencies.map((currency) => (
-                <MenuItem key={currency.symbol} value={currency.symbol}>
-                  {currency.ticker} - {currency.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
           </Box>
 
           <TextField

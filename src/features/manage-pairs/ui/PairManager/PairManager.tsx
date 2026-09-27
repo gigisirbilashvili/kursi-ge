@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Box, Button, Chip, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Chip, Stack, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import type { IPairManagerProps } from './types'
 
 export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
@@ -52,20 +53,16 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
 
           {available.length ? (
             <Stack className="mt-4 flex-col gap-3 sm:flex-row">
-              <TextField
-                select
+              <OptionSelect
                 label="Pair to add"
-                size="small"
                 value={selected}
-                onChange={(event) => setSelection(event.target.value)}
+                onChange={setSelection}
+                options={available.map(({ symbol, name, ticker }) => ({
+                  value: symbol,
+                  label: `${name} (${ticker}/USDT)`,
+                }))}
                 className="min-w-48"
-              >
-                {available.map((currency) => (
-                  <MenuItem key={currency.symbol} value={currency.symbol}>
-                    {currency.name} ({currency.ticker}/USDT)
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
 
               <Button variant="contained" onClick={() => onAdd(selected)}>
                 Add pair

@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
-import { Box, Button, MenuItem, TextField } from '@mui/material'
+import { useState } from 'react'
+import { Box, Button, TextField } from '@mui/material'
 
 import { notify } from '../../../../shared/lib/notify'
+import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { parseTarget } from '../../lib/createTargetAlerts'
 import type { ITargetAlertFormProps } from './types'
 
@@ -10,13 +11,15 @@ export function TargetAlertForm({ currencies, isFull, onAdd }: ITargetAlertFormP
   const [direction, setDirection] = useState<'above' | 'below'>('above')
   const [target, setTarget] = useState('')
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const currencySelectRef = useRef<HTMLDivElement>(null)
-  const conditionSelectRef = useRef<HTMLDivElement>(null)
   const symbol = currencies.some((currency) => currency.symbol === selection)
     ? selection
     : (currencies[0]?.symbol ?? '')
   const price = parseTarget(target)
   const hasError = (hasSubmitted || target.length > 0) && price === null
+  const currencyOptions = currencies.map(({ symbol: value, ticker }) => ({
+    value,
+    label: `${ticker}/USDT`,
+  }))
 
   return (
     <Box
@@ -38,46 +41,24 @@ export function TargetAlertForm({ currencies, isFull, onAdd }: ITargetAlertFormP
         setHasSubmitted(false)
       }}
     >
-      <TextField
-        ref={currencySelectRef}
-        select
+      <OptionSelect
         label="Alert currency"
         value={symbol}
-        size="small"
-        slotProps={{
-          select: {
-            onClose: () =>
-              currencySelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
-            MenuProps: { ['disableEnforceFocus']: true },
-          },
-        }}
-        onChange={(event) => setSelection(event.target.value)}
-      >
-        {currencies.map((currency) => (
-          <MenuItem key={currency.symbol} value={currency.symbol}>
-            {currency.ticker}/USDT
-          </MenuItem>
-        ))}
-      </TextField>
+        onChange={setSelection}
+        options={currencyOptions}
+        shouldRestoreFocus
+      />
 
-      <TextField
-        ref={conditionSelectRef}
-        select
+      <OptionSelect
         label="Condition"
         value={direction}
-        size="small"
-        slotProps={{
-          select: {
-            onClose: () =>
-              conditionSelectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
-            MenuProps: { ['disableEnforceFocus']: true },
-          },
-        }}
-        onChange={(event) => setDirection(event.target.value === 'above' ? 'above' : 'below')}
-      >
-        <MenuItem value="above">At or above</MenuItem>
-        <MenuItem value="below">At or below</MenuItem>
-      </TextField>
+        onChange={(value) => setDirection(value === 'above' ? 'above' : 'below')}
+        options={[
+          { value: 'above', label: 'At or above' },
+          { value: 'below', label: 'At or below' },
+        ]}
+        shouldRestoreFocus
+      />
 
       <TextField
         label="Target price (USDT)"

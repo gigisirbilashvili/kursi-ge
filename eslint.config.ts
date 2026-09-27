@@ -175,7 +175,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["eslint.config.ts", "eslint-local-rules.test.ts"],
+    files: ["eslint.config.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",

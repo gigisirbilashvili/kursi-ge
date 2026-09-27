@@ -8,12 +8,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test:lint": "npm test -- --runInBand eslint-local-rules.test.ts",
     "test:market": "npm test -- --runInBand src/entities/currency",
     "test:dashboard": "npm test -- --runInBand src/features/market-preferences src/features/significant-alerts",
     "test:calculator": "npm test -- --runInBand src/features/convert-currency",
     "test:bonuses": "npm test -- --runInBand src/features/target-alerts src/pages/home/lib/createPriceToastQueue.test.ts",
-    "docs:lint": "tsx scripts/document-eslint.ts",
     "preview": "vite preview",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "npm test -- --watch"

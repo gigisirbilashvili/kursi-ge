@@ -1,4 +1,4 @@
-import { Container, Link, StyledEngineProvider, ThemeProvider } from '@mui/material'
+import { Container, CssBaseline, Link, StyledEngineProvider, ThemeProvider } from '@mui/material'
 
 import { HomePage } from '../pages/home'
 import { useMarketFeed } from '../entities/currency'
@@ -15,10 +15,12 @@ export function App() {
   return (
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={themes[mode]}>
+        <CssBaseline enableColorScheme />
         <Toaster mode={mode} />
         <Link
           href="#main-content"
-          className="fixed top-2 left-4 z-[1500] -translate-y-[200%] rounded-xl bg-white px-4 py-2 focus:translate-y-0"
+          sx={{ bgcolor: 'background.paper' }}
+          className="fixed top-2 left-4 z-[1500] -translate-y-[200%] rounded-xl px-4 py-2 focus:translate-y-0"
         >
           Skip to content
         </Link>

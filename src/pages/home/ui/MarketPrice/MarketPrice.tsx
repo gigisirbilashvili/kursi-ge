@@ -17,15 +17,15 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
     )
   const color =
     quote.direction === 'up'
-      ? 'text-status-connected'
+      ? 'success.main'
       : quote.direction === 'down'
-        ? 'text-status-disconnected'
-        : 'text-muted'
+        ? 'error.main'
+        : 'text.secondary'
   return (
     <Stack className="items-end gap-1">
       <Stack className="flex-row items-center gap-2">
         <Tooltip title={`Latest tick: ${quote.direction}`}>
-          <Box component="span" className={`inline-flex w-4 shrink-0 ${color}`}>
+          <Box component="span" color={color} className="inline-flex w-4 shrink-0">
             <ArrowIcon width={16} height={20} direction={quote.direction} />
 
             <Box component="span" className="sr-only">

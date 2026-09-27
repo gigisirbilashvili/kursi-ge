@@ -162,12 +162,12 @@ export default defineConfig([
         "error",
         {
           selector: "typeProperty",
-          filter: { regex: "^(spanBold|body2Bold|headerPrimary|headerMuted|headerCaption)$", match: true },
+          filter: { regex: "^(spanBold|body2Bold|headerPrimary|headerMuted|headerCaption|header|headerStatus|brandSoft|positiveSoft|negativeSoft|neutralSoft)$", match: true },
           format: ["camelCase"],
         },
         {
           selector: "interface",
-          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|ButtonPropsColorOverrides|Palette|PaletteOptions)$", match: true },
+          filter: { regex: "^(Typography(Variants|VariantsOptions|PropsVariantOverrides|PropsColorOverrides)|ButtonPropsColorOverrides|AppBarPropsColorOverrides|ChipPropsColorOverrides|Palette|PaletteOptions)$", match: true },
           format: ["PascalCase"],
         },
         ...namingOptions,

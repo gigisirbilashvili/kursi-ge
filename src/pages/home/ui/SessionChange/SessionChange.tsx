@@ -20,14 +20,12 @@ export function SessionChange({ quote }: ISessionChangeProps) {
           maximumFractionDigits: Math.abs(change) < 0.01 ? 4 : 2,
           signDisplay: 'exceptZero',
         }).format(change)
-  const color =
-    change > 0 ? 'text-status-connected' : change < 0 ? 'text-status-disconnected' : 'text-muted'
-  const background =
-    change > 0 ? 'bg-positive-soft' : change < 0 ? 'bg-negative-soft' : 'bg-brand-soft'
+  const color = change > 0 ? 'positiveSoft' : change < 0 ? 'negativeSoft' : 'neutralSoft'
   return (
     <Tooltip title={`Since the first session price of ${formatPrice(quote.initialPrice)} USDT`}>
       <Chip
         size="small"
+        color={color}
         icon={
           <ArrowIcon
             width={16}
@@ -36,7 +34,7 @@ export function SessionChange({ quote }: ISessionChangeProps) {
           />
         }
         label={`${formatted}%`}
-        className={`h-7 text-xs font-semibold tabular-nums [&_.MuiChip-icon]:ml-2 [&_.MuiChip-icon]:text-inherit ${color} ${background}`}
+        className="h-7 text-xs font-semibold tabular-nums [&_.MuiChip-icon]:ml-2"
       />
     </Tooltip>
   )

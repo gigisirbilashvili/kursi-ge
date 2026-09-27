@@ -1,6 +1,6 @@
 import { Box, Chip } from '@mui/material'
 
-import { CONNECTION_STATUS_CLASSES, CONNECTION_STATUS_LABELS } from './constants'
+import { CONNECTION_STATUS_COLORS, CONNECTION_STATUS_LABELS } from './constants'
 import type { IConnectionStatusProps } from './types'
 
 export function ConnectionStatus({ status }: IConnectionStatusProps) {
@@ -14,13 +14,15 @@ export function ConnectionStatus({ status }: IConnectionStatusProps) {
         <Box
           component="span"
           aria-hidden="true"
-          className={`size-2 rounded-full ${CONNECTION_STATUS_CLASSES[status]}`}
+          sx={{ bgcolor: CONNECTION_STATUS_COLORS[status] }}
+          className="size-2 rounded-full"
         />
       }
       label={CONNECTION_STATUS_LABELS[status]}
       variant="outlined"
+      color="headerStatus"
       size="small"
-      className="h-7.5 shrink-0 border-white/15 bg-white/5 font-medium text-white/85 [&_.MuiChip-icon]:mr-0.5 [&_.MuiChip-icon]:ml-3"
+      className="h-7.5 shrink-0 font-medium [&_.MuiChip-icon]:mr-0.5 [&_.MuiChip-icon]:ml-3"
     />
   )
 }

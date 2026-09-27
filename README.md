@@ -42,7 +42,7 @@ src/
     App.tsx
     index.ts
     config/theme.ts         Material UI palette and component defaults
-    styles/index.css        Global CSS, theme tokens, and Tailwind
+    styles/index.css        Global CSS and Tailwind layout utilities
     ui/AppHeader/           Brand and market connection display
   processes/                Reserved for multi-step workflows
   pages/home/
@@ -81,7 +81,7 @@ The current dashboard includes:
 - A conversion calculator with source/target selectors, decimal amount input, Swap, and a result that refreshes from the latest quotes every 30 seconds. Editing inputs or currency selections updates immediately.
 - Responsive market cards below 900px and a table on wider screens, plus connection, loading, error, stale-price, and empty states.
 
-The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Component styling uses Tailwind classes rather than sx or inline styles. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. Light and dark palettes follow the saved preference or, on first visit, the system setting. A system sans-serif fallback is used when Inter is unavailable.
+The UI uses Material UI with Emotion, including Box, Stack, Typography, AppBar, Card, Table, List, Avatar, Chip, Alert, Button, TextField, Select, Tooltip, and Skeleton. Layout and spacing use Tailwind classes. Colors come from the MUI theme palette through component color props or theme-backed sx values when a component has no matching color prop. Tailwind theme and utility layers are imported without preflight so MUI form defaults are preserved. Light and dark palettes follow the saved preference or, on first visit, the system setting. A system sans-serif fallback is used when Inter is unavailable.
 
 ## Live market behavior
 
@@ -116,7 +116,7 @@ The session price chart samples collected updates every 10 seconds and shows up 
 - Keep page-specific assets and styles in the page. Keep global styles and the Tailwind import in app/styles/index.css.
 - Keep functionality local to its page until extraction has a concrete benefit. Do not add empty components, services, or stores.
 - For example, currency conversion belongs in features/convert-currency; a currency domain model belongs in entities/currency; a generic button belongs in shared/ui/button.
-- Use Material UI components for interface elements and layout. Use Tailwind className utilities for styling instead of sx or inline styles, preserving semantic elements through component props. StyledEngineProvider places MUI styles in the mui CSS layer, before Tailwind utilities, so classes override component defaults without !important. Shared palette and typography defaults remain in the MUI theme. Repeated Typography font styles belong in theme variants: use spanBold for semibold body text and body2Bold for compact semibold text. Keep layout classes local. Typography and Link text colors come from theme palette values through color props; preserve semantic elements with component and reserve local font overrides for genuinely unique text. Custom variant typings live in src/app/config/typography.d.ts. Keep the Tailwind import for existing global styles.
+- Use Material UI components for interface elements and layout. Use Tailwind className utilities for layout and spacing. Put all colors in the MUI palette and apply them with color props or theme-backed sx values, preserving semantic elements through component props. StyledEngineProvider places MUI styles in the mui CSS layer, before Tailwind utilities, so classes override component defaults without !important. Shared palette and typography defaults remain in the MUI theme. Repeated Typography font styles belong in theme variants: use spanBold for semibold body text and body2Bold for compact semibold text. Keep layout classes local. Typography, Link, Chip, and AppBar colors come from theme palette values through color props; preserve semantic elements with component and reserve local font overrides for genuinely unique text. Custom variant typings live in src/app/config/typography.d.ts. Keep the Tailwind import for existing global styles.
 - Follow the naming, types, import ordering, JSX, and comment conventions in ../rule.md.
 
 ## Verification

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Box, Card, MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
+  const theme = useTheme()
   const [selection, setSelection] = useState('BTCUSDT')
   const currency = currencies.find(({ symbol }) => symbol === selection) ?? currencies[0]
   const livePoints = market.history[currency?.symbol ?? ''] ?? []
@@ -75,8 +77,10 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
 
           <LineChart
             points={coordinates}
+            color={theme.palette.primary.main}
+            borderColor={theme.palette.divider}
             aria-label={`${currency?.name} session price chart. From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
-            className="block h-48 w-full overflow-visible text-brand"
+            className="block h-48 w-full overflow-visible"
           />
 
           <Stack

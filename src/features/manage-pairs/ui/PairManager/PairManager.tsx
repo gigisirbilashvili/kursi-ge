@@ -28,7 +28,8 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
       {isExpanded && (
         <Box
           id="pair-manager"
-          className="mt-3 rounded-xl border border-solid border-border bg-background p-4"
+          sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
+          className="mt-3 rounded-xl border border-solid p-4"
         >
           <Typography component="h2" variant="h2">
             Tracked markets

@@ -27,7 +27,8 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
       <Chip
         label="Prices quoted in USDT · Binance Spot"
         size="small"
-        className="mt-3 bg-brand-soft text-xs font-medium text-brand"
+        color="brandSoft"
+        className="mt-3 text-xs font-medium"
       />
 
       <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />

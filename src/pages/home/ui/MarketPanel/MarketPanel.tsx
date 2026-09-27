@@ -89,9 +89,10 @@ export function MarketPanel({
       component="section"
       aria-labelledby="spot-market-heading"
       variant="outlined"
-      className="mt-8 rounded-2xl shadow-[0_1px_3px_#24040a08]"
+      sx={{ boxShadow: (theme) => `0 1px 3px ${theme.palette.surfaceShadow.main}` }}
+      className="mt-8 rounded-2xl"
     >
-      <Stack className="flex-row flex-wrap items-center justify-between gap-4 border-b border-border p-5 sm:p-6">
+      <Stack sx={{ borderColor: 'divider' }} className="flex-row flex-wrap items-center justify-between gap-4 border-b p-5 sm:p-6">
         <Stack className="flex-row items-center gap-3">
           <Typography component="h2" variant="h2" id="spot-market-heading">
             Spot markets
@@ -100,7 +101,8 @@ export function MarketPanel({
           <Chip
             label={`${currencies.length - hiddenCurrencies.length} visible`}
             size="small"
-            className="bg-brand-soft text-xs font-medium text-brand"
+            color="brandSoft"
+            className="text-xs font-medium"
           />
         </Stack>
 
@@ -114,7 +116,8 @@ export function MarketPanel({
         aria-live="polite"
         severity={isUnavailable ? 'warning' : isConnected ? 'success' : 'info'}
         icon={false}
-        className={`rounded-none border-b border-border px-5 sm:px-6 [&_.MuiAlert-message]:w-full ${isUnavailable ? 'bg-warning-soft' : 'bg-background'}`}
+        sx={{ bgcolor: isUnavailable ? 'warningSoft.main' : 'background.default', borderColor: 'divider' }}
+        className="rounded-none border-b px-5 sm:px-6 [&_.MuiAlert-message]:w-full"
       >
         <Stack className="flex-row flex-wrap items-center justify-between gap-3">
           <Typography variant="body2" color={isUnavailable ? 'warning' : 'textSecondary'}>
@@ -140,7 +143,8 @@ export function MarketPanel({
       {alerts.length > 0 && (
         <Stack
           aria-label="Significant price alerts"
-          className="gap-2 border-b border-border p-5 sm:p-6"
+          sx={{ borderColor: 'divider' }}
+          className="gap-2 border-b p-5 sm:p-6"
         >
           {alerts.map((alert) => {
             const currency = AVAILABLE_CURRENCIES.find(({ symbol }) => symbol === alert.symbol)
@@ -165,7 +169,7 @@ export function MarketPanel({
           })}
         </Stack>
       )}
-      <Stack className="flex-row flex-wrap items-center gap-3 border-b border-border p-5 sm:p-6">
+      <Stack sx={{ borderColor: 'divider' }} className="flex-row flex-wrap items-center gap-3 border-b p-5 sm:p-6">
         <TextField
           label="Search currencies"
           size="small"
@@ -222,7 +226,8 @@ export function MarketPanel({
           <IconButton
             aria-label={`Sort ${sortDirection === 'asc' ? 'descending' : 'ascending'}`}
             onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-            className="border border-border"
+            sx={{ borderColor: 'divider' }}
+            className="border"
             size="small"
           >
             <SortIcon
@@ -247,7 +252,8 @@ export function MarketPanel({
           component="section"
           id="hidden-currencies"
           aria-label="Hidden currencies"
-          className="border-b border-border bg-background p-5 sm:p-6"
+          sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
+          className="border-b p-5 sm:p-6"
         >
           <Typography component="h3" variant="spanBold" className="mb-2">
             Hidden currencies
@@ -284,7 +290,7 @@ export function MarketPanel({
       ) : (
         <>
           <TableContainer className="hidden md:block">
-            <Table className="table-fixed [&_.MuiTableCell-root]:border-border [&_.MuiTableCell-root]:px-6 [&_.MuiTableCell-root]:py-5 [&_.MuiTableCell-head]:py-4 [&_.MuiTableCell-head]:text-xs">
+            <Table sx={{ '& .MuiTableCell-root': { borderColor: 'divider' } }} className="table-fixed [&_.MuiTableCell-root]:px-6 [&_.MuiTableCell-root]:py-5 [&_.MuiTableCell-head]:py-4 [&_.MuiTableCell-head]:text-xs">
               <Box component="caption" className="sr-only">
                 Live cryptocurrency prices in USDT, latest tick direction, percentage change since
                 opening, favorite status, and visibility actions.
@@ -324,7 +330,8 @@ export function MarketPanel({
                         <Stack className="flex-row items-center gap-3">
                           <Avatar
                             aria-hidden="true"
-                            className={`size-10 text-[10px] font-bold ${currency.badgeClass}`}
+                            sx={{ bgcolor: `${currency.badgeTone}.main`, color: `${currency.badgeTone}.contrastText` }}
+                            className="size-10 text-[10px] font-bold"
                           >
                             {currency.ticker}
                           </Avatar>
@@ -390,7 +397,8 @@ export function MarketPanel({
                     <Stack className="min-w-0 flex-row items-center gap-2">
                       <Avatar
                         aria-hidden="true"
-                        className={`size-9 text-[9px] font-bold ${currency.badgeClass}`}
+                        sx={{ bgcolor: `${currency.badgeTone}.main`, color: `${currency.badgeTone}.contrastText` }}
+                        className="size-9 text-[9px] font-bold"
                       >
                         {currency.ticker}
                       </Avatar>
@@ -444,7 +452,7 @@ export function MarketPanel({
           </List>
         </>
       )}
-      <Stack color="text.secondary" className="flex-row flex-wrap justify-between gap-2 border-t border-border bg-background px-5 py-4 sm:px-6">
+      <Stack color="text.secondary" sx={{ bgcolor: 'background.default', borderColor: 'divider' }} className="flex-row flex-wrap justify-between gap-2 border-t px-5 py-4 sm:px-6">
         <Typography variant="caption">
           Arrows beside prices show the latest tick. Percentages compare with your first session
           price.

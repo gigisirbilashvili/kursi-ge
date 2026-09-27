@@ -29,7 +29,8 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
       component="section"
       aria-labelledby="conversion-heading"
       variant="outlined"
-      className="mt-8 rounded-2xl p-5 shadow-[0_1px_3px_#24040a08] sm:p-6"
+      sx={{ boxShadow: (theme) => `0 1px 3px ${theme.palette.surfaceShadow.main}` }}
+      className="mt-8 rounded-2xl p-5 sm:p-6"
     >
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
         <Box>
@@ -42,7 +43,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           </Typography>
         </Box>
 
-        <Chip label="Updates every 30s" size="small" className="bg-brand-soft text-xs text-brand" />
+        <Chip label="Updates every 30s" size="small" color="brandSoft" className="text-xs font-medium" />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -108,7 +109,10 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           />
         </Stack>
 
-        <Box className="min-w-0 rounded-xl border border-solid border-border bg-background p-5">
+        <Box
+          sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
+          className="min-w-0 rounded-xl border border-solid p-5"
+        >
           <Typography color="textSecondary" variant="body1">You receive</Typography>
           {result.status === 'ready' ? (
             <>

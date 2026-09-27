@@ -5,31 +5,31 @@ export const CURRENCIES: readonly ICurrency[] = [
     symbol: "BTCUSDT",
     ticker: "BTC",
     name: "Bitcoin",
-    badgeClass: "bg-amber-50 text-amber-800",
+    badgeTone: "badgeAmber",
   },
   {
     symbol: "ETHUSDT",
     ticker: "ETH",
     name: "Ethereum",
-    badgeClass: "bg-violet-50 text-violet-800",
+    badgeTone: "badgeViolet",
   },
   {
     symbol: "SOLUSDT",
     ticker: "SOL",
     name: "Solana",
-    badgeClass: "bg-emerald-50 text-emerald-800",
+    badgeTone: "badgeEmerald",
   },
   {
     symbol: "BNBUSDT",
     ticker: "BNB",
     name: "BNB",
-    badgeClass: "bg-yellow-50 text-yellow-800",
+    badgeTone: "badgeYellow",
   },
   {
     symbol: "XRPUSDT",
     ticker: "XRP",
     name: "XRP",
-    badgeClass: "bg-slate-100 text-slate-700",
+    badgeTone: "badgeSlate",
   },
 ];
 
@@ -39,31 +39,31 @@ export const AVAILABLE_CURRENCIES: readonly ICurrency[] = [
     symbol: "ADAUSDT",
     ticker: "ADA",
     name: "Cardano",
-    badgeClass: "bg-blue-50 text-blue-800",
+    badgeTone: "badgeBlue",
   },
   {
     symbol: "DOGEUSDT",
     ticker: "DOGE",
     name: "Dogecoin",
-    badgeClass: "bg-amber-50 text-amber-800",
+    badgeTone: "badgeAmber",
   },
   {
     symbol: "LINKUSDT",
     ticker: "LINK",
     name: "Chainlink",
-    badgeClass: "bg-blue-50 text-blue-800",
+    badgeTone: "badgeBlue",
   },
   {
     symbol: "AVAXUSDT",
     ticker: "AVAX",
     name: "Avalanche",
-    badgeClass: "bg-red-50 text-red-800",
+    badgeTone: "badgeRed",
   },
   {
     symbol: "LTCUSDT",
     ticker: "LTC",
     name: "Litecoin",
-    badgeClass: "bg-slate-100 text-slate-700",
+    badgeTone: "badgeSlate",
   },
 ];
 

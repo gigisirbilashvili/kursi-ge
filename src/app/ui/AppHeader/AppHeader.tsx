@@ -9,7 +9,9 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
       component="header"
       position="static"
       elevation={0}
-      className="border-b border-white/10 bg-header"
+      color="header"
+      sx={{ borderColor: 'headerBorder.main' }}
+      className="border-b"
     >
       <Container maxWidth="lg">
         <Toolbar disableGutters className="flex-wrap justify-between gap-3 py-4">

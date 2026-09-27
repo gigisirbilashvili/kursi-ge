@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite. The public Binance market feed needs no API key or environment file.
+Open the URL printed by Vite. The public Binance market feed needs no API key. Its WebSocket endpoint is configured by `VITE_MARKET_STREAM_ENDPOINT` in the root `.env` file; override it in `.env.local` or in your deployment environment when needed.
 
 ```bash
 npm run lint

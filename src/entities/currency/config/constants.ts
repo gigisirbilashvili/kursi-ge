@@ -67,7 +67,6 @@ export const AVAILABLE_CURRENCIES: readonly ICurrency[] = [
   },
 ];
 
-export const MARKET_STREAM_URL = `wss://data-stream.binance.vision/stream?streams=${CURRENCIES.map(({ symbol }) => symbol.toLowerCase() + "@miniTicker").join("/")}`;
 export const HISTORY_LIMIT = 360;
 export const CONNECT_TIMEOUT_MS = 12_000;
 export const STALE_TIMEOUT_MS = 30_000;

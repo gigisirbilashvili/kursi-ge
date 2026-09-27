@@ -9,6 +9,8 @@ import {
 import { createMarketFeed } from './createMarketFeed'
 import type { IMarketSocket } from '../types/index'
 
+const TEST_STREAM_ENDPOINT = 'market-stream-endpoint'
+
 function message(price: string, eventTime = 1, symbol = 'BTCUSDT') {
   return JSON.stringify({
     stream: `${symbol.toLowerCase()}@miniTicker`,
@@ -24,9 +26,10 @@ function setup() {
   const tasks = new Map<ReturnType<typeof setTimeout>, { callback: () => void; delay: number }>()
   let sequence = 0
   const feed = createMarketFeed({
+    streamEndpoint: TEST_STREAM_ENDPOINT,
     createSocket(url) {
       urls.push(url)
-      assert.ok(url.startsWith('wss://data-stream.binance.vision/stream?streams='))
+      assert.ok(url.startsWith(`${TEST_STREAM_ENDPOINT}?streams=`))
       const socket: IMarketSocket = {
         onopen: null,
         onmessage: null,
@@ -167,6 +170,7 @@ test('should retry constructor failures and unsubscribe subscribers cleanly', ()
   assert.equal(count, 1)
   feed.stop()
   const brokenFeed = createMarketFeed({
+    streamEndpoint: TEST_STREAM_ENDPOINT,
     createSocket() {
       throw new Error('Unavailable')
     },
@@ -218,7 +222,7 @@ test('should change subscriptions on the same socket and ignore removed pairs', 
   feed.retry()
   assert.equal(
     urls[1],
-    'wss://data-stream.binance.vision/stream?streams=ethusdt@miniTicker/adausdt@miniTicker',
+    `${TEST_STREAM_ENDPOINT}?streams=ethusdt@miniTicker/adausdt@miniTicker`,
   )
   feed.stop()
   assert.equal(tasks.size, 0)

@@ -42,6 +42,7 @@ export interface IMarketSocket {
 }
 
 export interface IMarketFeedOptions {
+  streamEndpoint: string
   symbols?: readonly string[]
   createSocket?: (url: string) => IMarketSocket
   now?: () => number

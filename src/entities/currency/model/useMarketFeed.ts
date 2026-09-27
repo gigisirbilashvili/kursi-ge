@@ -4,7 +4,12 @@ import { createMarketFeed } from './createMarketFeed.ts'
 import { useMarketNotifications } from './useMarketNotifications'
 
 export function useMarketFeed(symbols: readonly string[]) {
-  const [feed] = useState(() => createMarketFeed({ symbols }))
+  const [feed] = useState(() => {
+    const streamEndpoint: unknown = import.meta.env.VITE_MARKET_STREAM_ENDPOINT
+    if (typeof streamEndpoint !== 'string' || !streamEndpoint)
+      throw new Error('VITE_MARKET_STREAM_ENDPOINT is required')
+    return createMarketFeed({ symbols, streamEndpoint })
+  })
   const snapshot = useSyncExternalStore(feed.subscribe, feed.getSnapshot, feed.getSnapshot)
   useMarketNotifications(snapshot)
 

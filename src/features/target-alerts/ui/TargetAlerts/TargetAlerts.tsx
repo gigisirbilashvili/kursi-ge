@@ -1,5 +1,6 @@
-import { Card, Stack, Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { TargetAlertForm } from '../TargetAlertForm/TargetAlertForm'
 import { TargetAlertItem } from '../TargetAlertItem/TargetAlertItem'
 import type { ITargetAlertsProps } from './types'
@@ -15,12 +16,7 @@ export function TargetAlerts({
   const isFull = alerts.length >= 20
 
   return (
-    <Card
-      component="section"
-      variant="outlined"
-      aria-labelledby="target-alert-heading"
-      className="mt-8 rounded-2xl p-5 sm:p-6"
-    >
+    <SectionCard headingId="target-alert-heading" className="p-5 sm:p-6">
       <Typography component="h2" variant="h2" id="target-alert-heading">
         Price alerts
       </Typography>
@@ -51,6 +47,6 @@ export function TargetAlerts({
           />
         ))}
       </Stack>
-    </Card>
+    </SectionCard>
   )
 }

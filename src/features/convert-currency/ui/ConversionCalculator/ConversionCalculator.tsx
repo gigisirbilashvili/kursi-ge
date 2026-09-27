@@ -2,7 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Card,
   Chip,
   InputAdornment,
   Skeleton,
@@ -14,6 +13,7 @@ import {
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -29,13 +29,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
   const hasError = result.status === 'invalid'
 
   return (
-    <Card
-      component="section"
-      aria-labelledby="conversion-heading"
-      variant="outlined"
-      sx={{ boxShadow: (theme) => `0 1px 3px ${theme.palette.surfaceShadow.main}` }}
-      className="mt-8 rounded-2xl p-5 sm:p-6"
-    >
+    <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
         <Box>
           <Typography component="h2" variant="h2" id="conversion-heading">
@@ -143,6 +137,6 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           </Typography>
         </Box>
       </Box>
-    </Card>
+    </SectionCard>
   )
 }

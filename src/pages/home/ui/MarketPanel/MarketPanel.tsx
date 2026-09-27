@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
   Chip,
   IconButton,
   InputAdornment,
@@ -33,6 +32,7 @@ import type {
 } from '../../../../features/market-preferences'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { formatPrice } from '../../lib/formatPrice'
 import { MarketPrice } from '../MarketPrice/MarketPrice'
 import { SessionChange } from '../SessionChange/SessionChange'
@@ -82,13 +82,7 @@ export function MarketPanel({
     !isConnected || now - (snapshot.quotes[symbol]?.receivedAt ?? 0) >= STALE_TIMEOUT_MS
 
   return (
-    <Card
-      component="section"
-      aria-labelledby="spot-market-heading"
-      variant="outlined"
-      sx={{ boxShadow: (theme) => `0 1px 3px ${theme.palette.surfaceShadow.main}` }}
-      className="mt-8 rounded-2xl"
-    >
+    <SectionCard headingId="spot-market-heading" hasShadow>
       <Stack sx={{ borderColor: 'divider' }} className="flex-row flex-wrap items-center justify-between gap-4 border-b p-5 sm:p-6">
         <Stack className="flex-row items-center gap-3">
           <Typography component="h2" variant="h2" id="spot-market-heading">
@@ -461,6 +455,6 @@ export function MarketPanel({
             : `Last update ${age < 2 ? 'just now' : `${age}s ago`}`}
         </Typography>
       </Stack>
-    </Card>
+    </SectionCard>
   )
 }

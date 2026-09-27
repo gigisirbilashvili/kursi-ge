@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Box, Card, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
@@ -32,12 +33,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
   const time = (value: number) => new Date(value).toLocaleTimeString()
 
   return (
-    <Card
-      component="section"
-      variant="outlined"
-      aria-labelledby="history-heading"
-      className="mt-8 rounded-2xl p-5 sm:p-6"
-    >
+    <SectionCard headingId="history-heading" className="p-5 sm:p-6">
       <Stack className="flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <Box>
           <Typography component="h2" variant="h2" id="history-heading">
@@ -95,6 +91,6 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
           History is paused until live prices return.
         </Typography>
       )}
-    </Card>
+    </SectionCard>
   )
 }

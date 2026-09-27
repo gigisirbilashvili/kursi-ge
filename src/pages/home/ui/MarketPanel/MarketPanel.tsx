@@ -33,6 +33,7 @@ import type {
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import { formatPrice } from '../../lib/formatPrice'
 import { MarketPrice } from '../MarketPrice/MarketPrice'
 import { SessionChange } from '../SessionChange/SessionChange'
@@ -248,7 +249,7 @@ export function MarketPanel({
             Hidden currencies
           </Typography>
           {hiddenCurrencies.length === 0 ? (
-            <Typography color="textSecondary">No hidden currencies.</Typography>
+            <StatusText>No hidden currencies.</StatusText>
           ) : (
             <Stack className="flex-row flex-wrap gap-2">
               {hiddenCurrencies.map((currency) => (

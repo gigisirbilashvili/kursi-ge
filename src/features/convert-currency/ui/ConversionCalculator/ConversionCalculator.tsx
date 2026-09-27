@@ -15,6 +15,7 @@ import { notify } from '../../../../shared/lib/notify'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -115,20 +116,20 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <Stack className="gap-2">
               <Skeleton className="h-10 w-full max-w-48 motion-reduce:animate-none" />
 
-              <Typography color="textSecondary" role="status" variant="body2">
+              <StatusText variant="body2">
                 {result.message}
-              </Typography>
+              </StatusText>
             </Stack>
           ) : result.status === 'stale' ? (
             <Alert severity="warning" className="mt-3" role="status">
               {result.message}
             </Alert>
           ) : (
-            <Typography color="textSecondary" role="status" variant="body2" className="mt-3">
+            <StatusText variant="body2" className="mt-3">
               {result.status === 'empty'
                 ? result.message
                 : 'Correct the amount to see the conversion.'}
-            </Typography>
+            </StatusText>
           )}
           <Typography color="textSecondary" variant="caption" className="mt-4 block">
             Estimated conversion using USDT prices. Excludes fees.

@@ -7,6 +7,7 @@ import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
@@ -84,9 +85,9 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       )}
 
       {market.status !== 'connected' && (
-        <Typography color="warning" role="status" className="mt-2">
+        <StatusText tone="warning" className="mt-2">
           History is paused until live prices return.
-        </Typography>
+        </StatusText>
       )}
     </SectionCard>
   )

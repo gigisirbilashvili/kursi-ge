@@ -1,7 +1,8 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import { TargetAlertForm } from '../TargetAlertForm/TargetAlertForm'
 import { TargetAlertItem } from '../TargetAlertItem/TargetAlertItem'
 import type { ITargetAlertsProps } from './types'
@@ -27,13 +28,13 @@ export function TargetAlerts({
       <TargetAlertForm currencies={currencies} isFull={isFull} onAdd={onAdd} />
 
       {isFull && (
-        <Typography color="textSecondary" role="status" className="mt-3">
+        <StatusText className="mt-3">
           Limit of 20 alerts reached. Remove an alert to add another.
-        </Typography>
+        </StatusText>
       )}
 
       <Stack className="mt-5 gap-3">
-        {!alerts.length && <Typography color="textSecondary">No target alerts yet.</Typography>}
+        {!alerts.length && <StatusText>No target alerts yet.</StatusText>}
         {alerts.map((alert) => (
           <TargetAlertItem
             key={alert.id}

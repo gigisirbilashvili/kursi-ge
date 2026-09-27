@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Box, Button, Chip, Stack, Typography } from '@mui/material'
+import { Box, Button, Chip, Stack } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
+import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPairManagerProps } from './types'
 
 export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
@@ -66,7 +67,7 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
               </Button>
             </Stack>
           ) : (
-            <Typography color="textSecondary" className="mt-3">All available pairs are tracked.</Typography>
+            <StatusText className="mt-3">All available pairs are tracked.</StatusText>
           )}
         </Box>
       )}

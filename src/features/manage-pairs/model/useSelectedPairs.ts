@@ -1,8 +1,11 @@
+import { useRef } from 'react'
+
 import { AVAILABLE_CURRENCIES, CURRENCIES } from '../../../entities/currency'
 import { notify } from '../../../shared/lib/notify'
 import { useStoredState } from '../../../shared/lib/useStoredState'
 
 const STORAGE_KEY = 'kursi-selected-pairs-v1'
+const PAIR_CHANGE_TOAST_ID = 'pair-change'
 
 function readSymbols(value: string | null): string[] {
   const saved: unknown = JSON.parse(value ?? 'null')
@@ -17,27 +20,36 @@ function readSymbols(value: string | null): string[] {
 
 export function useSelectedPairs() {
   const [symbols, setSymbols] = useStoredState(STORAGE_KEY, readSymbols)
+  const symbolsRef = useRef(symbols)
 
   const addPair = (symbol: string) => {
-    if (!AVAILABLE_CURRENCIES.some((currency) => currency.symbol === symbol)) {
-      notify.error('This currency pair is not supported.')
+    const currency = AVAILABLE_CURRENCIES.find((item) => item.symbol === symbol)
+    if (!currency) {
+      notify.error('This currency pair is not supported.', { toastId: 'pair-unsupported' })
       return
     }
-    if (symbols.includes(symbol)) {
-      notify.info('This currency pair is already tracked.')
+    const current = symbolsRef.current
+    if (current.includes(symbol)) {
+      notify.info('This currency pair is already tracked.', { toastId: 'pair-already-tracked' })
       return
     }
-    setSymbols((current) => (current.includes(symbol) ? current : [...current, symbol]))
-    notify.success('Currency pair added.')
+    const next = [...current, symbol]
+    symbolsRef.current = next
+    setSymbols(next)
+    notify.successLatest(`${currency.ticker}/USDT added.`, PAIR_CHANGE_TOAST_ID)
   }
   const removePair = (symbol: string) => {
-    if (symbols.length <= 1) {
-      notify.error('Keep at least one currency pair tracked.')
+    const current = symbolsRef.current
+    if (!current.includes(symbol)) return
+    if (current.length <= 1) {
+      notify.error('Keep at least one currency pair tracked.', { toastId: 'pair-last' })
       return
     }
-    if (!symbols.includes(symbol)) return
-    setSymbols((current) => current.filter((item) => item !== symbol))
-    notify.success('Currency pair removed.')
+    const next = current.filter((item) => item !== symbol)
+    symbolsRef.current = next
+    setSymbols(next)
+    const ticker = AVAILABLE_CURRENCIES.find((currency) => currency.symbol === symbol)?.ticker ?? symbol
+    notify.successLatest(`${ticker}/USDT removed.`, PAIR_CHANGE_TOAST_ID)
   }
   const currencies = AVAILABLE_CURRENCIES.filter(({ symbol }) => symbols.includes(symbol))
 

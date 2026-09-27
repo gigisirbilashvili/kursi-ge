@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   InputAdornment,
   Skeleton,
@@ -10,6 +9,7 @@ import {
 
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
+import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
@@ -121,9 +121,9 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
               </StatusText>
             </Stack>
           ) : result.status === 'stale' ? (
-            <Alert severity="warning" className="mt-3" role="status">
+            <AppAlert severity="warning" className="mt-3">
               {result.message}
-            </Alert>
+            </AppAlert>
           ) : (
             <StatusText variant="body2" className="mt-3">
               {result.status === 'empty'

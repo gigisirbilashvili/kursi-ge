@@ -1,7 +1,8 @@
-import { Alert, Box, Stack, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
+import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import type { ITargetAlertItemProps } from './types'
 
@@ -25,7 +26,7 @@ export function TargetAlertItem({
   else if (marketStatus !== 'connected') statusText = 'Waiting for live prices.'
 
   return (
-    <Alert
+    <AppAlert
       role={hasTriggered ? 'status' : 'note'}
       severity={hasTriggered ? 'success' : 'info'}
       icon={false}
@@ -51,6 +52,6 @@ export function TargetAlertItem({
           </AppButton>
         </Stack>
       </Stack>
-    </Alert>
+    </AppAlert>
   )
 }

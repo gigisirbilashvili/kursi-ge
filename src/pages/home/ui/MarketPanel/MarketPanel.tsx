@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  Alert,
   Avatar,
   Box,
   IconButton,
@@ -29,6 +28,7 @@ import type {
   TSortField,
 } from '../../../../features/market-preferences'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
+import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
@@ -101,8 +101,7 @@ export function MarketPanel({
         </Typography>
       </Stack>
 
-      <Alert
-        role="status"
+      <AppAlert
         aria-live="polite"
         severity={isUnavailable ? 'warning' : isConnected ? 'success' : 'info'}
         icon={false}
@@ -129,7 +128,7 @@ export function MarketPanel({
             </AppButton>
           )}
         </Stack>
-      </Alert>
+      </AppAlert>
       {alerts.length > 0 && (
         <Stack
           aria-label="Significant price alerts"
@@ -139,8 +138,9 @@ export function MarketPanel({
           {alerts.map((alert) => {
             const currency = AVAILABLE_CURRENCIES.find(({ symbol }) => symbol === alert.symbol)
             return (
-              <Alert
+              <AppAlert
                 key={alert.id}
+                role="alert"
                 severity={alert.direction === 'increased' ? 'success' : 'warning'}
                 onClose={() => onDismissAlert(alert.id)}
               >
@@ -154,7 +154,7 @@ export function MarketPanel({
                   Initial: {formatPrice(alert.initialPrice)} USDT · Current:{' '}
                   {formatPrice(alert.currentPrice)} USDT · Direction: {alert.direction}
                 </Typography>
-              </Alert>
+              </AppAlert>
             )
           })}
         </Stack>

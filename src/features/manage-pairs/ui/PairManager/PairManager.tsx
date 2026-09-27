@@ -3,6 +3,7 @@ import { Box, Button, Chip, Stack, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import type { IPairManagerProps } from './types'
 
 export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
@@ -32,14 +33,10 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
           sx={{ bgcolor: 'background.default', borderColor: 'divider' }}
           className="mt-3 rounded-xl border border-solid p-4"
         >
-          <Typography component="h2" variant="h2">
-            Tracked markets
-          </Typography>
-
-          <Typography color="textSecondary" className="mt-1">
-            Add a USDT pair or remove its live subscription. Keep at least one pair. Hiding a
-            currency only changes its visibility.
-          </Typography>
+          <SectionHeader
+            title="Tracked markets"
+            description="Add a USDT pair or remove its live subscription. Keep at least one pair. Hiding a currency only changes its visibility."
+          />
 
           <Stack className="mt-3 flex-row flex-wrap gap-2">
             {currencies.map((currency) => (

@@ -1,6 +1,7 @@
 import { Stack, Typography } from '@mui/material'
 
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { TargetAlertForm } from '../TargetAlertForm/TargetAlertForm'
 import { TargetAlertItem } from '../TargetAlertItem/TargetAlertItem'
 import type { ITargetAlertsProps } from './types'
@@ -17,14 +18,11 @@ export function TargetAlerts({
 
   return (
     <SectionCard headingId="target-alert-heading" className="p-5 sm:p-6">
-      <Typography component="h2" variant="h2" id="target-alert-heading">
-        Price alerts
-      </Typography>
-
-      <Typography color="textSecondary" className="mt-1">
-        Choose a target in USDT. Alerts fire once when the condition is met, including if it is
-        already met. Saved on this device; monitored while this page is open.
-      </Typography>
+      <SectionHeader
+        headingId="target-alert-heading"
+        title="Price alerts"
+        description="Choose a target in USDT. Alerts fire once when the condition is met, including if it is already met. Saved on this device; monitored while this page is open."
+      />
 
       <TargetAlertForm currencies={currencies} isFull={isFull} onAdd={onAdd} />
 

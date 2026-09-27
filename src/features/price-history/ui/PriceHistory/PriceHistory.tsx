@@ -6,6 +6,7 @@ import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
@@ -35,15 +36,11 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
   return (
     <SectionCard headingId="history-heading" className="p-5 sm:p-6">
       <Stack className="flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <Box>
-          <Typography component="h2" variant="h2" id="history-heading">
-            Session price history
-          </Typography>
-
-          <Typography color="textSecondary" className="mt-1">
-            Refreshes every 10 seconds. Latest 360 session updates, priced in USDT.
-          </Typography>
-        </Box>
+        <SectionHeader
+          headingId="history-heading"
+          title="Session price history"
+          description="Refreshes every 10 seconds. Latest 360 session updates, priced in USDT."
+        />
 
         <OptionSelect
           label="Chart currency"

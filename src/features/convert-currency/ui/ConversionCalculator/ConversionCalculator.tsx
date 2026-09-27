@@ -14,6 +14,7 @@ import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
+import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
@@ -31,15 +32,12 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
   return (
     <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
-        <Box>
-          <Typography component="h2" variant="h2" id="conversion-heading">
-            Currency calculator
-          </Typography>
-
-          <Typography color="textSecondary" variant="body2" className="mt-1">
-            Convert using Binance prices, refreshed every 30 seconds.
-          </Typography>
-        </Box>
+        <SectionHeader
+          headingId="conversion-heading"
+          title="Currency calculator"
+          description="Convert using Binance prices, refreshed every 30 seconds."
+          descriptionVariant="body2"
+        />
 
         <Chip label="Updates every 30s" size="small" color="brandSoft" className="text-xs font-medium" />
       </Stack>

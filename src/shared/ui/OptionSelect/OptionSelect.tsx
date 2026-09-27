@@ -22,17 +22,17 @@ export function OptionSelect({
       size="small"
       onChange={(event) => onChange(event.target.value)}
       className={className}
-      slotProps={
-        shouldRestoreFocus
-          ? {
-              select: {
-                onClose: () =>
-                  selectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus(),
-                MenuProps: { ['disableEnforceFocus']: true },
-              },
-            }
-          : undefined
-      }
+      slotProps={{
+        select: {
+          onClose: shouldRestoreFocus
+            ? () => selectRef.current?.querySelector<HTMLElement>('[role="combobox"]')?.focus()
+            : undefined,
+          MenuProps: {
+            ['disableScrollLock']: true,
+            ['disableEnforceFocus']: shouldRestoreFocus,
+          },
+        },
+      }}
     >
       {options.map((option) => (
         <MenuItem key={option.value} value={option.value}>

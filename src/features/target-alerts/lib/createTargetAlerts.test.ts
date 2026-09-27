@@ -34,9 +34,12 @@ test('should validate target prices and stored alerts', () => {
   const saved = [
     { id: '1', symbol: 'BTCUSDT', target: 120, direction: 'above' },
     { id: '2', symbol: 'FAKE', target: 1, direction: 'above' },
+    { id: '3', symbol: 'BTCUSDT', target: 80, direction: 'below', triggerCount: 0, triggeredPrice: 80 },
+    { id: '4', symbol: 'BTCUSDT', target: 80, direction: 'below', triggerCount: -1 },
+    { id: '5', symbol: 'BTCUSDT', target: 80, direction: 'below', triggeredPrice: 0 },
     null,
   ]
-  assert.equal(createTargetAlerts(saved).getSnapshot().length, 1)
+  assert.deepEqual(createTargetAlerts(saved).getSnapshot().map(({ id }) => id), ['1', '3'])
 })
 
 test('should fire target alerts inclusively once, persist results, and rearm explicitly', () => {

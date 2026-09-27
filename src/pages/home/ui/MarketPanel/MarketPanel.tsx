@@ -3,7 +3,6 @@ import {
   Alert,
   Avatar,
   Box,
-  Button,
   Chip,
   IconButton,
   InputAdornment,
@@ -31,6 +30,7 @@ import type {
   TSortField,
 } from '../../../../features/market-preferences'
 import { FavoriteIcon, SortIcon } from '../../../../shared/ui/icons'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
@@ -120,7 +120,7 @@ export function MarketPanel({
             {isUnavailable && hasPrices && ' Last-known prices are shown below.'}
           </Typography>
           {isUnavailable && (
-            <Button
+            <AppButton
               variant="outlined"
               size="small"
               onClick={onRetry}
@@ -128,7 +128,7 @@ export function MarketPanel({
               className="min-h-10"
             >
               Retry connection
-            </Button>
+            </AppButton>
           )}
         </Stack>
       </Alert>
@@ -172,14 +172,14 @@ export function MarketPanel({
             input: {
               endAdornment: search ? (
                 <InputAdornment position="end">
-                  <Button
+                  <AppButton
                     type="button"
                     size="small"
                     aria-label="Clear search"
                     onClick={() => setSearch('')}
                   >
                     Clear
-                  </Button>
+                  </AppButton>
                 </InputAdornment>
               ) : undefined,
             },
@@ -227,7 +227,7 @@ export function MarketPanel({
           </IconButton>
         </Tooltip>
 
-        <Button
+        <AppButton
           type="button"
           onClick={() => setIsShowingHidden(!isShowingHidden)}
           aria-expanded={isShowingHidden}
@@ -235,7 +235,7 @@ export function MarketPanel({
           className="ml-auto"
         >
           Hidden ({hiddenCurrencies.length})
-        </Button>
+        </AppButton>
       </Stack>
       {isShowingHidden && (
         <Box
@@ -253,7 +253,7 @@ export function MarketPanel({
           ) : (
             <Stack className="flex-row flex-wrap gap-2">
               {hiddenCurrencies.map((currency) => (
-                <Button
+                <AppButton
                   key={currency.symbol}
                   variant="outlined"
                   size="small"
@@ -261,7 +261,7 @@ export function MarketPanel({
                   aria-label={`Restore ${currency.name}`}
                 >
                   Restore {currency.ticker}
-                </Button>
+                </AppButton>
               ))}
             </Stack>
           )}
@@ -362,13 +362,13 @@ export function MarketPanel({
                             </IconButton>
                           </Tooltip>
 
-                          <Button
+                          <AppButton
                             size="small"
                             onClick={() => hide(currency.symbol)}
                             aria-label={`Hide ${currency.name}`}
                           >
                             Hide
-                          </Button>
+                          </AppButton>
                         </Stack>
                       </TableCell>
                     </TableRow>
@@ -428,13 +428,13 @@ export function MarketPanel({
                       </IconButton>
                     </Tooltip>
 
-                    <Button
+                    <AppButton
                       size="small"
                       onClick={() => hide(currency.symbol)}
                       aria-label={`Hide ${currency.name}`}
                     >
                       Hide
-                    </Button>
+                    </AppButton>
                   </Stack>
                 </ListItem>
               )

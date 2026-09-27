@@ -1,7 +1,6 @@
 import {
   Alert,
   Box,
-  Button,
   Chip,
   InputAdornment,
   Skeleton,
@@ -12,6 +11,7 @@ import {
 
 import { formatConversionValue } from '../../lib/convertCurrency'
 import { notify } from '../../../../shared/lib/notify'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
@@ -54,14 +54,14 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
               className="min-w-0"
             />
 
-            <Button
+            <AppButton
               variant="outlined"
               aria-label="Swap currencies"
               onClick={swap}
               className="min-h-10"
             >
               Swap
-            </Button>
+            </AppButton>
 
             <OptionSelect
               label="Target currency"

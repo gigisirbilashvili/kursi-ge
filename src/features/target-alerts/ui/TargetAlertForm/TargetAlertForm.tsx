@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Box, Button, TextField } from '@mui/material'
+import { Box, TextField } from '@mui/material'
 
 import { notify } from '../../../../shared/lib/notify'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { parseTarget } from '../../lib/createTargetAlerts'
 import type { ITargetAlertFormProps } from './types'
@@ -70,9 +71,9 @@ export function TargetAlertForm({ currencies, isFull, onAdd }: ITargetAlertFormP
         slotProps={{ htmlInput: { inputMode: 'decimal' } }}
       />
 
-      <Button type="submit" variant="contained" disabled={isFull} className="min-h-10">
+      <AppButton type="submit" variant="contained" disabled={isFull} className="min-h-10">
         Create alert
-      </Button>
+      </AppButton>
     </Box>
   )
 }

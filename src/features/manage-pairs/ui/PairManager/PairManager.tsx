@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Box, Button, Chip, Stack } from '@mui/material'
+import { Box, Chip, Stack } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
@@ -19,14 +20,14 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
 
   return (
     <Box className="mt-6">
-      <Button
+      <AppButton
         variant="outlined"
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
         aria-controls="pair-manager"
       >
         Manage pairs ({currencies.length})
-      </Button>
+      </AppButton>
 
       {isExpanded && (
         <Box
@@ -62,9 +63,9 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
                 className="min-w-48"
               />
 
-              <Button variant="contained" onClick={() => onAdd(selected)}>
+              <AppButton variant="contained" onClick={() => onAdd(selected)}>
                 Add pair
-              </Button>
+              </AppButton>
             </Stack>
           ) : (
             <StatusText className="mt-3">All available pairs are tracked.</StatusText>

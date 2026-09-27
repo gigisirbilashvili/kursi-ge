@@ -1,7 +1,8 @@
-import { Alert, Box, Button, Stack, Typography } from '@mui/material'
+import { Alert, Box, Stack, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
 import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
+import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import type { ITargetAlertItemProps } from './types'
 
 export function TargetAlertItem({
@@ -41,13 +42,13 @@ export function TargetAlertItem({
 
         <Stack className="flex-row gap-2">
           {hasTriggered && (
-            <Button onClick={() => onRearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
+            <AppButton onClick={() => onRearm(alert.id)} aria-label={`Rearm ${ticker} alert`}>
               Rearm
-            </Button>
+            </AppButton>
           )}
-          <Button onClick={() => onRemove(alert.id)} aria-label={`Remove ${ticker} alert`}>
+          <AppButton onClick={() => onRemove(alert.id)} aria-label={`Remove ${ticker} alert`}>
             Remove
-          </Button>
+          </AppButton>
         </Stack>
       </Stack>
     </Alert>

@@ -1,5 +1,6 @@
-import { AppBar, Button, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
+import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
@@ -36,14 +37,14 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
 
           <Stack className="flex-row flex-wrap items-center gap-2">
             <ConnectionStatus status={connectionStatus} />
-            <Button
+            <AppButton
               onClick={onToggleMode}
               size="small"
               color="headerPrimary"
               aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} theme`}
             >
               {mode === 'light' ? 'Dark mode' : 'Light mode'}
-            </Button>
+            </AppButton>
           </Stack>
         </Toolbar>
       </Container>

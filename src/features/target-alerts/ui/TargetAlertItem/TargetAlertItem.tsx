@@ -1,6 +1,7 @@
 import { Alert, Box, Button, Stack, Typography } from '@mui/material'
 
 import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
 import type { ITargetAlertItemProps } from './types'
 
 export function TargetAlertItem({
@@ -18,7 +19,7 @@ export function TargetAlertItem({
 
   let statusText = 'Armed — waiting for target.'
   if (alert.triggeredPrice !== undefined)
-    statusText = `Triggered at ${alert.triggeredPrice.toLocaleString('en-US', { maximumSignificantDigits: 12 })} USDT`
+    statusText = `Triggered at ${formatSignificantNumber(alert.triggeredPrice)} USDT`
   else if (!isTracked) statusText = 'Paused — add this pair to resume.'
   else if (marketStatus !== 'connected') statusText = 'Waiting for live prices.'
 
@@ -33,7 +34,7 @@ export function TargetAlertItem({
         <Box>
           <Typography component="p" variant="spanBold">
             {ticker}/USDT {alert.direction === 'above' ? '≥' : '≤'}{' '}
-            {alert.target.toLocaleString('en-US', { maximumSignificantDigits: 12 })}
+            {formatSignificantNumber(alert.target)}
           </Typography>
           <Typography variant="body2">{statusText}</Typography>
         </Box>

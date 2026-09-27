@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
+import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
 import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
@@ -31,7 +32,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
       return `${x},${y}`
     })
     .join(' ')
-  const format = (price: number) => price.toLocaleString('en-US', { maximumSignificantDigits: 8 })
+  const format = (price: number) => formatSignificantNumber(price, 8)
   const time = (value: number) => new Date(value).toLocaleTimeString()
 
   return (

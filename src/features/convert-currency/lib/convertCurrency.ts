@@ -1,5 +1,6 @@
 import { STALE_TIMEOUT_MS } from '../../../entities/currency/index.ts'
 import type { IMarketSnapshot } from '../../../entities/currency/index.ts'
+import { formatSignificantNumber } from '../../../shared/lib/formatSignificantNumber'
 import { NON_NEGATIVE_DECIMAL_INPUT_PATTERN } from '../../../shared/config/constants.ts'
 import type { TConversionResult } from '../types/index.ts'
 
@@ -67,5 +68,5 @@ export function getConversionResult(
 
 export function formatConversionValue(value: number) {
   if (value > 0 && value < 0.00000001) return value.toExponential(6)
-  return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 12 }).format(value)
+  return formatSignificantNumber(value)
 }

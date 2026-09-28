@@ -1,11 +1,11 @@
-import { Box, Skeleton, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 
-import { ArrowIcon } from '../../../../assets/icons'
-import { formatPrice } from '../../lib/formatPrice'
-import type { IMarketPriceProps } from './types'
+import { ArrowIcon } from "../../../../assets/icons";
+import { formatPrice } from "../../lib/formatPrice";
+import type { IMarketPriceProps } from "./types";
 
-export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
-  if (!quote)
+export function MarketPrice({ quote, isStale }: Readonly<IMarketPriceProps>) {
+  if (!quote) {
     return (
       <Stack className="items-end">
         <Skeleton className="h-6 w-24 motion-reduce:animate-none motion-reduce:after:animate-none" />
@@ -14,22 +14,30 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
           Awaiting price
         </Typography>
       </Stack>
-    )
-  const color =
-    quote.direction === 'up'
-      ? 'success.main'
-      : quote.direction === 'down'
-        ? 'error.main'
-        : 'text.secondary'
+    );
+  }
+
+  let color = "text.secondary";
+
+  if (quote.direction === "up") {
+    color = "success.main";
+  } else if (quote.direction === "down") {
+    color = "error.main";
+  }
+
   return (
     <Stack className="items-end gap-1">
       <Stack className="flex-row items-center gap-2">
         <Tooltip title={`Latest tick: ${quote.direction}`}>
-          <Box component="span" color={color} className="inline-flex w-4 shrink-0">
+          <Box
+            component="span"
+            color={color}
+            className="inline-flex w-4 shrink-0"
+          >
             <ArrowIcon width={16} height={20} direction={quote.direction} />
 
             <Box component="span" className="sr-only">
-              Latest tick {quote.direction}.{' '}
+              Latest tick {quote.direction}.{" "}
             </Box>
           </Box>
         </Tooltip>
@@ -48,5 +56,5 @@ export function MarketPrice({ quote, isStale }: IMarketPriceProps) {
         </Typography>
       )}
     </Stack>
-  )
+  );
 }

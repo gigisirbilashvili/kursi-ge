@@ -51,7 +51,7 @@ export function MarketPanel({
   currencies,
   alerts,
   onDismissAlert,
-}: IMarketPanelProps) {
+}: Readonly<IMarketPanelProps>) {
   const [now, setNow] = useState(Date.now);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<TMarketFilter>("all");

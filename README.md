@@ -61,6 +61,14 @@ The runtime code follows Feature-Sliced Design's downward dependency direction: 
 
 The repository has an unused `processes` placeholder; no runtime code depends on it. This one-page app does not need a `widgets` layer.
 
+### Market feed ownership
+
+`createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `useMarketFeed` bridges that store to React with `useSyncExternalStore`. Its effects only synchronize selected pairs, forward browser online/offline events, and start/stop the service.
+
+`App` is the single feed owner. The hook lazily creates one service per mounted App and passes its snapshot and retry action down to the dashboard. Rerenders and pair changes reuse that instance; removing a dashboard child does not stop it. Unmounting App removes the browser listeners and stops the service. React Strict Mode may start, stop, and restart it during development, with only one socket active at a time.
+
+An App-scoped instance keeps ownership explicit without a global singleton, reference counting, or a context provider. Call the hook once at the dashboard root rather than separately in each price widget. The endpoint and optional injected dependencies are fixed for that mounted instance; symbols remain reactive. The hook's optional third argument accepts the service's socket factory, clock, and timer dependencies for integration tests.
+
 ## Implemented features
 
 - Live prices for five default USDT pairs, with latest-price direction, session percentage change, loading placeholders, and responsive table/card layouts. The pair manager can track up to ten supported pairs.

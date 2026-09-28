@@ -1,5 +1,5 @@
 import { createBrowserSocket } from '../api/createBrowserSocket.ts'
-import { parseMarketMessage } from '../api/parseMarketMessage.ts'
+import { parseMarketSocketMessage } from '../api/parseMarketMessage.ts'
 import {
   CONNECT_TIMEOUT_MS,
   AVAILABLE_CURRENCIES,
@@ -10,7 +10,7 @@ import {
   STALE_TIMEOUT_MS,
 } from '../config/constants.ts'
 import { updateQuote } from '../lib/updateQuote.ts'
-import type { IMarketFeedOptions, IMarketSnapshot, IMarketSocket, IMarketTick } from '../types/index.ts'
+import type { IMarketFeedOptions, IMarketSnapshot, IMarketSocket, IMarketTick, TMarketSocketData } from '../types/index.ts'
 
 function createStreamUrl(streamEndpoint: string, desiredSymbols: ReadonlySet<string>) {
   const streams = [...desiredSymbols].map((symbol) => `${symbol.toLowerCase()}@miniTicker`)
@@ -161,9 +161,9 @@ export function createMarketFeed(options: IMarketFeedOptions) {
     }
   }
 
-  function handleSubscriptionResponse(response: object & { id: unknown }) {
-    if (pendingSubscriptionId === null || response.id !== pendingSubscriptionId) return
-    if (!('result' in response) || response.result !== null) {
+  function handleSubscriptionResponse(id: number | null, isAccepted: boolean) {
+    if (pendingSubscriptionId === null || id !== pendingSubscriptionId) return
+    if (!isAccepted) {
       scheduleReconnect('Binance rejected the pair change. Retrying automatically.')
       return
     }
@@ -194,29 +194,18 @@ export function createMarketFeed(options: IMarketFeedOptions) {
     })
   }
 
-  function handleMessage(data: unknown) {
-    if (typeof data === 'string') {
-      let response: unknown
-      try {
-        response = JSON.parse(data)
-      } catch {
-        publish({ status: 'error', message: 'An invalid market update was ignored.' })
+  function handleMessage(data: TMarketSocketData) {
+    const message = parseMarketSocketMessage(data)
+    switch (message.kind) {
+      case 'ticker':
+        handleMarketTick(message.tick)
         return
-      }
-      if (response && typeof response === 'object' && 'id' in response) {
-        handleSubscriptionResponse(response)
+      case 'subscription':
+        handleSubscriptionResponse(message.id, message.isAccepted)
         return
-      }
+      case 'invalid':
+        publish({ status: 'error', message: message.message })
     }
-    const tick = parseMarketMessage(data)
-    if (!tick) {
-      publish({
-        status: 'error',
-        message: 'An invalid market update was ignored. Waiting for valid prices.',
-      })
-      return
-    }
-    handleMarketTick(tick)
   }
 
   function handleOpen() {

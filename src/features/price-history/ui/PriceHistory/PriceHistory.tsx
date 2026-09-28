@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { LineChart } from '@mui/x-charts/LineChart'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
-import { LineChart } from '../../../../assets/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
@@ -22,16 +22,6 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
   const first = points[0]
   const last = points.at(-1)
   const range = max - min || max * 0.001 || 1
-  const coordinates = points
-    .map((point) => {
-      const x =
-        16 +
-        ((point.time - (first?.time ?? 0)) / Math.max(1, (last?.time ?? 0) - (first?.time ?? 0))) *
-          768
-      const y = max === min ? 100 : 180 - ((point.price - min) / range) * 160
-      return `${x},${y}`
-    })
-    .join(' ')
   const format = (price: number) => formatSignificantNumber(price, 8)
   const time = (value: number) => new Date(value).toLocaleTimeString()
 
@@ -65,11 +55,33 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
           </Stack>
 
           <LineChart
-            points={coordinates}
-            color={theme.palette.primary.main}
-            borderColor={theme.palette.divider}
-            aria-label={`${currency?.name} session price chart. From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
-            className="block h-48 w-full overflow-visible"
+            height={240}
+            xAxis={[{
+              data: points.map(({ time: timestamp }) => new Date(timestamp)),
+              scaleType: 'time',
+              valueFormatter: (value: Date) => value.toLocaleTimeString(),
+              tickNumber: 3,
+            }]}
+            yAxis={[{
+              min: Math.max(0, min - range * 0.1),
+              max: max + range * 0.1,
+              width: 90,
+              valueFormatter: (value: number) => format(value),
+            }]}
+            series={[{
+              id: currency?.symbol,
+              label: `${currency?.ticker}/USDT`,
+              data: points.map(({ price }) => price),
+              color: theme.palette.primary.main,
+              curve: 'linear',
+              ['showMark']: false,
+              valueFormatter: (value) => value === null ? '—' : `${format(value)} USDT`,
+            }]}
+            grid={{ ['horizontal']: true }}
+            hideLegend
+            skipAnimation
+            title={`${currency?.name} session price chart`}
+            desc={`From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
           />
 
           <Stack

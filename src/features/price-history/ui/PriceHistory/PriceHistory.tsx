@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { LineChart } from '@mui/x-charts/LineChart'
 
+import { useMarketHistory, useMarketStatus } from '../../../../entities/currency'
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
@@ -11,11 +12,12 @@ import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPriceHistoryProps } from './types'
 
-export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
+export function PriceHistory({ currencies }: IPriceHistoryProps) {
   const theme = useTheme()
   const [selection, setSelection] = useState('BTCUSDT')
   const currency = currencies.find(({ symbol }) => symbol === selection) ?? currencies[0]
-  const livePoints = market.history[currency?.symbol ?? ''] ?? []
+  const status = useMarketStatus()
+  const livePoints = useMarketHistory(currency?.symbol ?? '')
   const points = useSampledValue(livePoints, 10_000, currency?.symbol ?? '', livePoints.length >= 2)
   const min = Math.min(...points.map(({ price }) => price))
   const max = Math.max(...points.map(({ price }) => price))
@@ -97,7 +99,7 @@ export function PriceHistory({ currencies, market }: IPriceHistoryProps) {
         </Box>
       )}
 
-      {market.status !== 'connected' && (
+      {status !== 'connected' && (
         <StatusText tone="warning" className="mt-2">
           History is paused until live prices return.
         </StatusText>

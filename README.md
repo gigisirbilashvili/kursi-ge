@@ -53,11 +53,13 @@ There are no `widgets` or `processes` directories in the current app. Market pan
 
 ### Market feed ownership
 
-`createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `useMarketFeed` bridges that store to React with `useSyncExternalStore`. Its effects only synchronize selected pairs, forward browser online/offline events, and start/stop the service.
+`createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `MarketFeedProvider`, mounted once in `App`, creates one service and supplies that stable instance through context. Its ownership hook synchronizes selected pairs, forwards browser online/offline events, and starts/stops the service. The provider does not subscribe to the full snapshot.
 
-`App` is the single feed owner. The hook lazily creates one service per mounted App and passes its snapshot and retry action down to the dashboard. Rerenders and pair changes reuse that instance; removing a dashboard child does not stop it. Unmounting App removes the browser listeners and stops the service. React Strict Mode may start, stop, and restart it during development, with only one socket active at a time.
+Components read data through `useMarketStatus()`, `useMarketQuote(symbol)`, and `useMarketHistory(symbol)`. These use `useSyncExternalStore`, so an unrelated quote update does not trigger a subscription-driven render. `useMarketFeed()` only retrieves the existing service for commands or non-React subscriptions; it never creates or starts another feed. `useMarketValue(selector)` supports additional selections; selectors must return a primitive or an existing stable reference, not a newly allocated object or array.
 
-An App-scoped instance keeps ownership explicit without a global singleton, reference counting, or a context provider. Call the hook once at the dashboard root rather than separately in each price widget. The endpoint and optional injected dependencies are fixed for that mounted instance; symbols remain reactive. The hook's optional third argument accepts the service's socket factory, clock, and timer dependencies for integration tests.
+`initialOptions` holds the endpoint and optional injected socket factory, clock, and timers. Those options are fixed for the provider's mounted lifetime; `symbols` remains reactive. Remount the provider to replace its configuration. Removing consumers does not stop the feed. Unmounting the provider removes browser listeners and cancels the connection and timers. Strict Mode may replay ownership effects, with only one socket active at a time.
+
+Alert feature stores subscribe directly to the feed and evaluate every published update. React subscribes to their resulting alerts, rather than forwarding market snapshots through page props. The table subscribes to quotes only when sorting by market values; individual price cells and session changes subscribe by symbol. The footer owns its elapsed-time clock, and price cells schedule their own freshness deadline.
 
 ### WebSocket lifecycle
 
@@ -69,7 +71,7 @@ Connections and subscription acknowledgements time out after 12 seconds. An open
 
 ### Market panel
 
-`pages/home/ui/MarketPanel` composes the header and connection message, alerts, toolbar and hidden-currency controls, desktop table, mobile list, and footer. `useMarketPanel` owns the panel's local controls and reuses `useMarketPreferences` and `selectCurrencies` from the existing market-preferences feature. `getMarketPanelStatus` calculates connection flags, last-update age, and stale quotes.
+`pages/home/ui/MarketPanel` composes the header and connection message, alerts, toolbar and hidden-currency controls, desktop table, mobile list, and footer. `useMarketPanel` owns the panel's local controls and reuses `useMarketPreferences` and `selectCurrencies` from the existing market-preferences feature. The header reads connection state directly, the footer calculates last-update age, and each price cell tracks its freshness deadline.
 
 Desktop and mobile layouts share `MarketCurrencyInfo` and `MarketCurrencyActions`. `MarketPrice` and `SessionChange` remain in the home-page UI. Favorite, hide, and restore behavior stays in the market-preferences feature; presentational sections receive state and callbacks.
 

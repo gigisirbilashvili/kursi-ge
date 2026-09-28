@@ -1,11 +1,13 @@
 import { Tooltip, Typography } from "@mui/material";
 
+import { useMarketQuote } from '../../../../entities/currency';
 import { AppChip } from "../../../../shared/ui/AppChip/AppChip";
 import { ArrowIcon } from "../../../../assets/icons";
 import { formatPrice } from "../../lib/formatPrice";
 import type { ISessionChangeProps } from "./types";
 
-export function SessionChange({ quote }: ISessionChangeProps) {
+export function SessionChange({ symbol }: ISessionChangeProps) {
+  const quote = useMarketQuote(symbol)
   if (!quote)
     return (
       <Typography

@@ -1,7 +1,7 @@
 import { Container, CssBaseline, Link, StyledEngineProvider, ThemeProvider } from '@mui/material'
 
 import { HomePage } from '../pages/home'
-import { useMarketFeed } from '../entities/currency'
+import { MarketFeedProvider } from '../entities/currency'
 import { useSelectedPairs } from '../features/manage-pairs'
 import { Toaster } from '../shared/ui/Toaster/Toaster'
 import { themes } from './config/theme'
@@ -14,7 +14,6 @@ export function App() {
   const streamEndpoint: unknown = import.meta.env.VITE_MARKET_STREAM_ENDPOINT
   if (typeof streamEndpoint !== 'string' || !streamEndpoint)
     throw new Error('VITE_MARKET_STREAM_ENDPOINT is required')
-  const { snapshot, retry } = useMarketFeed(symbols, streamEndpoint)
   return (
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={themes[mode]}>
@@ -28,23 +27,23 @@ export function App() {
           Skip to content
         </Link>
 
-        <AppHeader connectionStatus={snapshot.status} mode={mode} onToggleMode={toggleMode} />
+        <MarketFeedProvider initialOptions={{ streamEndpoint }} symbols={symbols}>
+          <AppHeader mode={mode} onToggleMode={toggleMode} />
 
-        <Container
-          component="main"
-          id="main-content"
-          tabIndex={-1}
-          maxWidth="lg"
-          className="py-8 outline-none sm:py-10"
-        >
-          <HomePage
-            market={snapshot}
-            onRetry={retry}
-            currencies={currencies}
-            onAddPair={addPair}
-            onRemovePair={removePair}
-          />
-        </Container>
+          <Container
+            component="main"
+            id="main-content"
+            tabIndex={-1}
+            maxWidth="lg"
+            className="py-8 outline-none sm:py-10"
+          >
+            <HomePage
+              currencies={currencies}
+              onAddPair={addPair}
+              onRemovePair={removePair}
+            />
+          </Container>
+        </MarketFeedProvider>
       </ThemeProvider>
     </StyledEngineProvider>
   )

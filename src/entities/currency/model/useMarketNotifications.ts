@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { notify } from '../../../shared/lib/notify'
 import type { IMarketSnapshot, TMarketStatus } from '../types'
 
-export function useMarketNotifications({ status, message }: IMarketSnapshot) {
+export function useMarketNotifications({ status, message }: Pick<IMarketSnapshot, 'status' | 'message'>) {
   const previousStatus = useRef<TMarketStatus | null>(null)
   const hasFailed = useRef(false)
 

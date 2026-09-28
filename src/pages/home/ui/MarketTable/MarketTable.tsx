@@ -17,9 +17,7 @@ import type { IMarketTableProps } from './types'
 
 export function MarketTable({
   visibleCurrencies,
-  snapshot,
   favorites,
-  isQuoteStale,
   toggleFavorite,
   hide,
 }: Readonly<IMarketTableProps>) {
@@ -73,14 +71,13 @@ export function MarketTable({
 
                 <TableCell align="right">
                   <MarketPrice
-                    quote={snapshot.quotes[currency.symbol]}
-                    isStale={isQuoteStale(currency.symbol)}
+                    symbol={currency.symbol}
                   />
                 </TableCell>
 
                 <TableCell align="right">
                   <SessionChange
-                    quote={snapshot.quotes[currency.symbol]}
+                    symbol={currency.symbol}
                   />
                 </TableCell>
 

@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material'
 
+import { useMarketStatus } from '../../../../entities/currency'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
@@ -9,12 +10,12 @@ import type { ITargetAlertsProps } from './types'
 
 export function TargetAlerts({
   currencies,
-  market,
   alerts,
   onAdd,
   onRearm,
   onRemove,
 }: ITargetAlertsProps) {
+  const status = useMarketStatus()
   const isFull = alerts.length >= 20
 
   return (
@@ -40,7 +41,7 @@ export function TargetAlerts({
             key={alert.id}
             alert={alert}
             currencies={currencies}
-            marketStatus={market.status}
+            marketStatus={status}
             onRearm={onRearm}
             onRemove={onRemove}
           />

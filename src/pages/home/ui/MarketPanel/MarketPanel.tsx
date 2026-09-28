@@ -11,22 +11,15 @@ import { MarketPanelFooter } from '../MarketPanelFooter/MarketPanelFooter'
 import type { IMarketPanelProps } from './types'
 
 export function MarketPanel({
-  snapshot,
-  onRetry,
   currencies,
   alerts,
   onDismissAlert,
 }: Readonly<IMarketPanelProps>) {
-  const model = useMarketPanel(currencies, snapshot)
+  const model = useMarketPanel(currencies)
   return (
     <SectionCard headingId="spot-market-heading" hasShadow>
       <MarketPanelHeader
-        snapshot={snapshot}
         visibleCount={currencies.length - model.controls.hiddenCurrencies.length}
-        hasPrices={model.status.hasPrices}
-        isConnected={model.status.isConnected}
-        isUnavailable={model.status.isUnavailable}
-        onRetry={onRetry}
       />
       <MarketAlerts alerts={alerts} onDismissAlert={onDismissAlert} />
       <MarketToolbar {...model.controls} />
@@ -46,7 +39,7 @@ export function MarketPanel({
           <MarketMobileList {...model.rows} />
         </>
       )}
-      <MarketPanelFooter age={model.status.age} isWaiting={model.status.isWaiting} />
+      <MarketPanelFooter />
     </SectionCard>
   )
 }

@@ -27,7 +27,7 @@ export function normalizePreferences(
 
 export function selectCurrencies(
   currencies: readonly ICurrency[],
-  snapshot: IMarketSnapshot,
+  snapshot: Pick<IMarketSnapshot, 'quotes'>,
   preferences: IMarketPreferences,
   search: string,
   filter: TMarketFilter,

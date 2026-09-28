@@ -8,9 +8,7 @@ import type { IMarketMobileListProps } from './types'
 
 export function MarketMobileList({
   visibleCurrencies,
-  snapshot,
   favorites,
-  isQuoteStale,
   toggleFavorite,
   hide,
 }: Readonly<IMarketMobileListProps>) {
@@ -34,8 +32,7 @@ export function MarketMobileList({
               <MarketCurrencyInfo currency={currency} isCompact />
 
               <MarketPrice
-                quote={snapshot.quotes[currency.symbol]}
-                isStale={isQuoteStale(currency.symbol)}
+                symbol={currency.symbol}
               />
             </Stack>
 
@@ -44,7 +41,7 @@ export function MarketMobileList({
                 Since opening
               </Typography>
 
-              <SessionChange quote={snapshot.quotes[currency.symbol]} />
+              <SessionChange symbol={currency.symbol} />
             </Stack>
 
             <Stack className="mt-3 flex-row items-center justify-end gap-2">

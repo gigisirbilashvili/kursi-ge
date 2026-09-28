@@ -1,5 +1,6 @@
 import { Stack, Typography } from '@mui/material'
 
+import { useMarketFeed, useMarketStatus, useMarketValue } from '../../../../entities/currency'
 import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
@@ -7,12 +8,13 @@ import type { IMarketPanelHeaderProps } from './types'
 
 export function MarketPanelHeader({
   visibleCount,
-  snapshot,
-  isUnavailable,
-  isConnected,
-  hasPrices,
-  onRetry,
 }: Readonly<IMarketPanelHeaderProps>) {
+  const { retry } = useMarketFeed()
+  const status = useMarketStatus()
+  const message = useMarketValue((snapshot) => snapshot.message)
+  const hasPrices = useMarketValue((snapshot) => Object.keys(snapshot.quotes).length > 0)
+  const isConnected = status === 'connected'
+  const isUnavailable = !isConnected && status !== 'connecting'
   return (
     <>
       <Stack
@@ -50,7 +52,7 @@ export function MarketPanelHeader({
             variant="body2"
             color={isUnavailable ? "warning" : "textSecondary"}
           >
-            {snapshot.message ??
+            {message ??
               (isConnected
                 ? "Receiving market prices from Binance."
                 : "Connecting to Binance. Waiting for the first prices…")}
@@ -62,8 +64,8 @@ export function MarketPanelHeader({
             <AppButton
               variant="outlined"
               size="small"
-              onClick={onRetry}
-              disabled={snapshot.status === "disconnected"}
+              onClick={retry}
+              disabled={status === "disconnected"}
               className="min-h-10"
             >
               Retry connection

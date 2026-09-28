@@ -10,9 +10,9 @@ import { usePriceToasts } from '../model/usePriceToasts'
 import { MarketPanel } from './MarketPanel/MarketPanel'
 import type { IHomePageProps } from './types'
 
-function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHomePageProps) {
-  const { alerts: sessionAlerts, dismiss: dismissSessionAlert } = useSignificantAlerts(market)
-  const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts(market)
+function HomePage({ currencies, onAddPair, onRemovePair }: IHomePageProps) {
+  const { alerts: sessionAlerts, dismiss: dismissSessionAlert } = useSignificantAlerts()
+  const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts()
   usePriceToasts(sessionAlerts, targetAlerts)
 
   return (
@@ -34,19 +34,16 @@ function HomePage({ market, onRetry, currencies, onAddPair, onRemovePair }: IHom
       <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />
 
       <MarketPanel
-        snapshot={market}
-        onRetry={onRetry}
         currencies={currencies}
         alerts={sessionAlerts}
         onDismissAlert={dismissSessionAlert}
       />
 
-      <ConversionCalculator market={market} currencies={currencies} />
+      <ConversionCalculator currencies={currencies} />
 
-      <PriceHistory market={market} currencies={currencies} />
+      <PriceHistory currencies={currencies} />
 
       <TargetAlerts
-        market={market}
         currencies={currencies}
         alerts={targetAlerts}
         onAdd={add}

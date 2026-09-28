@@ -19,9 +19,9 @@ import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
-export function ConversionCalculator({ market, currencies }: IConversionCalculatorProps) {
+export function ConversionCalculator({ currencies }: IConversionCalculatorProps) {
   const { amount, setAmount, source, target, setSource, setTarget, swap, result } =
-    useConversionCalculator(market, currencies)
+    useConversionCalculator(currencies)
   const sourceTicker = currencies.find(({ symbol }) => symbol === source)?.ticker ?? source
   const targetTicker = currencies.find(({ symbol }) => symbol === target)?.ticker ?? target
   const currencyOptions = currencies.map(({ symbol, ticker, name }) => ({

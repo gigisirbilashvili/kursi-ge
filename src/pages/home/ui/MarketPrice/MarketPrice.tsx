@@ -1,10 +1,22 @@
+import { useEffect, useState } from 'react'
 import { Box, Skeleton, Stack, Tooltip, Typography } from "@mui/material";
 
+import { useMarketQuote, useMarketStatus, STALE_TIMEOUT_MS } from '../../../../entities/currency';
 import { ArrowIcon } from "../../../../assets/icons";
 import { formatPrice } from "../../lib/formatPrice";
 import type { IMarketPriceProps } from "./types";
 
-export function MarketPrice({ quote, isStale }: Readonly<IMarketPriceProps>) {
+export function MarketPrice({ symbol }: Readonly<IMarketPriceProps>) {
+  const quote = useMarketQuote(symbol)
+  const status = useMarketStatus()
+  const [now, setNow] = useState(Date.now)
+  const receivedAt = quote?.receivedAt
+  useEffect(() => {
+    if (receivedAt === undefined) return
+    const timer = window.setTimeout(() => setNow(Date.now()), Math.max(0, receivedAt + STALE_TIMEOUT_MS - Date.now()))
+    return () => window.clearTimeout(timer)
+  }, [receivedAt])
+  const isStale = status !== 'connected' || now - (receivedAt ?? 0) >= STALE_TIMEOUT_MS
   if (!quote) {
     return (
       <Stack className="items-end">

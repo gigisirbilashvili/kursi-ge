@@ -1,11 +1,13 @@
 import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
+import { useMarketStatus } from '../../../entities/currency'
 import { KursiLogo } from '../../../assets'
 import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
-export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderProps) {
+export function AppHeader({ mode, onToggleMode }: IAppHeaderProps) {
+  const connectionStatus = useMarketStatus()
   return (
     <AppBar
       component="header"

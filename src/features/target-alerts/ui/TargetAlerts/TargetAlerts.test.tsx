@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event'
 
 import { CURRENCIES } from '../../../../entities/currency'
 import type { IMarketSnapshot } from '../../../../entities/currency'
+import { MarketFeedContext } from '../../../../entities/currency/model/marketFeedContext'
+import { createMarketFeedFixture } from '../../../../entities/currency/model/testing/createMarketFeedFixture'
 import { TargetAlerts } from './TargetAlerts'
 
 const market: IMarketSnapshot = {
@@ -16,18 +18,19 @@ const market: IMarketSnapshot = {
 
 test('should create and manage alerts through the form and alert row', async () => {
   const user = userEvent.setup()
+  const { feed } = createMarketFeedFixture(market)
   const onAdd = jest.fn()
   const onRearm = jest.fn()
   const onRemove = jest.fn()
   const { rerender } = render(
     <TargetAlerts
       currencies={CURRENCIES}
-      market={market}
       alerts={[]}
       onAdd={onAdd}
       onRearm={onRearm}
       onRemove={onRemove}
     />,
+    { wrapper: ({ children }) => <MarketFeedContext.Provider value={feed}>{children}</MarketFeedContext.Provider> },
   )
   expect(screen.getByText('No target alerts yet.')).toBeInTheDocument()
 
@@ -44,7 +47,6 @@ test('should create and manage alerts through the form and alert row', async () 
   rerender(
     <TargetAlerts
       currencies={CURRENCIES}
-      market={market}
       alerts={[{ id: 'test-alert-id', symbol: 'BTCUSDT', target: 120, direction: 'above', triggeredPrice: 121 }]}
       onAdd={onAdd}
       onRearm={onRearm}

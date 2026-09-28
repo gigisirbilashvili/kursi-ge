@@ -1,6 +1,5 @@
-import type { ICurrency, IMarketSnapshot } from '../../../../../entities/currency'
+import type { ICurrency } from '../../../../../entities/currency'
 
 export interface IConversionCalculatorProps {
   currencies: readonly ICurrency[]
-  market: IMarketSnapshot
 }

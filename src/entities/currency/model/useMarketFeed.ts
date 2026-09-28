@@ -1,34 +1,30 @@
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useContext, useSyncExternalStore } from 'react'
 
-import type { IMarketFeedOptions } from '../types'
-import { createMarketFeed } from './createMarketFeed.ts'
-import { useMarketNotifications } from './useMarketNotifications'
+import type { IMarketSnapshot, IPricePoint } from '../types'
+import { MarketFeedContext } from './marketFeedContext'
 
-export function useMarketFeed(
-  symbols: readonly string[],
-  streamEndpoint: string,
-  dependencies: Omit<IMarketFeedOptions, 'symbols' | 'streamEndpoint'> = {},
-) {
-  const [feed] = useState(() => createMarketFeed({ ...dependencies, symbols, streamEndpoint }))
-  const snapshot = useSyncExternalStore(feed.subscribe, feed.getSnapshot, feed.getSnapshot)
-  useMarketNotifications(snapshot)
+const EMPTY_HISTORY: readonly IPricePoint[] = []
 
-  useEffect(() => {
-    feed.setSymbols(symbols)
-  }, [feed, symbols])
+export function useMarketFeed() {
+  const feed = useContext(MarketFeedContext)
+  if (!feed) throw new Error('Market hooks must be used inside MarketFeedProvider.')
+  return feed
+}
 
-  useEffect(() => {
-    const handleOnline = () => feed.setOnline(true)
-    const handleOffline = () => feed.setOnline(false)
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    feed.start(navigator.onLine)
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-      feed.stop()
-    }
-  }, [feed])
+export function useMarketValue<T>(select: (snapshot: IMarketSnapshot) => T) {
+  const feed = useMarketFeed()
+  const getValue = () => select(feed.getSnapshot())
+  return useSyncExternalStore(feed.subscribe, getValue, getValue)
+}
 
-  return { snapshot, retry: feed.retry }
+export function useMarketStatus() {
+  return useMarketValue((snapshot) => snapshot.status)
+}
+
+export function useMarketQuote(symbol: string) {
+  return useMarketValue((snapshot) => snapshot.quotes[symbol])
+}
+
+export function useMarketHistory(symbol: string) {
+  return useMarketValue((snapshot) => snapshot.history[symbol] ?? EMPTY_HISTORY)
 }

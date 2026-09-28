@@ -75,7 +75,11 @@ export default {
       const check = (node: TSESTree.FunctionDeclaration | TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression, name: string | undefined) => {
         if (!name || !/^[A-Z]/.test(name) || !containsJsx(node.body) || node.params.length === 0) return
         const param = node.params[0].type === 'AssignmentPattern' ? node.params[0].left : node.params[0]
-        const annotation = 'typeAnnotation' in param ? param.typeAnnotation?.typeAnnotation : undefined
+        let annotation = 'typeAnnotation' in param ? param.typeAnnotation?.typeAnnotation : undefined
+        if (annotation?.type === 'TSTypeReference' && annotation.typeName.type === 'Identifier' &&
+          annotation.typeName.name === 'Readonly' && annotation.typeArguments?.params.length === 1) {
+          annotation = annotation.typeArguments.params[0]
+        }
         const expected = `I${name}Props`
         const imports = context.sourceCode.ast.body.filter((item) => item.type === 'ImportDeclaration')
         const reference = annotation?.type === 'TSTypeReference' && annotation.typeName.type === 'Identifier' ? annotation.typeName.name : null

@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'
 
 import { useSampledValue } from '../../../../shared/lib/useSampledValue'
 import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
-import { LineChart } from '../../../../shared/ui/LineChart/LineChart'
+import { LineChart } from '../../../../assets/LineChart/LineChart'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'

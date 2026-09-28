@@ -33,7 +33,7 @@ import type {
   TSortDirection,
   TSortField,
 } from "../../../../features/market-preferences";
-import { FavoriteIcon, SortIcon } from "../../../../shared/ui/icons";
+import { FavoriteIcon, SortIcon } from "../../../../assets/icons";
 import { AppAlert } from "../../../../shared/ui/AppAlert/AppAlert";
 import { AppButton } from "../../../../shared/ui/AppButton/AppButton";
 import { AppChip } from "../../../../shared/ui/AppChip/AppChip";

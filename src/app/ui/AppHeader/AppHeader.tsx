@@ -1,5 +1,6 @@
 import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
+import { KursiLogo } from '../../../assets'
 import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
@@ -24,10 +25,7 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
               color="headerPrimary"
               className="shrink-0 text-base font-semibold"
             >
-              Kursi{' '}
-              <Typography variant="spanBold" color="headerMuted">
-                Crypto
-              </Typography>
+              <KursiLogo />
             </Link>
 
             <Typography variant="caption" color="headerCaption">

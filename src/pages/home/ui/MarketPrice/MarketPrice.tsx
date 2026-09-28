@@ -1,6 +1,6 @@
 import { Box, Skeleton, Stack, Tooltip, Typography } from '@mui/material'
 
-import { ArrowIcon } from '../../../../shared/ui/icons'
+import { ArrowIcon } from '../../../../assets/icons'
 import { formatPrice } from '../../lib/formatPrice'
 import type { IMarketPriceProps } from './types'
 

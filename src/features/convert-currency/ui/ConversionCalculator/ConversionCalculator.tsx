@@ -7,8 +7,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import { formatConversionValue } from '../../lib/convertCurrency'
-import { notify } from '../../../../shared/lib/notify'
+import { useConversionCalculatorModel } from '../../model/useConversionCalculatorModel'
 import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
@@ -16,20 +15,29 @@ import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
-import { useConversionCalculator } from '../../model/useConversionCalculator'
 import type { IConversionCalculatorProps } from './types'
 
-export function ConversionCalculator({ market, currencies }: IConversionCalculatorProps) {
-  const { amount, setAmount, source, target, setSource, setTarget, swap, result } =
-    useConversionCalculator(market, currencies)
-  const sourceTicker = currencies.find(({ symbol }) => symbol === source)?.ticker ?? source
-  const targetTicker = currencies.find(({ symbol }) => symbol === target)?.ticker ?? target
-  const currencyOptions = currencies.map(({ symbol, ticker, name }) => ({
-    value: symbol,
-    label: `${ticker} - ${name}`,
-  }))
-  const hasError = result.status === 'invalid'
-
+export function ConversionCalculator(props: IConversionCalculatorProps) {
+  const {
+    amount,
+    source,
+    target,
+    sourceTicker,
+    currencyOptions,
+    hasError,
+    helperText,
+    isReady,
+    isWaiting,
+    isStale,
+    resultText,
+    rateText,
+    statusText,
+    onAmountChange,
+    onSourceChange,
+    onTargetChange,
+    onSwap,
+    onAmountBlur,
+  } = useConversionCalculatorModel(props.currencies)
   return (
     <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
@@ -49,7 +57,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <OptionSelect
               label="Source currency"
               value={source}
-              onChange={setSource}
+              onChange={onSourceChange}
               options={currencyOptions}
               className="min-w-0"
             />
@@ -57,7 +65,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <AppButton
               variant="outlined"
               aria-label="Swap currencies"
-              onClick={swap}
+              onClick={onSwap}
               className="min-h-10"
             >
               Swap
@@ -66,7 +74,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             <OptionSelect
               label="Target currency"
               value={target}
-              onChange={setTarget}
+              onChange={onTargetChange}
               options={currencyOptions}
               className="min-w-0"
             />
@@ -77,12 +85,10 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
             label="Amount"
             size="small"
             value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-            onBlur={() => {
-              if (hasError) notify.error(result.message, { toastId: 'conversion-invalid' })
-            }}
+            onChange={(event) => onAmountChange(event.target.value)}
+            onBlur={onAmountBlur}
             error={hasError}
-            helperText={hasError ? result.message : 'Enter zero or a positive amount.'}
+            helperText={helperText}
             slotProps={{
               htmlInput: { inputMode: 'decimal' },
               input: {
@@ -97,7 +103,7 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
           className="min-w-0 rounded-xl border border-solid p-5"
         >
           <Typography color="textSecondary" variant="body1">You receive</Typography>
-          {result.status === 'ready' ? (
+          {isReady ? (
             <>
               <Typography
                 component="output"
@@ -105,30 +111,28 @@ export function ConversionCalculator({ market, currencies }: IConversionCalculat
                 aria-label="Converted amount"
                 className="mt-2 block break-words text-2xl font-semibold tabular-nums"
               >
-                {formatConversionValue(result.value)} {targetTicker}
+                {resultText}
               </Typography>
 
               <Typography color="textSecondary" variant="body2" className="mt-3 break-words">
-                1 {sourceTicker} ≈ {formatConversionValue(result.rate)} {targetTicker}
+                {rateText}
               </Typography>
             </>
-          ) : result.status === 'waiting' ? (
+          ) : isWaiting ? (
             <Stack className="gap-2">
               <Skeleton className="h-10 w-full max-w-48 motion-reduce:animate-none" />
 
               <StatusText variant="body2">
-                {result.message}
+                {statusText}
               </StatusText>
             </Stack>
-          ) : result.status === 'stale' ? (
+          ) : isStale ? (
             <AppAlert severity="warning" className="mt-3">
-              {result.message}
+              {statusText}
             </AppAlert>
           ) : (
             <StatusText variant="body2" className="mt-3">
-              {result.status === 'empty'
-                ? result.message
-                : 'Correct the amount to see the conversion.'}
+              {statusText}
             </StatusText>
           )}
           <Typography color="textSecondary" variant="caption" className="mt-4 block">

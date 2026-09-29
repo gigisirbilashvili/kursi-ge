@@ -4,7 +4,7 @@ A responsive, frontend-only dashboard for live Binance Spot cryptocurrency price
 
 ## Installation
 
-Install Node.js and npm, then run from the repository root:
+Use Node.js 20.19+ (20.x) or 22.12+ with npm, as required by the installed Vite version. Run these commands from the `kursi-ge` repository root:
 
 ```bash
 npm install
@@ -30,24 +30,13 @@ npm run preview
 - **React and React DOM** for the interface and state; **TypeScript** for typed application code.
 - **Vite** for development and builds, with the **React Compiler** Babel plugin.
 - **Material UI and Emotion** for accessible controls, theme palettes, and component styling; **Tailwind CSS** for layout and spacing.
+- **MUI X Charts** for the session price-history line chart, time/price axes, and interactive tooltips. The chart uses the existing MUI theme and refreshes every 10 seconds.
 - **React-Toastify** for transient notifications.
 - **Jest, React Testing Library, jest-dom, and user-event** for tests; **ESLint** for code and architecture rules.
 
 ## Architecture
 
-- First, I approached the task as if it were not just a take-home assignment, but a real production application that could grow significantly over time.
-
-- nt architectural question: how should we structure the frontend so that it remains maintainable as the product grows, more features are introduced, and a larger development team starts working on it?
-
-- here are several possible approaches. For example, a simple feature-based or component-based structure would be completely reasonable for an application of this size. However, I wanted to think beyond the current scope and consider how the codebase could evolve into a much larger platform.
-
-- For that reason, I chose Feature-Sliced Design.
-
-- For this particular assignment, I understand that FSD can be considered overengineering. However, I made that decision intentionally because it gives us clear architectural boundaries, predictable dependency rules, separation between business features and shared infrastructure, and better scalability from a development-team perspective.
-
-- Of course, FSD also introduces additional structure and complexity, so there is a trade-off. For a small application, I would normally prefer a simpler architecture. In this case, I treated the assignment as an opportunity to demonstrate how I would structure a frontend that is expected to grow.
-
-- The benefits and trade-offs of that decision are something I would be happy to discuss during the interview.
+The project uses Feature-Sliced Design to keep page composition, user interactions, domain state, and reusable UI separate. This adds structure for a small application, but makes ownership and dependency direction explicit as features grow.
 
 The runtime code follows Feature-Sliced Design's downward dependency direction: `app → pages → features → entities → shared`. Slices expose their public APIs through `index.ts`, and tests live beside the code they cover.
 
@@ -57,9 +46,52 @@ The runtime code follows Feature-Sliced Design's downward dependency direction: 
 | `pages/home`        | The screen that brings market data and user features together.               |
 | `features`          | Conversion, pair management, favorites and visibility, history, and alerts.  |
 | `entities/currency` | Binance message parsing, market feed, quote state, and connection lifecycle. |
-| `shared`            | Reusable controls, icons, notifications, storage helpers, and formatting.    |
+| `shared`            | Reusable controls, notifications, storage helpers, and formatting.           |
+| `assets`            | SVG icon components and the Kursi logo.                                     |
 
-The repository has an unused `processes` placeholder; no runtime code depends on it. This one-page app does not need a `widgets` layer.
+There are no `widgets` or `processes` directories in the current app. Market panel composition stays in `pages/home`; generic SVG icons and the logo live in `src/assets`. Component props are defined in adjacent `types/index.ts` files.
+
+### UI, model, and lib
+
+Features and page components use three responsibility segments, without a forwarding-wrapper layer:
+
+- `ui/`: feature entry components call their model hook and render directly. Smaller presentational components receive prepared text, flags, lists, and event handlers.
+- `model/`: hooks own React state, subscriptions, timers, persistence/notification effects, and coordination. They call `lib/` helpers to apply rules and prepare display state.
+- `lib/`: business rules, validation, calculations, and reusable transformations. Examples include selected-pair rules, conversion calculations, target-alert validation/evaluation, preference updates, and chart calculations.
+
+`HomePage` calls `useHomePageModel` to coordinate alerts, and composes feature UI components directly. `App` owns pair selection above `MarketFeedProvider`, because the provider needs the selected symbols. `MarketPrice` and `SessionChange` call their own model hooks, preserving subscriptions by symbol instead of lifting every price update into the page.
+
+Component integration tests sit beside their UI entry components. Presentational-child tests verify rendering and event forwarding without a market provider. Business helpers have unit tests. `types/`, `config/`, and `api/` retain their existing supporting roles and the FSD layer boundaries remain enforced.
+
+### Market feed ownership
+
+`createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `MarketFeedProvider`, mounted once in `App`, creates one service and supplies that stable instance through context. Its ownership hook synchronizes selected pairs, forwards browser online/offline events, and starts/stops the service. The provider does not subscribe to the full snapshot.
+
+Model hooks read data through `useMarketStatus()`, `useMarketQuote(symbol)`, and `useMarketHistory(symbol)`. These use `useSyncExternalStore`, so an unrelated quote update does not trigger a subscription-driven render. `useMarketFeed()` only retrieves the existing service for commands or non-React subscriptions; it never creates or starts another feed. `useMarketValue(selector)` supports additional selections; selectors must return a primitive or an existing stable reference, not a newly allocated object or array.
+
+`initialOptions` holds the endpoint and optional injected socket factory, clock, and timers. Those options are fixed for the provider's mounted lifetime; `symbols` remains reactive. Remount the provider to replace its configuration. Removing consumers does not stop the feed. Unmounting the provider removes browser listeners and cancels the connection and timers. Strict Mode may replay ownership effects, with only one socket active at a time.
+
+Alert feature stores subscribe directly to the feed and evaluate every published update. React subscribes to their resulting alerts, rather than forwarding market snapshots through page props. The table subscribes to quotes only when sorting by market values; individual price cells and session changes subscribe by symbol. The footer owns its elapsed-time clock, and price cells schedule their own freshness deadline.
+
+### WebSocket lifecycle
+
+The service uses separate timers for connection timeout, reconnect delay, stale data, subscription debounce, and subscription acknowledgement. A failed connection schedules at most one reconnect, using exponential delays from 1 second up to 30 seconds. A valid market tick resets the backoff. Generation checks ignore socket callbacks and timers belonging to a released connection.
+
+Connections and subscription acknowledgements time out after 12 seconds. An open connection without valid prices becomes stale after 30 seconds. Pair changes are debounced for 500 ms, with removals sent before additions and one acknowledgement awaited at a time. `desiredSymbols` tracks the selection; `subscribedSymbols` tracks the current socket subscriptions.
+
+`parseMarketSocketMessage` parses each message once and returns a typed ticker, subscription response, or invalid-message result. It checks supported symbols, stream names, positive decimal prices, and timestamps. Invalid updates produce error state; valid updates can restore the connected state. React renders the service's `connecting`, `connected`, `reconnecting`, `disconnected`, and `error` statuses.
+
+### Market panel
+
+`pages/home/ui/MarketPanel` composes the header and connection message, alerts, toolbar and hidden-currency controls, desktop table, mobile list, and footer. `useMarketPanel` owns the panel's local controls and reuses `useMarketPreferences` and `selectCurrencies` from the existing market-preferences feature. The header reads connection state directly, the footer calculates last-update age, and each price cell tracks its freshness deadline.
+
+Desktop and mobile layouts share `MarketCurrencyInfo` and `MarketCurrencyActions`. `MarketPrice` and `SessionChange` remain in the home-page UI. Favorite, hide, and restore behavior stays in the market-preferences feature; presentational sections receive state and callbacks.
+
+### Session price history
+
+`features/price-history` renders the MUI X Charts Community `LineChart` using `market.history` from the same feed. Each currency retains its latest 360 accepted `{ time, price }` updates in memory. These are update counts, not fixed-duration candles, and no historical REST request is made.
+
+The chart shows time and price axes, hover tooltips, low/high values, and the latest price. It follows the MUI theme and fills the available width. At least two points are required; flat-price data is given a small vertical range so the line stays visible. `useSampledValue` refreshes the displayed data every 10 seconds, with immediate updates when changing currencies or receiving the first two points. During a disconnection, existing history stays visible with a paused message. Reloading the page clears session history.
 
 ## Implemented features
 
@@ -68,7 +100,7 @@ The repository has an unused `processes` placeholder; no runtime code depends on
 - A calculator with source/target selectors, amount validation, and a swap action. It derives cross-rates from the selected currencies' USDT prices.
 - Connection status, automatic reconnection, retry controls, stale-price handling, and clear loading, disconnected, error, and empty-search states.
 - Alerts for a change of at least 2% from the first session price, with currency, initial/current price, percentage, and direction. The same threshold does not repeatedly fire until the price returns inside the range.
-- Optional session price history, dynamic WebSocket subscribe/unsubscribe when tracked pairs change, configurable target-price alerts, light/dark themes, and automated tests.
+- Session price history with interactive MUI charts, dynamic WebSocket subscribe/unsubscribe when tracked pairs change, configurable target-price alerts, light/dark themes, and automated tests.
 
 ## Technical decisions and assumptions
 
@@ -81,9 +113,25 @@ The repository has an unused `processes` placeholder; no runtime code depends on
 ## Verification
 
 ```bash
+npx tsc -b
 npm run lint
 npm run build
 npm test -- --runInBand
 ```
 
 Jest runs unit tests in Node and component tests with React Testing Library in jsdom. Tests sit beside the code they cover, and every `test` or `it` title starts with `should ` (enforced by ESLint). A browser smoke check should confirm live Binance prices, reconnection, and the desktop and mobile layouts.
+
+Focused test commands:
+
+```bash
+npm run test:market
+npm run test:dashboard
+npm run test:calculator
+npm run test:bonuses
+npm test -- --runInBand src/pages/home
+npm test -- --runInBand src/features/price-history
+```
+
+Coverage includes WebSocket timeouts, stale data, reconnect backoff, subscription acknowledgements, offline recovery, and old-generation callbacks; hook rerenders and Strict Mode cleanup; market search, favorites, hide/restore, sorting, and alerts; and chart rendering, flat prices, currency selection, and refresh timing. The chart integration tests render the real MUI component with a fixed test width. Jest setup provides a `structuredClone` fallback for jsdom.
+
+The production build currently reports Vite's large-chunk warning. It still completes successfully; chart code splitting is a possible future optimization.

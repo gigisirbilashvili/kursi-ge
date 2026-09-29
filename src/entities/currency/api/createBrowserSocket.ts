@@ -1,4 +1,4 @@
-import type { IMarketSocket } from '../types/index.ts'
+import type { IMarketSocket, TMarketSocketData } from '../types/index.ts'
 
 export function createBrowserSocket(url: string): IMarketSocket {
   const nativeSocket = new WebSocket(url)
@@ -19,9 +19,8 @@ export function createBrowserSocket(url: string): IMarketSocket {
     },
   }
   nativeSocket.onopen = () => socket.onopen?.()
-  nativeSocket.onmessage = (event) => {
-    const data: unknown = event.data
-    socket.onmessage?.(data)
+  nativeSocket.onmessage = (event: MessageEvent<TMarketSocketData>) => {
+    socket.onmessage?.(event.data)
   }
   nativeSocket.onclose = () => socket.onclose?.()
   nativeSocket.onerror = () => socket.onerror?.()

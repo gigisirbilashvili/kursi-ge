@@ -1,10 +1,18 @@
 import { AppBar, Container, Link, Stack, Toolbar, Typography } from '@mui/material'
 
+import { useAppHeaderModel } from '../../model/useAppHeaderModel'
+import { KursiLogo } from '../../../assets'
 import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
-export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderProps) {
+export function AppHeader(props: IAppHeaderProps) {
+  const {
+    connection,
+    themeLabel,
+    themeText,
+    onToggleMode,
+  } = useAppHeaderModel(props)
   return (
     <AppBar
       component="header"
@@ -24,10 +32,7 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
               color="headerPrimary"
               className="shrink-0 text-base font-semibold"
             >
-              Kursi{' '}
-              <Typography variant="spanBold" color="headerMuted">
-                Crypto
-              </Typography>
+              <KursiLogo />
             </Link>
 
             <Typography variant="caption" color="headerCaption">
@@ -36,14 +41,14 @@ export function AppHeader({ connectionStatus, mode, onToggleMode }: IAppHeaderPr
           </Stack>
 
           <Stack className="flex-row flex-wrap items-center gap-2">
-            <ConnectionStatus status={connectionStatus} />
+            <ConnectionStatus {...connection} />
             <AppButton
               onClick={onToggleMode}
               size="small"
               color="headerPrimary"
-              aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} theme`}
+              aria-label={themeLabel}
             >
-              {mode === 'light' ? 'Dark mode' : 'Light mode'}
+              {themeText}
             </AppButton>
           </Stack>
         </Toolbar>

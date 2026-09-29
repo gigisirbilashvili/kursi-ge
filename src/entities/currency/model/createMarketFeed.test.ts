@@ -55,8 +55,8 @@ function setup() {
       tasks.delete(id)
     },
   })
-  const next = () => {
-    const first = tasks.entries().next().value
+  const next = (delay?: number) => {
+    const first = [...tasks.entries()].find(([, task]) => delay === undefined || task.delay === delay)
     assert.ok(first)
     tasks.delete(first[0])
     first[1].callback()
@@ -260,3 +260,191 @@ test('should retain bounded chronological session history and preserve it throug
   assert.equal(feed.getSnapshot().quotes.BTCUSDT.initialPrice, 1)
   feed.stop()
 })
+
+test('should time out an unopened socket and ignore every callback from that generation', () => {
+  const { feed, sockets, closed, tasks, next } = setup()
+  feed.start()
+  const oldOpen = sockets[0].onopen
+  const oldMessage = sockets[0].onmessage
+  const oldClose = sockets[0].onclose
+  const oldError = sockets[0].onerror
+  const oldTimeout = [...tasks.values()][0].callback
+  next(CONNECT_TIMEOUT_MS)
+  assert.ok(closed.has(sockets[0]))
+  assert.equal(feed.getSnapshot().message, 'The market connection timed out. Retrying automatically.')
+  assert.equal(feed.getSnapshot().retryAt, 101_000)
+  next(1000)
+  const snapshot = feed.getSnapshot()
+  oldOpen?.()
+  oldMessage?.(message('999'))
+  oldClose?.()
+  oldError?.()
+  oldTimeout()
+  assert.equal(feed.getSnapshot(), snapshot)
+  assert.equal(sockets.length, 2)
+  assert.equal(tasks.size, 1)
+  assert.equal([...tasks.values()][0].delay, CONNECT_TIMEOUT_MS)
+  feed.stop()
+})
+
+test('should reconnect an open socket that never receives valid prices', () => {
+  const { feed, sockets, tasks, next } = setup()
+  feed.start()
+  sockets[0].onopen?.()
+  assert.equal(tasks.size, 1)
+  assert.equal([...tasks.values()][0].delay, STALE_TIMEOUT_MS)
+  sockets[0].onmessage?.('{}')
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 99 }))
+  next(STALE_TIMEOUT_MS)
+  assert.equal(feed.getSnapshot().message, 'No valid market prices received. Retrying automatically.')
+  assert.equal(tasks.size, 1)
+  feed.stop()
+})
+
+test('should reset the stale timeout only for a newer desired market tick', () => {
+  const { feed, sockets, tasks } = setup()
+  feed.start()
+  sockets[0].onopen?.()
+  sockets[0].onmessage?.(message('100', 2))
+  const staleTimer = [...tasks.keys()][0]
+  sockets[0].onmessage?.(message('99', 1))
+  sockets[0].onmessage?.(message('101', 2))
+  sockets[0].onmessage?.(message('1', 3, 'ADAUSDT'))
+  sockets[0].onmessage?.('invalid')
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 1 }))
+  assert.deepEqual([...tasks.keys()], [staleTimer])
+  sockets[0].onmessage?.(message('102', 3))
+  assert.equal(tasks.size, 1)
+  assert.equal(tasks.has(staleTimer), false)
+  assert.equal(feed.getSnapshot().status, 'connected')
+  feed.stop()
+})
+
+test.each(['close', 'error'] as const)(
+  'should schedule only one reconnect after repeated socket %s and error callbacks',
+  (event) => {
+    const { feed, sockets, tasks, next } = setup()
+    feed.start()
+    const close = sockets[0].onclose
+    const error = sockets[0].onerror
+    if (event === 'close') close?.()
+    else error?.()
+    const snapshot = feed.getSnapshot()
+    close?.()
+    error?.()
+    close?.()
+    assert.equal(feed.getSnapshot(), snapshot)
+    assert.equal(tasks.size, 1)
+    assert.equal([...tasks.values()][0].delay, 1000)
+    next(1000)
+    assert.equal(sockets.length, 2)
+    sockets[1].onclose?.()
+    assert.equal([...tasks.values()][0].delay, 2000)
+    feed.stop()
+  },
+)
+
+test('should cancel a pending reconnect while offline and reconnect immediately when online', () => {
+  const { feed, sockets, tasks } = setup()
+  feed.start()
+  sockets[0].onerror?.()
+  const oldReconnect = [...tasks.values()][0].callback
+  feed.setOnline(false)
+  assert.equal(feed.getSnapshot().status, 'disconnected')
+  assert.equal(feed.getSnapshot().retryAt, null)
+  assert.equal(tasks.size, 0)
+  oldReconnect()
+  feed.retry()
+  assert.equal(sockets.length, 1)
+  feed.setOnline(true)
+  oldReconnect()
+  assert.equal(sockets.length, 2)
+  assert.equal(tasks.size, 1)
+  sockets[1].onerror?.()
+  assert.equal(feed.getSnapshot().retryAt, 101_000)
+  feed.stop()
+})
+
+test('should retain the subscription acknowledgement deadline while market ticks arrive', () => {
+  const { feed, sockets, tasks, next, urls } = setup()
+  feed.start()
+  sockets[0].onopen?.()
+  feed.setSymbols(['ETHUSDT'])
+  next(500)
+  const acknowledgementTimer = [...tasks.entries()].find(([, task]) => task.delay === CONNECT_TIMEOUT_MS)
+  assert.ok(acknowledgementTimer)
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 99 }))
+  sockets[0].onmessage?.(message('200', 1, 'ETHUSDT'))
+  assert.equal(tasks.has(acknowledgementTimer[0]), true)
+  assert.equal(tasks.size, 2)
+  next(CONNECT_TIMEOUT_MS)
+  assert.equal(feed.getSnapshot().message, 'Binance did not confirm the pair change. Retrying automatically.')
+  assert.equal(tasks.size, 1)
+  next(1000)
+  assert.equal(urls[1], `${TEST_STREAM_ENDPOINT}?streams=ethusdt@miniTicker`)
+  feed.stop()
+})
+
+test('should wait for acknowledgement before applying the latest desired subscriptions', () => {
+  const { feed, sockets, tasks, next, sent } = setup()
+  feed.start()
+  sockets[0].onopen?.()
+  feed.setSymbols(['ETHUSDT'])
+  next(500)
+  feed.setSymbols(['ETHUSDT', 'ADAUSDT'])
+  feed.setSymbols(['ETHUSDT', 'LINKUSDT'])
+  assert.equal(sent.length, 1)
+  assert.equal([...tasks.values()].some((task) => task.delay === 500), false)
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 1 }))
+  assert.equal([...tasks.values()].some((task) => task.delay === CONNECT_TIMEOUT_MS), false)
+  next(500)
+  assert.deepEqual(JSON.parse(sent[1]), {
+    method: 'SUBSCRIBE',
+    params: ['linkusdt@miniTicker'],
+    id: 2,
+  })
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 1 }))
+  assert.equal([...tasks.values()].some((task) => task.delay === CONNECT_TIMEOUT_MS), true)
+  sockets[0].onmessage?.(JSON.stringify({ result: null, id: 2 }))
+  assert.equal(tasks.size, 1)
+  assert.equal([...tasks.values()][0].delay, STALE_TIMEOUT_MS)
+  feed.stop()
+})
+
+test('should reconnect when sending a subscription request fails', () => {
+  const { feed, sockets, tasks, next } = setup()
+  feed.start()
+  sockets[0].onopen?.()
+  sockets[0].send = () => { throw new Error('Socket closed') }
+  feed.setSymbols(['ETHUSDT'])
+  next(500)
+  assert.equal(feed.getSnapshot().message, 'Could not update market subscriptions. Retrying automatically.')
+  assert.equal(tasks.size, 1)
+  next(1000)
+  assert.equal(sockets.length, 2)
+  feed.stop()
+})
+
+test.each(['debounce', 'acknowledgement'] as const)(
+  'should clear subscription %s and stale timers on stop and ignore their old callbacks',
+  (stage) => {
+    const { feed, sockets, tasks, next, sent } = setup()
+    feed.start()
+    sockets[0].onopen?.()
+    feed.setSymbols(['ETHUSDT'])
+    if (stage === 'acknowledgement') next(500)
+    const oldCallbacks = [...tasks.values()].map((task) => task.callback)
+    const sentCount = sent.length
+    assert.equal(tasks.size, 2)
+    feed.stop()
+    assert.equal(tasks.size, 0)
+    feed.start()
+    const snapshot = feed.getSnapshot()
+    oldCallbacks.forEach((callback) => callback())
+    assert.equal(feed.getSnapshot(), snapshot)
+    assert.equal(sent.length, sentCount)
+    assert.equal(tasks.size, 1)
+    assert.equal(sockets.length, 2)
+    feed.stop()
+  },
+)

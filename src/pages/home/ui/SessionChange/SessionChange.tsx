@@ -1,12 +1,19 @@
 import { Tooltip, Typography } from "@mui/material";
 
+import { useSessionChangeModel } from '../../model/useSessionChangeModel'
 import { AppChip } from "../../../../shared/ui/AppChip/AppChip";
-import { ArrowIcon } from "../../../../shared/ui/icons";
-import { formatPrice } from "../../lib/formatPrice";
+import { ArrowIcon } from "../../../../assets/icons";
 import type { ISessionChangeProps } from "./types";
 
-export function SessionChange({ quote }: ISessionChangeProps) {
-  if (!quote)
+export function SessionChange(props: ISessionChangeProps) {
+  const {
+    isUnavailable,
+    color,
+    direction,
+    label,
+    title,
+  } = useSessionChangeModel(props.symbol)
+  if (isUnavailable)
     return (
       <Typography
         color="textSecondary"
@@ -16,20 +23,9 @@ export function SessionChange({ quote }: ISessionChangeProps) {
         —
       </Typography>
     );
-  const change = quote.percentageChange;
-  const formatted =
-    change !== 0 && Math.abs(change) < 0.0001
-      ? `${change > 0 ? "+" : "-"}<0.0001`
-      : new Intl.NumberFormat("en-US", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: Math.abs(change) < 0.01 ? 4 : 2,
-          signDisplay: "exceptZero",
-        }).format(change);
-  const color =
-    change > 0 ? "positiveSoft" : change < 0 ? "negativeSoft" : "neutralSoft";
   return (
     <Tooltip
-      title={`Since the first session price of ${formatPrice(quote.initialPrice)} USDT`}
+      title={title}
     >
       <AppChip
         color={color}
@@ -37,10 +33,10 @@ export function SessionChange({ quote }: ISessionChangeProps) {
           <ArrowIcon
             width={16}
             height={18}
-            direction={change > 0 ? "up" : change < 0 ? "down" : "unchanged"}
+            direction={direction}
           />
         }
-        label={`${formatted}%`}
+        label={label}
         className="h-7 text-xs font-semibold tabular-nums [&_.MuiChip-icon]:ml-2"
       />
     </Tooltip>

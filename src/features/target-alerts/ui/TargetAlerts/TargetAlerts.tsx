@@ -8,13 +8,13 @@ import { TargetAlertForm } from '../TargetAlertForm/TargetAlertForm'
 import { TargetAlertItem } from '../TargetAlertItem/TargetAlertItem'
 import type { ITargetAlertsProps } from './types'
 
-export function TargetAlerts(props: ITargetAlertsProps) {
+export function TargetAlerts({ currencies, alerts, onAdd, onRearm, onRemove }: ITargetAlertsProps) {
   const {
     form,
     items,
     isFull,
     isEmpty,
-  } = useTargetAlertsModel(props)
+  } = useTargetAlertsModel({ currencies, alerts, onAdd, onRearm, onRemove })
   return (
     <SectionCard headingId="target-alert-heading" className="p-5 sm:p-6">
       <SectionHeader

@@ -17,7 +17,7 @@ import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IConversionCalculatorProps } from './types'
 
-export function ConversionCalculator(props: IConversionCalculatorProps) {
+export function ConversionCalculator({ currencies }: IConversionCalculatorProps) {
   const {
     amount,
     source,
@@ -37,7 +37,7 @@ export function ConversionCalculator(props: IConversionCalculatorProps) {
     onTargetChange,
     onSwap,
     onAmountBlur,
-  } = useConversionCalculatorModel(props.currencies)
+  } = useConversionCalculatorModel(currencies)
   return (
     <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">

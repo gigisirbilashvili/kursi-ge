@@ -6,7 +6,7 @@ import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import type { IMarketPanelHeaderProps } from './types'
 
-export function MarketPanelHeader(props: IMarketPanelHeaderProps) {
+export function MarketPanelHeader({ visibleCount }: IMarketPanelHeaderProps) {
   const {
     visibleText,
     isUnavailable,
@@ -14,7 +14,7 @@ export function MarketPanelHeader(props: IMarketPanelHeaderProps) {
     messageText,
     isRetryDisabled,
     onRetry,
-  } = useMarketPanelHeaderModel(props.visibleCount)
+  } = useMarketPanelHeaderModel(visibleCount)
   return (
     <>
       <Stack

@@ -15,13 +15,13 @@ afterEach(() => {
   jest.useRealTimers()
 })
 
-test('should prepare conversion results, swap currencies, and validate input through the container', () => {
+test('should update immediately for either price, swap currencies, and validate input', () => {
   const error = jest.spyOn(notify, 'error').mockReturnValue('test')
   const quote = {
     price: 100, initialPrice: 100, previousPrice: 100, percentageChange: 0,
     direction: 'unchanged' as const, eventTime: 1, receivedAt: Date.now(),
   }
-  const { feed } = createMarketFeedFixture({
+  const { feed, publish } = createMarketFeedFixture({
     status: 'connected', history: {}, message: null, retryAt: null,
     quotes: { BTCUSDT: quote, ETHUSDT: { ...quote, price: 50 } },
   })
@@ -31,6 +31,14 @@ test('should prepare conversion results, swap currencies, and validate input thr
   } })
   const { unmount } = render(<ConversionCalculator currencies={CURRENCIES} />, {
     wrapper: ({ children }) => <ThemeProvider theme={theme}><MarketFeedContext.Provider value={feed}>{children}</MarketFeedContext.Provider></ThemeProvider>,
+  })
+  expect(screen.getByLabelText('Converted amount')).toHaveTextContent('2 ETH')
+  act(() => {
+    publish({ ...feed.getSnapshot(), quotes: { BTCUSDT: { ...quote, price: 200 }, ETHUSDT: { ...quote, price: 50 } } })
+  })
+  expect(screen.getByLabelText('Converted amount')).toHaveTextContent('4 ETH')
+  act(() => {
+    publish({ ...feed.getSnapshot(), quotes: { BTCUSDT: { ...quote, price: 200 }, ETHUSDT: quote } })
   })
   expect(screen.getByLabelText('Converted amount')).toHaveTextContent('2 ETH')
   fireEvent.click(screen.getByRole('button', { name: 'Swap currencies' }))

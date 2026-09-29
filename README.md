@@ -1,127 +1,142 @@
 # Kursi Crypto Dashboard
 
-A responsive, frontend-only dashboard for live Binance Spot cryptocurrency prices. It covers the assignment's market view, calculator, favorites, visibility controls, search, sorting, connection states, and optional features.
+A frontend-only cryptocurrency dashboard built with React and TypeScript. It receives Binance Spot prices over WebSocket and includes favorites, hidden currencies, search, sorting, conversion, session-change alerts, price history, configurable target alerts, and light/dark themes.
 
-## Installation
+## Installation and running
 
-Use Node.js 20.19+ (20.x) or 22.12+ with npm, as required by the installed Vite version. Run these commands from the `kursi-ge` repository root:
-
-```bash
-npm install
-```
-
-The repository includes a `.env` file with `VITE_MARKET_STREAM_ENDPOINT`, the base endpoint for Binance's public market-data WebSocket. No API key is needed. To use a different endpoint locally, set the same variable in `.env.local`. The app requires this variable at startup.
-
-## Running the project
+Use Node.js **20.19+ within 20.x, or 22.12+**, with npm, matching the installed Vite engine requirement. Run commands from the `kursi-ge` directory:
 
 ```bash
+npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. To check and preview a production build:
+Open the local URL printed by Vite. For a production build and local preview:
 
 ```bash
 npm run build
 npm run preview
 ```
 
+The tracked `.env` contains a public market-data endpoint so a clone can run without an API key:
+
+```dotenv
+VITE_MARKET_STREAM_ENDPOINT=wss://data-stream.binance.vision/stream
+```
+
+Override it in `.env.local` if necessary. The value is a base combined-stream endpoint; the feed appends its selected streams. Vite includes this configuration in the client build. Restart the development server or rebuild after changing it. [Environment configuration](src/shared/config/env.ts) trims and validates the required value when the module loads.
+
+## Assignment alignment
+
+Reviewed against the supplied **Take-home-assigment.docx** on **2026-09-29**. Source inspection and automated tests indicate that **all 9 core feature areas are implemented**. This is a requirement checklist, not an evaluator's score. Live Binance connectivity and visual behavior at different viewport sizes were not manually retested during this review.
+
+| Core requirement | Status | Current implementation and evidence |
+| --- | --- | --- |
+| 1. Live cryptocurrency rates | Implemented | Five default pairs: BTC, ETH, SOL, BNB, and XRP against USDT. Quote subscriptions update prices without a page reload. Rows expose symbols, price direction, favorites, and hide actions; hidden items have a separate restore list. See [feed](src/entities/currency/model/createMarketFeed.ts) and [market panel](src/pages/home/ui/MarketPanel/MarketPanel.tsx). |
+| 2. Latest price-change indicator | Implemented | Arrows use the latest tick direction, with green for up, red for down, and neutral color for unchanged prices. [Regression tests](src/pages/home/ui/MarketPrice/MarketPrice.test.tsx) cover color changes in both theme modes. |
+| 3. Significant price-change alert | Implemented | The first accepted price is the session baseline. Alerts trigger at +2% or -2%, include all required details, and do not repeat while the pair remains in the same threshold zone. See [tracker](src/features/significant-alerts/lib/createAlertTracker.ts) and [alert display preparation](src/pages/home/lib/createMarketAlertViews.ts). |
+| 4. Currency calculator | **Implemented** | Source/target selection, amount entry, swap, cross-rate calculation, and invalid/negative input validation are implemented. [useConversionCalculator](src/features/convert-currency/model/useConversionCalculator.ts) updates the displayed result immediately whenever either selected price changes. |
+| 5. Persistent favorites | Implemented | Favorite toggles, All/Favorites filtering, and browser-storage persistence. See [preferences hook](src/features/market-preferences/model/useMarketPreferences.ts). |
+| 6. Persistent hidden currencies | Implemented | Hide, list hidden currencies, and restore; hidden selections persist. Hiding does not unsubscribe a pair. See [toolbar](src/pages/home/ui/MarketToolbar/MarketToolbar.tsx) and the preferences feature. |
+| 7. Search and sorting | Implemented | Search by name, ticker, or pair symbol. Sort by name, current price, or session percentage change in either direction. See [selection rules](src/features/market-preferences/lib/preferences.ts). |
+| 8. Connection state and cleanup | Implemented | Connected, reconnecting, and disconnected indicators; automatic retries, manual retry, online/offline handling, socket cleanup, and timer cleanup. See [feed owner](src/entities/currency/model/useMarketFeedOwner.ts) and [lifecycle tests](src/entities/currency/model/useMarketFeed.test.tsx). |
+| 9. UI states | Implemented | Loading placeholders, connection/error messages, stale-price labels, empty search results, and waiting/invalid conversion states. See [panel tests](src/pages/home/ui/MarketPanel/MarketPanel.test.tsx). |
+
+### Technical requirements
+
+- React, TypeScript, and Binance WebSocket integration are present. The app has no backend.
+- Responsive desktop table and mobile list layouts share row presentation and actions. Tailwind's `md` breakpoint is aligned with MUI at 900 px.
+- Feature logic, React state/effects, and WebSocket ownership have separate modules. Shared controls and icons are reused.
+- TypeScript types cover component props, market messages, quotes, and feature state. The reviewed source contains no explicit `any` annotations.
+- ESLint includes TypeScript, React hooks, accessibility, naming, component-props, import-order, and FSD layer restrictions. There is no Prettier configuration or dedicated format script; linting is the configured code-quality check.
+- Favorites and hidden currencies persist in `localStorage`. Storage failures fall back to current-session state and notify the user.
+
+### Optional bonuses
+
+All six listed bonus areas have implementations:
+
+| Bonus | Implementation |
+| --- | --- |
+| Session price-history chart | [PriceHistory](src/features/price-history/ui/PriceHistory/PriceHistory.tsx) renders an interactive MUI line chart from in-memory session updates. |
+| Dynamic pair selection | [PairManager](src/features/manage-pairs/ui/PairManager/PairManager.tsx) adds/removes supported pairs, prevents duplicates, and retains at least one pair. |
+| Subscribe/unsubscribe on the existing socket | [createMarketFeed](src/entities/currency/model/createMarketFeed.ts) debounces subscription changes and waits for acknowledgements. |
+| Configurable target-price alerts | [Target alerts](src/features/target-alerts/lib/createTargetAlerts.ts) support above/below targets, persistence, one-shot triggering, rearming, and removal. |
+| Light/dark theme | [useColorMode](src/app/model/useColorMode.ts) manages the persisted choice; [themes](src/app/config/theme.ts) supply both palettes. |
+| Calculator and percentage-change tests | [Calculator tests](src/features/convert-currency/lib/convertCurrency.test.ts) cover calculations and invalid values. [Feed tests](src/entities/currency/model/createMarketFeed.test.ts) cover baseline/percentage calculations; [alert tests](src/features/significant-alerts/lib/createAlertTracker.test.ts) cover thresholds and duplicate suppression. |
+
 ## Libraries used
 
-- **React and React DOM** for the interface and state; **TypeScript** for typed application code.
-- **Vite** for development and builds, with the **React Compiler** Babel plugin.
-- **Material UI and Emotion** for accessible controls, theme palettes, and component styling; **Tailwind CSS** for layout and spacing.
-- **MUI X Charts** for the session price-history line chart, time/price axes, and interactive tooltips. The chart uses the existing MUI theme and refreshes every 10 seconds.
-- **React-Toastify** for transient notifications.
-- **Jest, React Testing Library, jest-dom, and user-event** for tests; **ESLint** for code and architecture rules.
+- **React 19 and React DOM**: rendering, hooks, and external-store subscriptions.
+- **TypeScript**: application and component types.
+- **Vite and React Compiler**: development, production bundling, and compiler optimizations.
+- **Material UI, Emotion, and Tailwind CSS**: controls, theme styling, and responsive layouts.
+- **MUI X Charts**: session-history chart, axes, and tooltips.
+- **React-Toastify**: transient notifications.
+- **Jest, React Testing Library, jest-dom, and user-event**: unit and component tests.
+- **ESLint and TypeScript/React/accessibility plugins**: code-quality and architecture checks.
 
 ## Architecture
 
-The project uses Feature-Sliced Design to keep page composition, user interactions, domain state, and reusable UI separate. This adds structure for a small application, but makes ownership and dependency direction explicit as features grow.
+The project follows FSD-style layers with downward runtime dependencies:
 
-The runtime code follows Feature-Sliced Design's downward dependency direction: `app → pages → features → entities → shared`. Slices expose their public APIs through `index.ts`, and tests live beside the code they cover.
+```text
+app → pages → features → entities → shared
+```
 
-| Layer               | Responsibility                                                               |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `app`               | Theme, global styles, providers, and dashboard composition.                  |
-| `pages/home`        | The screen that brings market data and user features together.               |
-| `features`          | Conversion, pair management, favorites and visibility, history, and alerts.  |
-| `entities/currency` | Binance message parsing, market feed, quote state, and connection lifecycle. |
-| `shared`            | Reusable controls, notifications, storage helpers, and formatting.           |
-| `assets`            | SVG icon components and the Kursi logo.                                     |
+```text
+src/
+├── app/                 Application setup, theme, layout, and header
+├── pages/home/          Dashboard composition and market display
+├── features/
+│   ├── manage-pairs/
+│   ├── market-preferences/
+│   ├── convert-currency/
+│   ├── significant-alerts/
+│   ├── target-alerts/
+│   └── price-history/
+├── entities/currency/   Market feed, WebSocket boundary, and quote state
+├── shared/              Reusable UI, configuration, storage, and helpers
+└── assets/              Icons and logo
+```
 
-There are no `widgets` or `processes` directories in the current app. Market panel composition stays in `pages/home`; generic SVG icons and the logo live in `src/assets`. Component props are defined in adjacent `types/index.ts` files.
+Within a feature or page:
 
-### UI, model, and lib
+| Segment | Responsibility |
+| --- | --- |
+| `ui/` | Entry components call model hooks and render directly. Smaller presentational components receive prepared text, flags, lists, and event handlers. Component parameters destructure their props. |
+| `model/` | React state, subscriptions, timers, persistence/notification effects, coordination, and preparation of display state. |
+| `lib/` | Business rules, validation, calculations, and reusable transformations. |
+| Supporting folders | `types/` holds contracts; `config/` holds configuration; the currency entity's `api/` handles browser sockets and message parsing. |
 
-Features and page components use three responsibility segments, without a forwarding-wrapper layer:
+There is no `containers/` layer. For example, [ConversionCalculator](src/features/convert-currency/ui/ConversionCalculator/ConversionCalculator.tsx) calls its model hook and renders directly; [conversion rules](src/features/convert-currency/lib/convertCurrency.ts) live in `lib/`. Component props are defined in adjacent `types/index.ts` files. Slice entry points use `index.ts`; ESLint checks layer direction but does not enforce every public-API or cross-slice boundary.
 
-- `ui/`: feature entry components call their model hook and render directly. Smaller presentational components receive prepared text, flags, lists, and event handlers.
-- `model/`: hooks own React state, subscriptions, timers, persistence/notification effects, and coordination. They call `lib/` helpers to apply rules and prepare display state.
-- `lib/`: business rules, validation, calculations, and reusable transformations. Examples include selected-pair rules, conversion calculations, target-alert validation/evaluation, preference updates, and chart calculations.
-
-`HomePage` calls `useHomePageModel` to coordinate alerts, and composes feature UI components directly. `App` owns pair selection above `MarketFeedProvider`, because the provider needs the selected symbols. `MarketPrice` and `SessionChange` call their own model hooks, preserving subscriptions by symbol instead of lifting every price update into the page.
-
-Component integration tests sit beside their UI entry components. Presentational-child tests verify rendering and event forwarding without a market provider. Business helpers have unit tests. `types/`, `config/`, and `api/` retain their existing supporting roles and the FSD layer boundaries remain enforced.
-
-### Market feed ownership
-
-`createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `MarketFeedProvider`, mounted once in `App`, creates one service and supplies that stable instance through context. Its ownership hook synchronizes selected pairs, forwards browser online/offline events, and starts/stops the service. The provider does not subscribe to the full snapshot.
-
-Model hooks read data through `useMarketStatus()`, `useMarketQuote(symbol)`, and `useMarketHistory(symbol)`. These use `useSyncExternalStore`, so an unrelated quote update does not trigger a subscription-driven render. `useMarketFeed()` only retrieves the existing service for commands or non-React subscriptions; it never creates or starts another feed. `useMarketValue(selector)` supports additional selections; selectors must return a primitive or an existing stable reference, not a newly allocated object or array.
-
-`initialOptions` holds the endpoint and optional injected socket factory, clock, and timers. Those options are fixed for the provider's mounted lifetime; `symbols` remains reactive. Remount the provider to replace its configuration. Removing consumers does not stop the feed. Unmounting the provider removes browser listeners and cancels the connection and timers. Strict Mode may replay ownership effects, with only one socket active at a time.
-
-Alert feature stores subscribe directly to the feed and evaluate every published update. React subscribes to their resulting alerts, rather than forwarding market snapshots through page props. The table subscribes to quotes only when sorting by market values; individual price cells and session changes subscribe by symbol. The footer owns its elapsed-time clock, and price cells schedule their own freshness deadline.
-
-### WebSocket lifecycle
-
-The service uses separate timers for connection timeout, reconnect delay, stale data, subscription debounce, and subscription acknowledgement. A failed connection schedules at most one reconnect, using exponential delays from 1 second up to 30 seconds. A valid market tick resets the backoff. Generation checks ignore socket callbacks and timers belonging to a released connection.
-
-Connections and subscription acknowledgements time out after 12 seconds. An open connection without valid prices becomes stale after 30 seconds. Pair changes are debounced for 500 ms, with removals sent before additions and one acknowledgement awaited at a time. `desiredSymbols` tracks the selection; `subscribedSymbols` tracks the current socket subscriptions.
-
-`parseMarketSocketMessage` parses each message once and returns a typed ticker, subscription response, or invalid-message result. It checks supported symbols, stream names, positive decimal prices, and timestamps. Invalid updates produce error state; valid updates can restore the connected state. React renders the service's `connecting`, `connected`, `reconnecting`, `disconnected`, and `error` statuses.
-
-### Market panel
-
-`pages/home/ui/MarketPanel` composes the header and connection message, alerts, toolbar and hidden-currency controls, desktop table, mobile list, and footer. `useMarketPanel` owns the panel's local controls and reuses `useMarketPreferences` and `selectCurrencies` from the existing market-preferences feature. The header reads connection state directly, the footer calculates last-update age, and each price cell tracks its freshness deadline.
-
-Desktop and mobile layouts share `MarketCurrencyInfo` and `MarketCurrencyActions`. `MarketPrice` and `SessionChange` remain in the home-page UI. Favorite, hide, and restore behavior stays in the market-preferences feature; presentational sections receive state and callbacks.
-
-### Session price history
-
-`features/price-history` renders the MUI X Charts Community `LineChart` using `market.history` from the same feed. Each currency retains its latest 360 accepted `{ time, price }` updates in memory. These are update counts, not fixed-duration candles, and no historical REST request is made.
-
-The chart shows time and price axes, hover tooltips, low/high values, and the latest price. It follows the MUI theme and fills the available width. At least two points are required; flat-price data is given a small vertical range so the line stays visible. `useSampledValue` refreshes the displayed data every 10 seconds, with immediate updates when changing currencies or receiving the first two points. During a disconnection, existing history stays visible with a paused message. Reloading the page clears session history.
-
-## Implemented features
-
-- Live prices for five default USDT pairs, with latest-price direction, session percentage change, loading placeholders, and responsive table/card layouts. The pair manager can track up to ten supported pairs.
-- Favorites, hidden currencies with restore controls, search by name or symbol, and sorting by name, price, or session change. Favorites and visibility survive reloads.
-- A calculator with source/target selectors, amount validation, and a swap action. It derives cross-rates from the selected currencies' USDT prices.
-- Connection status, automatic reconnection, retry controls, stale-price handling, and clear loading, disconnected, error, and empty-search states.
-- Alerts for a change of at least 2% from the first session price, with currency, initial/current price, percentage, and direction. The same threshold does not repeatedly fire until the price returns inside the range.
-- Session price history with interactive MUI charts, dynamic WebSocket subscribe/unsubscribe when tracked pairs change, configurable target-price alerts, light/dark themes, and automated tests.
+`App` owns selected pairs above `MarketFeedProvider`. `HomePage` calls `useHomePageModel` to coordinate significant alerts, target alerts, and price notifications. Feature components manage their own inputs through model hooks. Price and session-change displays subscribe by symbol, while the market panel subscribes to quotes when sorting by market values.
 
 ## Technical decisions and assumptions
 
-- The app is frontend-only. It uses one combined Binance `@miniTicker` WebSocket feed and treats USDT as the common quote currency. Pair changes update subscriptions on the existing socket. Socket listeners, timers, and subscriptions are cleaned up; failures reconnect with bounded backoff.
-- The first valid price received for a pair is its session baseline. Session baselines, price history, and significant-change alerts reset when the page reloads. Quotes older than 30 seconds are treated as stale, while the last known price remains visible.
-- Calculator results are estimates and exclude trading fees. Input or currency changes recalculate immediately; market-only changes are sampled every 30 seconds. Invalid, missing, or stale prices do not produce a conversion result.
-- `localStorage` persists favorites, hidden and tracked pairs, target alerts, and theme choice. Storage failures fall back to in-memory state for the current session and surface a notification.
-- Notifications appear at the upper right for six seconds. Repeated events update an existing toast; distinct price alerts can appear immediately without waiting in a queue. Inline validation remains visible beside the relevant input.
+- **One feed owner:** `MarketFeedProvider` creates a stable market service. Its ownership hook starts/stops the feed and cleans up browser listeners. Descendants consume the existing service through context and `useSyncExternalStore`.
+- **Connection recovery:** reconnect delays grow from 1 to 30 seconds. Connections and subscription acknowledgements time out after 12 seconds. Valid ticks reset the backoff. Generation checks ignore callbacks from released connections.
+- **Pair changes:** updates are debounced for 500 ms, removals precede additions, and acknowledgements are processed one at a time. Removing a tracked pair clears its quote and history; re-adding it starts a new baseline for that pair. Hiding only affects list visibility.
+- **Prices and baselines:** prices are Binance `miniTicker` last prices quoted in USDT. Session percentage change is `(current - initial) / initial * 100`, not Binance's 24-hour percentage. Baselines survive reconnects but reset after a reload or pair removal/re-addition.
+- **Freshness:** quotes are treated as stale at 30 seconds. The UI retains last-known prices and suspends conversions when selected prices are stale or disconnected.
+- **Calculator:** cross-rate is `source USDT price / target USDT price`. Results exclude fees and use JavaScript numbers, not arbitrary-precision accounting. Input, currency, and relevant market price changes recalculate the displayed result immediately. A regression test publishes changes to both selected prices and checks the result without advancing timers.
+- **History:** the latest 360 accepted updates per pair are retained in memory. They are update counts, not candles or a fixed time window. The chart refreshes every 10 seconds, requires two points, and updates immediately on selection changes or first readiness. No historical REST request is made.
+- **Alerts:** significant-change alerts retain the latest ten entries. Remaining in the same threshold zone does not create duplicates; returning inside the threshold and crossing again, or crossing to the opposite zone, can create another alert. Up to 20 configurable target alerts are saved; they are evaluated only while the app is open and can trigger immediately if their condition is already met.
+- **Persistence:** tracked pairs, favorites, hidden currencies, target alerts, and theme choice use browser storage. Price history and session baselines are not persisted.
 
 ## Verification
 
 ```bash
-npx tsc -b
 npm run lint
 npm run build
 npm test -- --runInBand
 ```
 
-Jest runs unit tests in Node and component tests with React Testing Library in jsdom. Tests sit beside the code they cover, and every `test` or `it` title starts with `should ` (enforced by ESLint). A browser smoke check should confirm live Binance prices, reconnection, and the desktop and mobile layouts.
+Verified on **2026-09-29**: lint passed, production build passed, and **69 tests across 22 suites passed**. The build emitted a large-chunk warning: approximately 914 kB minified / 285 kB gzip for the main JavaScript bundle. These checks validate code and simulated market scenarios, not availability of the external Binance service.
 
-Focused test commands:
+Jest runs `.test.ts` unit tests in Node and `.test.tsx` component tests in jsdom. Coverage includes conversion validation, percentage changes, alert thresholds, storage failures, reconnect backoff, stale data, subscription acknowledgements, cleanup, panel actions, chart sampling, and arrow colors in both themes.
+
+Focused commands:
 
 ```bash
 npm run test:market
@@ -132,6 +147,7 @@ npm test -- --runInBand src/pages/home
 npm test -- --runInBand src/features/price-history
 ```
 
-Coverage includes WebSocket timeouts, stale data, reconnect backoff, subscription acknowledgements, offline recovery, and old-generation callbacks; hook rerenders and Strict Mode cleanup; market search, favorites, hide/restore, sorting, and alerts; and chart rendering, flat prices, currency selection, and refresh timing. The chart integration tests render the real MUI component with a fixed test width. Jest setup provides a `structuredClone` fallback for jsdom.
+## Remaining work before submission
 
-The production build currently reports Vite's large-chunk warning. It still completes successfully; chart code splitting is a possible future optimization.
+1. **Run a live browser smoke check.** Confirm Binance data arrives, disconnect/reconnect recovery, persistence after reload, theme switching, and desktop/mobile layouts. Automated tests use controlled feeds.
+2. **Consider bundle splitting.** The current build succeeds but exceeds Vite's 500 kB chunk warning threshold. This is an optimization opportunity, not an explicit assignment blocker.

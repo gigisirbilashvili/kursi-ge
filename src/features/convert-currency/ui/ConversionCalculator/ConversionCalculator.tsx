@@ -44,11 +44,11 @@ export function ConversionCalculator({ currencies }: IConversionCalculatorProps)
         <SectionHeader
           headingId="conversion-heading"
           title="Currency calculator"
-          description="Convert using Binance prices, refreshed every 30 seconds."
+          description="Convert using the latest Binance prices."
           descriptionVariant="body2"
         />
 
-        <AppChip label="Updates every 30s" isBrand />
+        <AppChip label="Live updates" isBrand />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">

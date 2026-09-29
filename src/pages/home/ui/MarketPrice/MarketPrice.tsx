@@ -32,7 +32,7 @@ export function MarketPrice({ symbol }: IMarketPriceProps) {
         <Tooltip title={tickTitle}>
           <Box
             component="span"
-            color={color}
+            sx={{ color }}
             className="inline-flex w-4 shrink-0"
           >
             <ArrowIcon width={16} height={20} direction={direction} />

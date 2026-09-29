@@ -4,10 +4,9 @@ import type { ITargetAlertsProps } from '../ui/TargetAlerts/types'
 import type { ITargetAlertsViewState } from './types/targetAlerts'
 import { useTargetAlertForm } from './useTargetAlertForm'
 
-export function useTargetAlertsModel(props: ITargetAlertsProps): ITargetAlertsViewState {
-  const { currencies, alerts, onRearm, onRemove } = props
+export function useTargetAlertsModel({ currencies, alerts, onAdd, onRearm, onRemove }: ITargetAlertsProps): ITargetAlertsViewState {
   const status = useMarketStatus()
-  const form = useTargetAlertForm(props)
+  const form = useTargetAlertForm({ currencies, alerts, onAdd, onRearm, onRemove })
   return {
     form, isFull: form.isFull, isEmpty: alerts.length === 0,
     items: alerts.map((alert) => {

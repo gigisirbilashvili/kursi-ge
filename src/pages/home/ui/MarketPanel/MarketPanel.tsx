@@ -13,19 +13,19 @@ import { MarketTable } from '../MarketTable/MarketTable'
 import { MarketMobileList } from '../MarketMobileList/MarketMobileList'
 import type { IMarketPanelProps } from './types'
 
-export function MarketPanel(props: IMarketPanelProps) {
-  const model = useMarketPanel(props)
+export function MarketPanel({ currencies, alerts, onDismissAlert }: IMarketPanelProps) {
+  const model = useMarketPanel({ currencies, alerts, onDismissAlert })
   const rows = model.rows.map(({ symbol, ...row }) => ({
     ...row,
     price: <MarketPrice symbol={symbol} />,
     change: <SessionChange symbol={symbol} />,
   }))
   const toolbar = model.controls
-  const { alerts, hasAlerts, hasRows } = model
+  const { alerts: alertViews, hasAlerts, hasRows } = model
   return (
     <SectionCard headingId="spot-market-heading" hasShadow>
       <MarketPanelHeader visibleCount={model.visibleCount} />
-      <MarketAlerts alerts={alerts} hasAlerts={hasAlerts} />
+      <MarketAlerts alerts={alertViews} hasAlerts={hasAlerts} />
       <MarketToolbar {...toolbar} />
       {!hasRows ? (
         <Box role="status" className="px-5 py-12 text-center sm:px-6">

@@ -147,8 +147,10 @@ export default defineConfig([
     files: ["**/*.{test,spec}.{ts,tsx}"],
     plugins: { jest },
     rules: {
+      "jest/require-top-level-describe": "error",
       "jest/valid-title": ["error", {
         mustMatch: {
+          describe: ["^(?:\\.<[A-Z][A-Za-z0-9]*/>|[a-z][A-Za-z0-9]*)$", 'Describe names must use ".<ComponentName/>" for components or "functionName" for functions and hooks.'],
           test: ["^should\\s", 'Test names must start with "should".'],
           it: ["^should\\s", 'Test names must start with "should".'],
         },

@@ -6,13 +6,12 @@ import { AppButton } from '../../../shared/ui/AppButton/AppButton'
 import { ConnectionStatus } from '../../../shared/ui/connection-status'
 import type { IAppHeaderProps } from './types'
 
-export function AppHeader(props: IAppHeaderProps) {
+export function AppHeader({ mode, onToggleMode }: IAppHeaderProps) {
   const {
     connection,
     themeLabel,
     themeText,
-    onToggleMode,
-  } = useAppHeaderModel(props)
+  } = useAppHeaderModel({ mode, onToggleMode })
   return (
     <AppBar
       component="header"

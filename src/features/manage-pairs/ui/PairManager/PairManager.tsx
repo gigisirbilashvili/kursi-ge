@@ -8,7 +8,7 @@ import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPairManagerProps } from './types'
 
-export function PairManager(props: IPairManagerProps) {
+export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
   const {
     isExpanded,
     selected,
@@ -18,8 +18,8 @@ export function PairManager(props: IPairManagerProps) {
     options,
     onToggle,
     onSelectionChange,
-    onAdd,
-  } = usePairManagerModel(props)
+    onAdd: onAddSelectedPair,
+  } = usePairManagerModel({ currencies, onAdd, onRemove })
   return (
     <Box className="mt-6">
       <AppButton
@@ -63,7 +63,7 @@ export function PairManager(props: IPairManagerProps) {
                 className="min-w-48"
               />
 
-              <AppButton variant="contained" onClick={onAdd}>
+              <AppButton variant="contained" onClick={onAddSelectedPair}>
                 Add pair
               </AppButton>
             </Stack>

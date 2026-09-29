@@ -5,14 +5,14 @@ import { AppChip } from "../../../../shared/ui/AppChip/AppChip";
 import { ArrowIcon } from "../../../../assets/icons";
 import type { ISessionChangeProps } from "./types";
 
-export function SessionChange(props: ISessionChangeProps) {
+export function SessionChange({ symbol }: ISessionChangeProps) {
   const {
     isUnavailable,
     color,
     direction,
     label,
     title,
-  } = useSessionChangeModel(props.symbol)
+  } = useSessionChangeModel(symbol)
   if (isUnavailable)
     return (
       <Typography

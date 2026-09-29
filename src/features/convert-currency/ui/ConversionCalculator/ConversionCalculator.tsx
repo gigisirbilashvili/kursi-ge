@@ -17,7 +17,7 @@ import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IConversionCalculatorProps } from './types'
 
-export function ConversionCalculator(props: IConversionCalculatorProps) {
+export function ConversionCalculator({ currencies }: IConversionCalculatorProps) {
   const {
     amount,
     source,
@@ -37,18 +37,18 @@ export function ConversionCalculator(props: IConversionCalculatorProps) {
     onTargetChange,
     onSwap,
     onAmountBlur,
-  } = useConversionCalculatorModel(props.currencies)
+  } = useConversionCalculatorModel(currencies)
   return (
     <SectionCard headingId="conversion-heading" hasShadow className="p-5 sm:p-6">
       <Stack className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
         <SectionHeader
           headingId="conversion-heading"
           title="Currency calculator"
-          description="Convert using Binance prices, refreshed every 30 seconds."
+          description="Convert using the latest Binance prices."
           descriptionVariant="body2"
         />
 
-        <AppChip label="Updates every 30s" isBrand />
+        <AppChip label="Live updates" isBrand />
       </Stack>
 
       <Box className="grid grid-cols-1 gap-6 md:grid-cols-2">

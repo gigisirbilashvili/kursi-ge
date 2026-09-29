@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import type { ICurrency } from '../../../entities/currency/index.ts'
 import { useMarketQuote, useMarketStatus } from '../../../entities/currency'
-import { useSampledValue } from '../../../shared/lib/useSampledValue'
 import { notify } from '../../../shared/lib/notify'
 import { getConversionResult } from '../lib/convertCurrency.ts'
 
@@ -28,17 +27,10 @@ export function useConversionCalculator(available: readonly ICurrency[]) {
   const status = useMarketStatus()
   const sourceQuote = useMarketQuote(source)
   const targetQuote = useMarketQuote(target)
-  const liveResult = getConversionResult(amount, source, target, {
+  const result = getConversionResult(amount, source, target, {
     status, quotes: { [source]: sourceQuote, [target]: targetQuote },
     history: {}, message: null, retryAt: null,
   }, now)
-  const sampledResult = useSampledValue(
-    liveResult,
-    30_000,
-    `${source}/${target}/${amount}/${status}`,
-    liveResult.status === 'ready',
-  )
-  const result = liveResult.status === 'ready' ? sampledResult : liveResult
   const staleMessage = result.status === 'stale' && status === 'connected' ? result.message : null
 
   useEffect(() => {

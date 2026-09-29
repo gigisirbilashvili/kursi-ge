@@ -4,7 +4,7 @@ import { useMarketPriceModel } from '../../model/useMarketPriceModel'
 import { ArrowIcon } from "../../../../assets/icons";
 import type { IMarketPriceProps } from "./types";
 
-export function MarketPrice(props: IMarketPriceProps) {
+export function MarketPrice({ symbol }: IMarketPriceProps) {
   const {
     isWaiting,
     isStale,
@@ -13,7 +13,7 @@ export function MarketPrice(props: IMarketPriceProps) {
     priceText,
     tickTitle,
     tickText,
-  } = useMarketPriceModel(props.symbol)
+  } = useMarketPriceModel(symbol)
   if (isWaiting) {
     return (
       <Stack className="items-end">
@@ -32,7 +32,7 @@ export function MarketPrice(props: IMarketPriceProps) {
         <Tooltip title={tickTitle}>
           <Box
             component="span"
-            color={color}
+            sx={{ color }}
             className="inline-flex w-4 shrink-0"
           >
             <ArrowIcon width={16} height={20} direction={direction} />

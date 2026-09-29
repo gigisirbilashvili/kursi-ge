@@ -3,7 +3,7 @@ import { Avatar, Box, Stack, Typography } from '@mui/material'
 import type { IMarketCurrencyInfoProps } from './types'
 
 export function MarketCurrencyInfo({
-  currency,
+  name, ticker, pairText, badgeBackground, badgeColor,
   isCompact = false,
 }: Readonly<IMarketCurrencyInfoProps>) {
   return (
@@ -11,20 +11,20 @@ export function MarketCurrencyInfo({
       <Avatar
         aria-hidden="true"
         sx={{
-          bgcolor: `${currency.badgeTone}.main`,
-          color: `${currency.badgeTone}.contrastText`,
+          bgcolor: badgeBackground,
+          color: badgeColor,
         }}
         className={isCompact ? "size-9 text-[9px] font-bold" : "size-10 text-[10px] font-bold"}
       >
-        {currency.ticker}
+        {ticker}
       </Avatar>
 
       <Box>
         <Typography component="p" variant="spanBold">
-          {currency.name}
+          {name}
         </Typography>
         <Typography color="textSecondary" variant="caption">
-          {currency.ticker}/USDT
+          {pairText}
         </Typography>
       </Box>
     </Stack>

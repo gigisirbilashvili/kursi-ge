@@ -11,16 +11,9 @@ import {
 
 import { MarketCurrencyInfo } from '../MarketCurrencyInfo/MarketCurrencyInfo'
 import { MarketCurrencyActions } from '../MarketCurrencyActions/MarketCurrencyActions'
-import { MarketPrice } from '../MarketPrice/MarketPrice'
-import { SessionChange } from '../SessionChange/SessionChange'
 import type { IMarketTableProps } from './types'
 
-export function MarketTable({
-  visibleCurrencies,
-  favorites,
-  toggleFavorite,
-  hide,
-}: Readonly<IMarketTableProps>) {
+export function MarketTable({ rows }: Readonly<IMarketTableProps>) {
   return (
     <TableContainer className="hidden md:block">
       <Table
@@ -51,44 +44,32 @@ export function MarketTable({
         </TableHead>
 
         <TableBody>
-          {visibleCurrencies.map((currency) => {
-            const isFavorite = favorites.includes(
-              currency.symbol,
-            );
+          {rows.map((row) => {
             return (
               <TableRow
-                key={currency.symbol}
+                key={row.id}
                 hover
                 className="last:[&_.MuiTableCell-root]:border-b-0"
               >
                 <TableCell
                   component="th"
                   scope="row"
-                  aria-label={`${currency.name}, ${currency.ticker}/USDT`}
+                  aria-label={row.label}
                 >
-                  <MarketCurrencyInfo currency={currency} />
+                  <MarketCurrencyInfo {...row.info} />
                 </TableCell>
 
                 <TableCell align="right">
-                  <MarketPrice
-                    symbol={currency.symbol}
-                  />
+                  {row.price}
                 </TableCell>
 
                 <TableCell align="right">
-                  <SessionChange
-                    symbol={currency.symbol}
-                  />
+                  {row.change}
                 </TableCell>
 
                 <TableCell align="right">
                   <Stack className="flex-row items-center justify-end gap-1">
-                    <MarketCurrencyActions
-                      currency={currency}
-                      isFavorite={isFavorite}
-                      toggleFavorite={toggleFavorite}
-                      hide={hide}
-                    />
+                    <MarketCurrencyActions {...row.actions} />
                   </Stack>
                 </TableCell>
               </TableRow>

@@ -5,26 +5,24 @@ import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import type { IMarketCurrencyActionsProps } from './types'
 
 export function MarketCurrencyActions({
-  currency,
   isFavorite,
-  toggleFavorite,
-  hide,
+  favoriteTitle,
+  favoriteLabel,
+  hideLabel,
+  onToggleFavorite,
+  onHide,
 }: Readonly<IMarketCurrencyActionsProps>) {
   return (
     <>
       <Tooltip
-        title={
-          isFavorite
-            ? "Remove from favorites"
-            : "Add to favorites"
-        }
+        title={favoriteTitle}
       >
         <IconButton
           size="small"
           color={isFavorite ? "primary" : "default"}
-          aria-label={`${isFavorite ? "Remove" : "Add"} ${currency.name} ${isFavorite ? "from" : "to"} favorites`}
+          aria-label={favoriteLabel}
           aria-pressed={isFavorite}
-          onClick={() => toggleFavorite(currency.symbol)}
+          onClick={onToggleFavorite}
         >
           <FavoriteIcon size={20} isFilled={isFavorite} />
         </IconButton>
@@ -32,8 +30,8 @@ export function MarketCurrencyActions({
 
       <AppButton
         size="small"
-        onClick={() => hide(currency.symbol)}
-        aria-label={`Hide ${currency.name}`}
+        onClick={onHide}
+        aria-label={hideLabel}
       >
         Hide
       </AppButton>

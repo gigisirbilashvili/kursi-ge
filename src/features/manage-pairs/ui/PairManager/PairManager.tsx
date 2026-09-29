@@ -1,7 +1,6 @@
-import { useState } from 'react'
 import { Box, Stack } from '@mui/material'
 
-import { AVAILABLE_CURRENCIES } from '../../../../entities/currency'
+import { usePairManagerModel } from '../../model/usePairManagerModel'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
@@ -9,25 +8,27 @@ import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader
 import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPairManagerProps } from './types'
 
-export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [selection, setSelection] = useState('')
-  const available = AVAILABLE_CURRENCIES.filter(
-    ({ symbol }) => !currencies.some((currency) => currency.symbol === symbol),
-  )
-  const selected = available.some(({ symbol }) => symbol === selection)
-    ? selection
-    : (available[0]?.symbol ?? '')
-
+export function PairManager(props: IPairManagerProps) {
+  const {
+    isExpanded,
+    selected,
+    buttonText,
+    hasAvailablePairs,
+    pairs,
+    options,
+    onToggle,
+    onSelectionChange,
+    onAdd,
+  } = usePairManagerModel(props)
   return (
     <Box className="mt-6">
       <AppButton
         variant="outlined"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onToggle}
         aria-expanded={isExpanded}
         aria-controls="pair-manager"
       >
-        Manage pairs ({currencies.length})
+        {buttonText}
       </AppButton>
 
       {isExpanded && (
@@ -42,30 +43,27 @@ export function PairManager({ currencies, onAdd, onRemove }: IPairManagerProps) 
           />
 
           <Stack className="mt-3 flex-row flex-wrap gap-2">
-            {currencies.map((currency) => (
+            {pairs.map((pair) => (
               <AppChip
-                key={currency.symbol}
-                label={`${currency.ticker}/USDT`}
+                key={pair.id}
+                label={pair.label}
                 size="medium"
-                onDelete={currencies.length > 1 ? () => onRemove(currency.symbol) : undefined}
+                onDelete={pair.onRemove}
               />
             ))}
           </Stack>
 
-          {available.length ? (
+          {hasAvailablePairs ? (
             <Stack className="mt-4 flex-col gap-3 sm:flex-row">
               <OptionSelect
                 label="Pair to add"
                 value={selected}
-                onChange={setSelection}
-                options={available.map(({ symbol, name, ticker }) => ({
-                  value: symbol,
-                  label: `${name} (${ticker}/USDT)`,
-                }))}
+                onChange={onSelectionChange}
+                options={options}
                 className="min-w-48"
               />
 
-              <AppButton variant="contained" onClick={() => onAdd(selected)}>
+              <AppButton variant="contained" onClick={onAdd}>
                 Add pair
               </AppButton>
             </Stack>

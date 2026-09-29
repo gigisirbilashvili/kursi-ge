@@ -1,5 +1,8 @@
-import type { ICurrency } from '../../../../../entities/currency'
 export interface IMarketCurrencyInfoProps {
-  currency: ICurrency
+  name: string
+  ticker: string
+  pairText: string
+  badgeBackground: string
+  badgeColor: string
   isCompact?: boolean
 }

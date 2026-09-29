@@ -1,20 +1,20 @@
 import { Stack, Typography } from '@mui/material'
 
-import { useMarketFeed, useMarketStatus, useMarketValue } from '../../../../entities/currency'
+import { useMarketPanelHeaderModel } from '../../model/useMarketPanelHeaderModel'
 import { AppAlert } from '../../../../shared/ui/AppAlert/AppAlert'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { AppChip } from '../../../../shared/ui/AppChip/AppChip'
 import type { IMarketPanelHeaderProps } from './types'
 
-export function MarketPanelHeader({
-  visibleCount,
-}: Readonly<IMarketPanelHeaderProps>) {
-  const { retry } = useMarketFeed()
-  const status = useMarketStatus()
-  const message = useMarketValue((snapshot) => snapshot.message)
-  const hasPrices = useMarketValue((snapshot) => Object.keys(snapshot.quotes).length > 0)
-  const isConnected = status === 'connected'
-  const isUnavailable = !isConnected && status !== 'connecting'
+export function MarketPanelHeader(props: IMarketPanelHeaderProps) {
+  const {
+    visibleText,
+    isUnavailable,
+    severity,
+    messageText,
+    isRetryDisabled,
+    onRetry,
+  } = useMarketPanelHeaderModel(props.visibleCount)
   return (
     <>
       <Stack
@@ -27,7 +27,7 @@ export function MarketPanelHeader({
           </Typography>
 
           <AppChip
-            label={`${visibleCount} visible`}
+            label={visibleText}
             isBrand
           />
         </Stack>
@@ -39,7 +39,7 @@ export function MarketPanelHeader({
 
       <AppAlert
         aria-live="polite"
-        severity={isUnavailable ? "warning" : isConnected ? "success" : "info"}
+        severity={severity}
         icon={false}
         sx={{
           bgcolor: isUnavailable ? "warningSoft.main" : "background.default",
@@ -52,20 +52,14 @@ export function MarketPanelHeader({
             variant="body2"
             color={isUnavailable ? "warning" : "textSecondary"}
           >
-            {message ??
-              (isConnected
-                ? "Receiving market prices from Binance."
-                : "Connecting to Binance. Waiting for the first prices…")}
-            {isUnavailable &&
-              hasPrices &&
-              " Last-known prices are shown below."}
+            {messageText}
           </Typography>
           {isUnavailable && (
             <AppButton
               variant="outlined"
               size="small"
-              onClick={retry}
-              disabled={status === "disconnected"}
+              onClick={onRetry}
+              disabled={isRetryDisabled}
               className="min-h-10"
             >
               Retry connection

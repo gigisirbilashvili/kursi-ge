@@ -2,38 +2,26 @@ import { List, ListItem, Stack, Typography } from '@mui/material'
 
 import { MarketCurrencyInfo } from '../MarketCurrencyInfo/MarketCurrencyInfo'
 import { MarketCurrencyActions } from '../MarketCurrencyActions/MarketCurrencyActions'
-import { MarketPrice } from '../MarketPrice/MarketPrice'
-import { SessionChange } from '../SessionChange/SessionChange'
 import type { IMarketMobileListProps } from './types'
 
-export function MarketMobileList({
-  visibleCurrencies,
-  favorites,
-  toggleFavorite,
-  hide,
-}: Readonly<IMarketMobileListProps>) {
+export function MarketMobileList({ rows }: Readonly<IMarketMobileListProps>) {
   return (
     <List
       aria-label="Cryptocurrency markets"
       disablePadding
       className="block md:hidden"
     >
-      {visibleCurrencies.map((currency) => {
-        const isFavorite = favorites.includes(
-          currency.symbol,
-        );
-        return (
+      {rows.map((row) => {
+            return (
           <ListItem
-            key={currency.symbol}
+            key={row.id}
             divider
             className="block p-5 last:border-b-0"
           >
             <Stack className="flex-row items-center justify-between gap-2">
-              <MarketCurrencyInfo currency={currency} isCompact />
+              <MarketCurrencyInfo {...row.info} isCompact />
 
-              <MarketPrice
-                symbol={currency.symbol}
-              />
+              {row.price}
             </Stack>
 
             <Stack className="mt-4 flex-row items-center justify-between gap-2">
@@ -41,16 +29,11 @@ export function MarketMobileList({
                 Since opening
               </Typography>
 
-              <SessionChange symbol={currency.symbol} />
+              {row.change}
             </Stack>
 
             <Stack className="mt-3 flex-row items-center justify-end gap-2">
-              <MarketCurrencyActions
-                currency={currency}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                hide={hide}
-              />
+              <MarketCurrencyActions {...row.actions} />
             </Stack>
           </ListItem>
         );

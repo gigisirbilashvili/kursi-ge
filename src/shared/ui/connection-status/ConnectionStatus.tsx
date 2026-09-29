@@ -1,25 +1,24 @@
 import { Box } from '@mui/material'
 
 import { AppChip } from '../AppChip/AppChip'
-import { CONNECTION_STATUS_COLORS, CONNECTION_STATUS_LABELS } from './constants'
 import type { IConnectionStatusProps } from './types'
 
-export function ConnectionStatus({ status }: IConnectionStatusProps) {
+export function ConnectionStatus({ label, color, ariaLabel }: IConnectionStatusProps) {
   return (
     <AppChip
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      aria-label={`Market connection: ${CONNECTION_STATUS_LABELS[status]}`}
+      aria-label={ariaLabel}
       icon={
         <Box
           component="span"
           aria-hidden="true"
-          sx={{ bgcolor: CONNECTION_STATUS_COLORS[status] }}
+          sx={{ bgcolor: color }}
           className="size-2 rounded-full"
         />
       }
-      label={CONNECTION_STATUS_LABELS[status]}
+      label={label}
       variant="outlined"
       color="headerStatus"
       className="h-7.5 shrink-0 font-medium [&_.MuiChip-icon]:mr-0.5 [&_.MuiChip-icon]:ml-3"

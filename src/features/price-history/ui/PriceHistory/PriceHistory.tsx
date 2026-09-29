@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import { Box, Stack, Typography } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
 import { LineChart } from '@mui/x-charts/LineChart'
 
-import { useMarketHistory, useMarketStatus } from '../../../../entities/currency'
-import { useSampledValue } from '../../../../shared/lib/useSampledValue'
-import { formatSignificantNumber } from '../../../../shared/lib/formatSignificantNumber'
+import { usePriceHistoryModel } from '../../model/usePriceHistoryModel'
+
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
 import { SectionCard } from '../../../../shared/ui/SectionCard/SectionCard'
 import { SectionHeader } from '../../../../shared/ui/SectionHeader/SectionHeader'
@@ -13,20 +10,29 @@ import { StatusText } from '../../../../shared/ui/StatusText/StatusText'
 import type { IPriceHistoryProps } from './types'
 
 export function PriceHistory({ currencies }: IPriceHistoryProps) {
-  const theme = useTheme()
-  const [selection, setSelection] = useState('BTCUSDT')
-  const currency = currencies.find(({ symbol }) => symbol === selection) ?? currencies[0]
-  const status = useMarketStatus()
-  const livePoints = useMarketHistory(currency?.symbol ?? '')
-  const points = useSampledValue(livePoints, 10_000, currency?.symbol ?? '', livePoints.length >= 2)
-  const min = Math.min(...points.map(({ price }) => price))
-  const max = Math.max(...points.map(({ price }) => price))
-  const first = points[0]
-  const last = points.at(-1)
-  const range = max - min || max * 0.001 || 1
-  const format = (price: number) => formatSignificantNumber(price, 8)
-  const time = (value: number) => new Date(value).toLocaleTimeString()
-
+  const {
+    chartColor,
+    formatAxisPrice,
+    formatAxisTime,
+    formatSeriesPrice,
+    title,
+    description,
+    seriesId,
+    seriesLabel,
+    times,
+    prices,
+    minValue,
+    maxValue,
+    selection,
+    options,
+    onSelectionChange,
+    isWaiting,
+    isPaused,
+    lowText,
+    highText,
+    startText,
+    latestText,
+  } = usePriceHistoryModel(currencies)
   return (
     <SectionCard headingId="history-heading" className="p-5 sm:p-6">
       <Stack className="flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -38,52 +44,52 @@ export function PriceHistory({ currencies }: IPriceHistoryProps) {
 
         <OptionSelect
           label="Chart currency"
-          value={currency?.symbol ?? ''}
-          onChange={setSelection}
-          options={currencies.map(({ symbol, ticker }) => ({ value: symbol, label: `${ticker}/USDT` }))}
+          value={selection}
+          onChange={onSelectionChange}
+          options={options}
           className="min-w-36"
         />
       </Stack>
 
-      {points.length < 2 ? (
+      {isWaiting ? (
         <Box role="status" color="text.secondary" className="flex min-h-48 items-center justify-center">
           Waiting for two live updates to draw the chart…
         </Box>
       ) : (
         <Box component="figure" className="mx-0 mt-5 mb-0">
           <Stack color="text.secondary" className="flex-row flex-wrap justify-between gap-2">
-            <Typography variant="caption">Low {format(min)}</Typography>
-            <Typography variant="caption">High {format(max)}</Typography>
+            <Typography variant="caption">{lowText}</Typography>
+            <Typography variant="caption">{highText}</Typography>
           </Stack>
 
           <LineChart
             height={240}
             xAxis={[{
-              data: points.map(({ time: timestamp }) => new Date(timestamp)),
+              data: times,
               scaleType: 'time',
-              valueFormatter: (value: Date) => value.toLocaleTimeString(),
+              valueFormatter: formatAxisTime,
               tickNumber: 3,
             }]}
             yAxis={[{
-              min: Math.max(0, min - range * 0.1),
-              max: max + range * 0.1,
+              min: minValue,
+              max: maxValue,
               width: 90,
-              valueFormatter: (value: number) => format(value),
+              valueFormatter: formatAxisPrice,
             }]}
             series={[{
-              id: currency?.symbol,
-              label: `${currency?.ticker}/USDT`,
-              data: points.map(({ price }) => price),
-              color: theme.palette.primary.main,
+              id: seriesId,
+              label: seriesLabel,
+              data: prices,
+              color: chartColor,
               curve: 'linear',
               ['showMark']: false,
-              valueFormatter: (value) => value === null ? '—' : `${format(value)} USDT`,
+              valueFormatter: formatSeriesPrice,
             }]}
             grid={{ ['horizontal']: true }}
             hideLegend
             skipAnimation
-            title={`${currency?.name} session price chart`}
-            desc={`From ${format(first?.price ?? 0)} to ${format(last?.price ?? 0)} USDT. Low ${format(min)}, high ${format(max)}.`}
+            title={title}
+            desc={description}
           />
 
           <Stack
@@ -91,15 +97,15 @@ export function PriceHistory({ currencies }: IPriceHistoryProps) {
             color="text.secondary"
             className="flex-row flex-wrap justify-between gap-2"
           >
-            <Typography variant="caption">{first && time(first.time)}</Typography>
+            <Typography variant="caption">{startText}</Typography>
             <Typography variant="caption">
-              Latest {format(last?.price ?? 0)} USDT · {last && time(last.time)}
+              {latestText}
             </Typography>
           </Stack>
         </Box>
       )}
 
-      {status !== 'connected' && (
+      {isPaused && (
         <StatusText tone="warning" className="mt-2">
           History is paused until live prices return.
         </StatusText>

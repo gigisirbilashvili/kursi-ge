@@ -1,7 +1,7 @@
 import { AVAILABLE_CURRENCIES } from '../../../entities/currency/index.ts'
 import { notify } from '../../../shared/lib/notify'
 import { useStoredState } from '../../../shared/lib/useStoredState'
-import { normalizePreferences } from '../lib/preferences.ts'
+import { hideCurrency, normalizePreferences, restoreCurrency, toggleCurrencyFavorite } from '../lib/preferences.ts'
 import type { IMarketPreferences } from '../types/index.ts'
 
 const STORAGE_KEY = 'kursi-market-preferences-v1'
@@ -18,29 +18,18 @@ export function useMarketPreferences() {
       notify.error('This currency pair is not supported.')
       return
     }
-    setPreferences((current) => ({
-      ...current,
-      favorites: current.favorites.includes(symbol)
-        ? current.favorites.filter((item) => item !== symbol)
-        : [...current.favorites, symbol],
-    }))
+    setPreferences((current) => toggleCurrencyFavorite(current, symbol))
   }
   const hide = (symbol: string) => {
     if (!VALID_SYMBOLS.has(symbol)) {
       notify.error('This currency pair is not supported.')
       return
     }
-    setPreferences((current) => ({
-      ...current,
-      hidden: current.hidden.includes(symbol) ? current.hidden : [...current.hidden, symbol],
-    }))
+    setPreferences((current) => hideCurrency(current, symbol))
     notify.success('Currency hidden from the market list.', { toastId: 'market-visibility' })
   }
   const restore = (symbol: string) => {
-    setPreferences((current) => ({
-      ...current,
-      hidden: current.hidden.filter((item) => item !== symbol),
-    }))
+    setPreferences((current) => restoreCurrency(current, symbol))
     notify.success('Currency restored to the market list.', { toastId: 'market-visibility' })
   }
   return { preferences, toggleFavorite, hide, restore }

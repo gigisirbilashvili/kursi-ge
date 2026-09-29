@@ -1,16 +1,21 @@
-import type { ICurrency } from '../../../../../entities/currency'
-import type { TMarketFilter, TSortDirection, TSortField } from '../../../../../features/market-preferences'
+import type { ISelectOption } from '../../../../../shared/ui/OptionSelect/types'
+
 export interface IMarketToolbarProps {
   search: string
-  setSearch: (value: string) => void
-  filter: TMarketFilter
-  setFilter: (value: TMarketFilter) => void
-  sortField: TSortField
-  setSortField: (value: TSortField) => void
-  sortDirection: TSortDirection
-  setSortDirection: (value: TSortDirection) => void
+  hasSearch: boolean
+  onSearchChange: (value: string) => void
+  onClearSearch: () => void
+  filter: string
+  onFilterChange: (value: string | null) => void
+  sortField: string
+  onSortFieldChange: (value: string) => void
+  sortOptions: readonly ISelectOption[]
+  sortLabel: string
+  isDescending: boolean
+  onToggleSort: () => void
   isShowingHidden: boolean
-  setIsShowingHidden: (value: boolean) => void
-  hiddenCurrencies: readonly ICurrency[]
-  restore: (symbol: string) => void
+  onToggleHidden: () => void
+  hiddenLabel: string
+  hasHiddenItems: boolean
+  hiddenItems: readonly { id: string; label: string; ariaLabel: string; onRestore: () => void }[]
 }

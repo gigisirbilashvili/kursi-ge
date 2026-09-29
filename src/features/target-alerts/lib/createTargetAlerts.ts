@@ -5,6 +5,25 @@ import type { ITargetAlert } from '../types/index.ts'
 
 const MAX_TARGET_ALERTS = 20
 
+export function isTargetAlertLimitReached(count: number) {
+  return count >= MAX_TARGET_ALERTS
+}
+
+export function validateTargetSubmission(value: string, count: number) {
+  const price = parseTarget(value)
+  if (price === null) return {
+    isValid: false as const,
+    message: 'Enter a positive decimal target price.',
+    toastId: 'target-invalid',
+  }
+  if (isTargetAlertLimitReached(count)) return {
+    isValid: false as const,
+    message: 'Limit of 20 alerts reached. Remove an alert to add another.',
+    toastId: 'target-limit',
+  }
+  return { isValid: true as const, price }
+}
+
 function isSupportedSymbol(value: unknown): value is string {
   return typeof value === 'string' && AVAILABLE_CURRENCIES.some(({ symbol }) => symbol === value)
 }
@@ -76,7 +95,7 @@ export function createTargetAlerts(
       }
     },
     add(alert: ITargetAlert) {
-      if (alerts.length >= MAX_TARGET_ALERTS || alerts.some((item) => item.id === alert.id)) return
+      if (isTargetAlertLimitReached(alerts.length) || alerts.some((item) => item.id === alert.id)) return
       if (!isSupportedSymbol(alert.symbol) || !isValidTargetPrice(alert.target)) return
       if (!isValidAlertDirection(alert.direction)) return
       publish([...alerts, alert])

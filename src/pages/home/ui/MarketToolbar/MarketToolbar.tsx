@@ -10,7 +10,6 @@ import {
   Typography,
 } from '@mui/material'
 
-import type { TMarketFilter } from '../../../../features/market-preferences'
 import { SortIcon } from '../../../../assets/icons'
 import { AppButton } from '../../../../shared/ui/AppButton/AppButton'
 import { OptionSelect } from '../../../../shared/ui/OptionSelect/OptionSelect'
@@ -19,17 +18,22 @@ import type { IMarketToolbarProps } from './types'
 
 export function MarketToolbar({
   search,
-  setSearch,
+  hasSearch,
+  onSearchChange,
+  onClearSearch,
   filter,
-  setFilter,
+  onFilterChange,
   sortField,
-  setSortField,
-  sortDirection,
-  setSortDirection,
+  onSortFieldChange,
+  sortOptions,
+  sortLabel,
+  isDescending,
+  onToggleSort,
   isShowingHidden,
-  setIsShowingHidden,
-  hiddenCurrencies,
-  restore,
+  onToggleHidden,
+  hiddenLabel,
+  hasHiddenItems,
+  hiddenItems,
 }: Readonly<IMarketToolbarProps>) {
   return (
     <>
@@ -41,17 +45,17 @@ export function MarketToolbar({
           label="Search currencies"
           size="small"
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => onSearchChange(event.target.value)}
           slotProps={{
             htmlInput: { role: "searchbox" },
             input: {
-              endAdornment: search ? (
+              endAdornment: hasSearch ? (
                 <InputAdornment position="end">
                   <AppButton
                     type="button"
                     size="small"
                     aria-label="Clear search"
-                    onClick={() => setSearch("")}
+                    onClick={onClearSearch}
                   >
                     Clear
                   </AppButton>
@@ -66,9 +70,7 @@ export function MarketToolbar({
           size="small"
           exclusive
           value={filter}
-          onChange={(_, value: TMarketFilter | null) => {
-            if (value) setFilter(value);
-          }}
+          onChange={(_, value: string | null) => onFilterChange(value)}
           aria-label="Currency filter"
         >
           <ToggleButton value="all">All</ToggleButton>
@@ -78,44 +80,36 @@ export function MarketToolbar({
         <OptionSelect
           label="Sort by"
           value={sortField}
-          onChange={(value) => {
-            if (value === 'name' || value === 'price' || value === 'change') setSortField(value)
-          }}
-          options={[
-            { value: "name", label: "Name" },
-            { value: "price", label: "Current price" },
-            { value: "change", label: "Price change" },
-          ]}
+          onChange={onSortFieldChange}
+          options={sortOptions}
           className="min-w-36"
         />
 
         <Tooltip
-          title={`Sort ${sortDirection === "asc" ? "descending" : "ascending"}`}
+          title={sortLabel}
         >
           <IconButton
-            aria-label={`Sort ${sortDirection === "asc" ? "descending" : "ascending"}`}
-            onClick={() =>
-              setSortDirection(sortDirection === "asc" ? "desc" : "asc")
-            }
+            aria-label={sortLabel}
+            onClick={onToggleSort}
             sx={{ borderColor: "divider" }}
             className="border"
             size="small"
           >
             <SortIcon
               size={18}
-              className={sortDirection === "desc" ? "rotate-180" : undefined}
+              className={isDescending ? "rotate-180" : undefined}
             />
           </IconButton>
         </Tooltip>
 
         <AppButton
           type="button"
-          onClick={() => setIsShowingHidden(!isShowingHidden)}
+          onClick={onToggleHidden}
           aria-expanded={isShowingHidden}
           aria-controls="hidden-currencies"
           className="ml-auto"
         >
-          Hidden ({hiddenCurrencies.length})
+          {hiddenLabel}
         </AppButton>
       </Stack>
       {isShowingHidden && (
@@ -129,19 +123,19 @@ export function MarketToolbar({
           <Typography component="h3" variant="spanBold" className="mb-2">
             Hidden currencies
           </Typography>
-          {hiddenCurrencies.length === 0 ? (
+          {!hasHiddenItems ? (
             <StatusText>No hidden currencies.</StatusText>
           ) : (
             <Stack className="flex-row flex-wrap gap-2">
-              {hiddenCurrencies.map((currency) => (
+              {hiddenItems.map((item) => (
                 <AppButton
-                  key={currency.symbol}
+                  key={item.id}
                   variant="outlined"
                   size="small"
-                  onClick={() => restore(currency.symbol)}
-                  aria-label={`Restore ${currency.name}`}
+                  onClick={item.onRestore}
+                  aria-label={item.ariaLabel}
                 >
-                  Restore {currency.ticker}
+                  {item.label}
                 </AppButton>
               ))}
             </Stack>

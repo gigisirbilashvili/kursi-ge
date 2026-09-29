@@ -4,8 +4,16 @@ import { test } from '@jest/globals'
 import {
   createTargetAlerts,
   parseTarget,
+  validateTargetSubmission,
 } from './createTargetAlerts'
 import type { IMarketSnapshot } from '../../../entities/currency/types/index'
+
+test('should validate submission price before enforcing the shared alert limit', () => {
+  assert.equal(validateTargetSubmission('0', 20).isValid, false)
+  assert.equal(validateTargetSubmission('0', 20).toastId, 'target-invalid')
+  assert.equal(validateTargetSubmission('100', 20).toastId, 'target-limit')
+  assert.deepEqual(validateTargetSubmission('100', 19), { isValid: true, price: 100 })
+})
 
 function market(price: number): IMarketSnapshot {
   return {

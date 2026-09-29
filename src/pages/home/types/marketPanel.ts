@@ -1,7 +1,17 @@
-import type { ICurrency } from '../../../entities/currency'
+import type { ReactNode } from 'react'
+
+import type { IMarketCurrencyInfoProps } from '../ui/MarketCurrencyInfo/types'
+import type { IMarketCurrencyActionsProps } from '../ui/MarketCurrencyActions/types'
+
+export interface IMarketRowView {
+  id: string
+  label: string
+  info: IMarketCurrencyInfoProps
+  actions: IMarketCurrencyActionsProps
+  price: ReactNode
+  change: ReactNode
+}
+
 export interface IMarketRowsProps {
-  visibleCurrencies: readonly ICurrency[]
-  favorites: readonly string[]
-  toggleFavorite: (symbol: string) => void
-  hide: (symbol: string) => void
+  rows: readonly IMarketRowView[]
 }

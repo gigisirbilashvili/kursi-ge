@@ -1,8 +1,15 @@
-import type { ICurrency } from '../../../../../entities/currency'
-import type { ITargetAlert } from '../../../types'
+import type { ISelectOption } from '../../../../../shared/ui/OptionSelect/types'
 
 export interface ITargetAlertFormProps {
-  currencies: readonly ICurrency[]
+  symbol: string
+  direction: string
+  target: string
+  hasError: boolean
   isFull: boolean
-  onAdd: (alert: ITargetAlert) => void
+  helperText?: string
+  currencyOptions: readonly ISelectOption[]
+  onSymbolChange: (value: string) => void
+  onDirectionChange: (value: string) => void
+  onTargetChange: (value: string) => void
+  onSubmit: () => void
 }

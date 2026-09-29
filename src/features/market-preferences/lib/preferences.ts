@@ -25,6 +25,23 @@ export function normalizePreferences(
   return { favorites: symbols(saved.favorites), hidden: symbols(saved.hidden) }
 }
 
+export function toggleCurrencyFavorite(current: IMarketPreferences, symbol: string): IMarketPreferences {
+  return {
+    ...current,
+    favorites: current.favorites.includes(symbol)
+      ? current.favorites.filter((item) => item !== symbol)
+      : [...current.favorites, symbol],
+  }
+}
+
+export function hideCurrency(current: IMarketPreferences, symbol: string): IMarketPreferences {
+  return { ...current, hidden: current.hidden.includes(symbol) ? current.hidden : [...current.hidden, symbol] }
+}
+
+export function restoreCurrency(current: IMarketPreferences, symbol: string): IMarketPreferences {
+  return { ...current, hidden: current.hidden.filter((item) => item !== symbol) }
+}
+
 export function selectCurrencies(
   currencies: readonly ICurrency[],
   snapshot: Pick<IMarketSnapshot, 'quotes'>,

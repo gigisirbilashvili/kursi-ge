@@ -51,11 +51,23 @@ The runtime code follows Feature-Sliced Design's downward dependency direction: 
 
 There are no `widgets` or `processes` directories in the current app. Market panel composition stays in `pages/home`; generic SVG icons and the logo live in `src/assets`. Component props are defined in adjacent `types/index.ts` files.
 
+### UI, model, and lib
+
+Features and page components use three responsibility segments, without a forwarding-wrapper layer:
+
+- `ui/`: feature entry components call their model hook and render directly. Smaller presentational components receive prepared text, flags, lists, and event handlers.
+- `model/`: hooks own React state, subscriptions, timers, persistence/notification effects, and coordination. They call `lib/` helpers to apply rules and prepare display state.
+- `lib/`: business rules, validation, calculations, and reusable transformations. Examples include selected-pair rules, conversion calculations, target-alert validation/evaluation, preference updates, and chart calculations.
+
+`HomePage` calls `useHomePageModel` to coordinate alerts, and composes feature UI components directly. `App` owns pair selection above `MarketFeedProvider`, because the provider needs the selected symbols. `MarketPrice` and `SessionChange` call their own model hooks, preserving subscriptions by symbol instead of lifting every price update into the page.
+
+Component integration tests sit beside their UI entry components. Presentational-child tests verify rendering and event forwarding without a market provider. Business helpers have unit tests. `types/`, `config/`, and `api/` retain their existing supporting roles and the FSD layer boundaries remain enforced.
+
 ### Market feed ownership
 
 `createMarketFeed` owns the WebSocket, parsing, retries, stale-data timers, subscriptions, and market snapshot. `MarketFeedProvider`, mounted once in `App`, creates one service and supplies that stable instance through context. Its ownership hook synchronizes selected pairs, forwards browser online/offline events, and starts/stops the service. The provider does not subscribe to the full snapshot.
 
-Components read data through `useMarketStatus()`, `useMarketQuote(symbol)`, and `useMarketHistory(symbol)`. These use `useSyncExternalStore`, so an unrelated quote update does not trigger a subscription-driven render. `useMarketFeed()` only retrieves the existing service for commands or non-React subscriptions; it never creates or starts another feed. `useMarketValue(selector)` supports additional selections; selectors must return a primitive or an existing stable reference, not a newly allocated object or array.
+Model hooks read data through `useMarketStatus()`, `useMarketQuote(symbol)`, and `useMarketHistory(symbol)`. These use `useSyncExternalStore`, so an unrelated quote update does not trigger a subscription-driven render. `useMarketFeed()` only retrieves the existing service for commands or non-React subscriptions; it never creates or starts another feed. `useMarketValue(selector)` supports additional selections; selectors must return a primitive or an existing stable reference, not a newly allocated object or array.
 
 `initialOptions` holds the endpoint and optional injected socket factory, clock, and timers. Those options are fixed for the provider's mounted lifetime; `symbols` remains reactive. Remount the provider to replace its configuration. Removing consumers does not stop the feed. Unmounting the provider removes browser listeners and cancels the connection and timers. Strict Mode may replay ownership effects, with only one socket active at a time.
 

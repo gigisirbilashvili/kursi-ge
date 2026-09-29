@@ -1,25 +1,17 @@
 import { Box, Typography } from "@mui/material";
 
-import { PairManager } from "../../../features/manage-pairs";
-import { PriceHistory } from "../../../features/price-history";
-import { useSignificantAlerts } from "../../../features/significant-alerts";
-import { TargetAlerts, useTargetAlerts } from "../../../features/target-alerts";
-import { ConversionCalculator } from "../../../features/convert-currency";
+import { PairManager } from '../../../features/manage-pairs'
+import { PriceHistory } from '../../../features/price-history'
+import { TargetAlerts } from '../../../features/target-alerts'
+import { ConversionCalculator } from '../../../features/convert-currency'
+import { useHomePageModel } from '../model/useHomePageModel'
+import { MarketPanel } from './MarketPanel/MarketPanel'
+
 import { AppChip } from "../../../shared/ui/AppChip/AppChip";
-import { usePriceToasts } from "../model/usePriceToasts";
-import { MarketPanel } from "./MarketPanel/MarketPanel";
 import type { IHomePageProps } from "./types";
 
-function HomePage({
-  currencies,
-  onAddPair,
-  onRemovePair,
-}: Readonly<IHomePageProps>) {
-  const { alerts: sessionAlerts, dismiss: dismissSessionAlert } =
-    useSignificantAlerts();
-  const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts();
-  usePriceToasts(sessionAlerts, targetAlerts);
-
+export function HomePage({ currencies, onAddPair, onRemovePair }: IHomePageProps) {
+  const { session, targets } = useHomePageModel()
   return (
     <Box component="section" aria-labelledby="market-heading">
       <Typography
@@ -41,31 +33,11 @@ function HomePage({
         className="mt-3"
       />
 
-      <PairManager
-        currencies={currencies}
-        onAdd={onAddPair}
-        onRemove={onRemovePair}
-      />
-
-      <MarketPanel
-        currencies={currencies}
-        alerts={sessionAlerts}
-        onDismissAlert={dismissSessionAlert}
-      />
-
+      <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />
+      <MarketPanel currencies={currencies} alerts={session.alerts} onDismissAlert={session.dismiss} />
       <ConversionCalculator currencies={currencies} />
-
       <PriceHistory currencies={currencies} />
-
-      <TargetAlerts
-        currencies={currencies}
-        alerts={targetAlerts}
-        onAdd={add}
-        onRearm={rearm}
-        onRemove={remove}
-      />
+      <TargetAlerts currencies={currencies} alerts={targets.alerts} onAdd={targets.add} onRearm={targets.rearm} onRemove={targets.remove} />
     </Box>
   );
 }
-
-export default HomePage;

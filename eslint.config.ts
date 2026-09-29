@@ -156,6 +156,20 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/vite-env.d.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "interface",
+          filter: { regex: "^ImportMetaEnv$", match: true },
+          format: ["PascalCase"],
+        },
+        ...namingOptions,
+      ],
+    },
+  },
+  {
     files: ["src/app/config/typography.d.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [

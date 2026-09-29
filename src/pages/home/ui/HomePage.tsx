@@ -1,23 +1,33 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography } from "@mui/material";
 
-import { PairManager } from '../../../features/manage-pairs'
-import { PriceHistory } from '../../../features/price-history'
-import { useSignificantAlerts } from '../../../features/significant-alerts'
-import { TargetAlerts, useTargetAlerts } from '../../../features/target-alerts'
-import { ConversionCalculator } from '../../../features/convert-currency'
-import { AppChip } from '../../../shared/ui/AppChip/AppChip'
-import { usePriceToasts } from '../model/usePriceToasts'
-import { MarketPanel } from './MarketPanel/MarketPanel'
-import type { IHomePageProps } from './types'
+import { PairManager } from "../../../features/manage-pairs";
+import { PriceHistory } from "../../../features/price-history";
+import { useSignificantAlerts } from "../../../features/significant-alerts";
+import { TargetAlerts, useTargetAlerts } from "../../../features/target-alerts";
+import { ConversionCalculator } from "../../../features/convert-currency";
+import { AppChip } from "../../../shared/ui/AppChip/AppChip";
+import { usePriceToasts } from "../model/usePriceToasts";
+import { MarketPanel } from "./MarketPanel/MarketPanel";
+import type { IHomePageProps } from "./types";
 
-function HomePage({ currencies, onAddPair, onRemovePair }: IHomePageProps) {
-  const { alerts: sessionAlerts, dismiss: dismissSessionAlert } = useSignificantAlerts()
-  const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts()
-  usePriceToasts(sessionAlerts, targetAlerts)
+function HomePage({
+  currencies,
+  onAddPair,
+  onRemovePair,
+}: Readonly<IHomePageProps>) {
+  const { alerts: sessionAlerts, dismiss: dismissSessionAlert } =
+    useSignificantAlerts();
+  const { alerts: targetAlerts, add, rearm, remove } = useTargetAlerts();
+  usePriceToasts(sessionAlerts, targetAlerts);
 
   return (
     <Box component="section" aria-labelledby="market-heading">
-      <Typography component="h1" variant="h1" id="market-heading" className="text-2xl sm:text-3xl">
+      <Typography
+        component="h1"
+        variant="h1"
+        id="market-heading"
+        className="text-2xl sm:text-3xl"
+      >
         Crypto market
       </Typography>
 
@@ -31,7 +41,11 @@ function HomePage({ currencies, onAddPair, onRemovePair }: IHomePageProps) {
         className="mt-3"
       />
 
-      <PairManager currencies={currencies} onAdd={onAddPair} onRemove={onRemovePair} />
+      <PairManager
+        currencies={currencies}
+        onAdd={onAddPair}
+        onRemove={onRemovePair}
+      />
 
       <MarketPanel
         currencies={currencies}
@@ -51,7 +65,7 @@ function HomePage({ currencies, onAddPair, onRemovePair }: IHomePageProps) {
         onRemove={remove}
       />
     </Box>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;

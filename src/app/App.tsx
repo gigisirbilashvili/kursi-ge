@@ -3,6 +3,7 @@ import { Container, CssBaseline, Link, StyledEngineProvider, ThemeProvider } fro
 import { HomePage } from '../pages/home'
 import { MarketFeedProvider } from '../entities/currency'
 import { useSelectedPairs } from '../features/manage-pairs'
+import { env } from '../shared/config/env'
 import { Toaster } from '../shared/ui/Toaster/Toaster'
 import { themes } from './config/theme'
 import { useColorMode } from './model/useColorMode'
@@ -11,9 +12,6 @@ import { AppHeader } from './ui/AppHeader/AppHeader'
 export function App() {
   const { mode, toggleMode } = useColorMode()
   const { symbols, currencies, addPair, removePair } = useSelectedPairs()
-  const streamEndpoint: unknown = import.meta.env.VITE_MARKET_STREAM_ENDPOINT
-  if (typeof streamEndpoint !== 'string' || !streamEndpoint)
-    throw new Error('VITE_MARKET_STREAM_ENDPOINT is required')
   return (
     <StyledEngineProvider enableCssLayer>
       <ThemeProvider theme={themes[mode]}>
@@ -27,7 +25,7 @@ export function App() {
           Skip to content
         </Link>
 
-        <MarketFeedProvider initialOptions={{ streamEndpoint }} symbols={symbols}>
+        <MarketFeedProvider initialOptions={{ streamEndpoint: env.streamEndpoint }} symbols={symbols}>
           <AppHeader mode={mode} onToggleMode={toggleMode} />
 
           <Container
